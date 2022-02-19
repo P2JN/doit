@@ -3,6 +3,7 @@
 ## Version
 
 07/02/22 - V0.1 (Version inicial)
+19/02/22 - V0.2 (Añadidos apartados restantes)
 
 ## Índice
 
@@ -58,9 +59,13 @@ Todo ello bajo la asistencia y apoyo de un asistente virtual que, de forma human
 | ------- | ----- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **OA1** | #     | **Integración** | Integración con varias apis de otras aplicaciones para llevar a cabo trackeos automatizados de objetivos relacionados con dichas aplicaciones, (por ejemplo, commits al día/mes/año en github) |
 
-## Requisitos
+## Requisitos de usuario de alto nivel
 
-TODO
+| ID      | Issue | Nombre        | Descripcion                                                                      |
+| ------- | ----- | ------------- | -------------------------------------------------------------------------------- |
+| **RA1** | #     | **Objetivos** | Como usuario, quiero poder crear objetivos para poder posteriormente segirlos de forma activa                     |
+| **RA2** | #     | **Interacción Social** | Como usuario, quiero poder crear mi perfil e interactuar con otros usuarios para relacionarse con otras personas de manera sencilla e intuitiva
+| **RA3** | #     | **Recomendación de planificación para objetivos**  | Como usuario, quiero que la aplicación me recomiende una fecha de inicio y de finalización de un objetivo para poder organizar mi tiempo de manera sencilla.
 
 ## Límites Iniciales
 
@@ -79,11 +84,16 @@ TODO
 
 ## Entregables
 
-TODO
+TODO DESARROLLO, CIERRE y RESULTADOS DE LA PLANIFICACIÓN
 
 | ID     | Fase       | Nombre               | Descripción |
 | ------ | ---------- | -------------------- | ----------- |
 | **E1** | **Inicio** | Acta de Constitución |             |
+| **E2** | **Inicio** | Contexto             |  Definir el contexto del proyecto, motivaciones y objetivos generales|
+| **E3** | **Planificación** | Metodología             |  Definir el contexto del proyecto, motivaciones y objetivos generales|
+| **E4** | **Planificación** | Planificación temporal del proyecto  |  Realizar una primera planificación inicial temporal |
+| **E5** | **Planificación** | Costes del proyecto  |  Realizar una estimación de los costes de personal, material y de costes indirectos|
+| **E6** | **Planificación** |  Arranque del proyecto |  Definir la lista de características del sistema y el estilo arquitectónico |
 
 ## Hitos del proyecto
 
@@ -92,3 +102,17 @@ TODO
 | ID     | Fase       | Nombre       | Descripción                     |
 | ------ | ---------- | ------------ | ------------------------------- |
 | **H1** | **Inicio** | Constitución | Definición inicial del proyecto |
+
+## Criterios de salida/abandono del proyecto
+### Criterios de salida
+TODO
+### Criterios de Abandono
+TODO
+
+## Estructura de la Organización y Autoridad
+### Equipo directivo
+El equipo directivo se encuentra compuesto por Jose Montiel Nieves y Pedro Alonso Pontiga. La principal obligación del equipo directivo es velar por el buen desarrollo del proyecto y planificar el mismo. Las decisiones de implementación del proyecto se realizaran mediante mediacion y unanimidad del equipo directivo.
+### Equipo de desarrollo
+El equipo de desarrollo se encuentra compuesto por dos desarrolladores FullStack Jose Montiel Nieves y Pedro Alonso Pontiga. Principalmente este equipo se encontrara dividido en dos subgrupos BackEnd y FrontEnd. De los cuales Jose Montiel es director del FrontEnd y Pedro Alonso es director del BackEnd para las decisiones de implementación.
+
+## Firmas
