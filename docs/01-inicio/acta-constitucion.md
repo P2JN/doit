@@ -2,8 +2,9 @@
 
 ## Version
 
-07/02/22 - V0.1 (Version inicial)
-19/02/22 - V0.2 (Añadidos apartados restantes)
+07/02/22 - V0.1 (Propósito, objetivos, y estructura)
+19/02/22 - V0.2 (Refinado de la versión inicial)
+27/02/22- v0.3 (Definición de hitos, costes y entregables)
 
 ## Índice
 
@@ -16,11 +17,15 @@
     - [Principales](#principales)
     - [Segundarios](#segundarios)
     - [Adicionales](#adicionales)
-  - [Requisitos](#requisitos)
   - [Límites Iniciales](#límites-iniciales)
   - [Riesgos Iniciales](#riesgos-iniciales)
+  - [Costes Iniciales Previstos](#costes-iniciales-previstos)
   - [Entregables](#entregables)
   - [Hitos del proyecto](#hitos-del-proyecto)
+  - [Estructura de la Organización](#estructura-de-la-organización)
+    - [Dirección y organización](#dirección-y-organización)
+    - [Equipo de desarrollo](#equipo-de-desarrollo)
+  - [Firmas](#firmas)
 
 ## Propósito
 
@@ -34,7 +39,7 @@ DOIT, es una aplicación web que permite la gestión y el seguimiento de objetiv
 
 Para ello, se promociona y facilita la interacción social y el establecimiento de retos grupales y comunidades para motivar a los usuarios a mejorar y aumentar su rendimiento.
 
-Todo ello bajo la asistencia y apoyo de un asistente virtual que, de forma humana y en base al análisis del desempeño y datos registrados, mantiene a los usuarios al corriente de sus ultimos logros, estadísticas y notificaciones y recomienda posibles acciones a tomar o planes temporales a seguir.
+Además, bajo la asistencia y apoyo de un asistente virtual que, de forma humana y en base al análisis del desempeño y datos registrados, mantiene a los usuarios al corriente de sus ultimos logros, estadísticas y notificaciones y recomienda posibles acciones a tomar o planes temporales a seguir.
 
 ## Objetivos
 
@@ -57,15 +62,7 @@ Todo ello bajo la asistencia y apoyo de un asistente virtual que, de forma human
 
 | ID      | Issue | Nombre          | Descripcion                                                                                                                                                                                    |
 | ------- | ----- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **OA1** | #     | **Integración** | Integración con varias apis de otras aplicaciones para llevar a cabo trackeos automatizados de objetivos relacionados con dichas aplicaciones, (por ejemplo, commits al día/mes/año en github) |
-
-## Requisitos de usuario de alto nivel
-
-| ID      | Issue | Nombre        | Descripcion                                                                      |
-| ------- | ----- | ------------- | -------------------------------------------------------------------------------- |
-| **RA1** | #     | **Objetivos** | Como usuario, quiero poder crear objetivos para poder posteriormente segirlos de forma activa                     |
-| **RA2** | #     | **Interacción Social** | Como usuario, quiero poder crear mi perfil e interactuar con otros usuarios para relacionarse con otras personas de manera sencilla e intuitiva
-| **RA3** | #     | **Recomendación de planificación para objetivos**  | Como usuario, quiero que la aplicación me recomiende una fecha de inicio y de finalización de un objetivo para poder organizar mi tiempo de manera sencilla.
+| **OA1** | #     | **Integración** | Integración con varias APIs de otras aplicaciones para llevar a cabo trackeos automatizados de objetivos relacionados con dichas aplicaciones, (por ejemplo, commits al día/mes/año en github) |
 
 ## Límites Iniciales
 
@@ -77,42 +74,65 @@ Todo ello bajo la asistencia y apoyo de un asistente virtual que, de forma human
 
 ## Riesgos Iniciales
 
-| ID      | Nombre               | Descripcion                                                                                                                                                                                                  |
-| ------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **RG1** | **Gestión Temporal** | Debido a las limitaciones temporales preestablecidas y a la alta complejidad de los objetivos, una mala gestión temporal podría conllevar retrasos o incumplimientos de los objetivos del proyecto           |
-| **RG2** | **Dependencias**     | Debido a las dependencias que conllevan las integraciones de aplicaciones de terceros con la aplicación base, se identifica la posibilidad de que la incorporación de ciertas aplicaciones resulte inestable |
+| ID      | Nombre               | Descripcion                                                                                                                                                                                                              |
+| ------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **RG1** | **Gestión Temporal** | Debido a las limitaciones temporales preestablecidas y a la alta complejidad de los objetivos, una mala gestión temporal podría conllevar retrasos o incumplimientos de los objetivos del proyecto                       |
+| **RG2** | **Dependencias**     | Debido a las dependencias que conllevan las integraciones de aplicaciones de terceros con la aplicación base, se identifica la posibilidad de que la incorporación de ciertas aplicaciones resulte inestable             |
+| **RG3** | **Divisibilidad**    | La planificación y gestión inicial del proyecto resulta poco divisible y la coordinación de los miembros del grupo puede complicarse y perjudicar al avance inicial del proyecto                                         |
+| **RG3** | **Separación**       | Al tratarse de un proyecto realizado en pareja, existe la posibilidad de separación por motivos de cooperación, incompatibilidad temporal o otros desajustes por situaciones personales de cualquiera de los integrantes |
+
+## Costes Iniciales Previstos
+
+| ID     | Nombre                   | Descripcion                                   |
+| ------ | ------------------------ | --------------------------------------------- |
+| **C1** | **Coste Temporal**       | 600h \* 13 €/h = **7800€**                    |
+| **C2** | **Costes de despliegue** | 4 meses \* 6,8096 €/mes = **~27€**            |
+| **C3** | **Costes de equipo**     | 2 \* 2000€ = **4000€**                        |
+| **C3** | **Costes energéticos**   | 0.2140 € kWh \* (0.28 kWh \* 600h) = ~**36€** |
 
 ## Entregables
 
-TODO DESARROLLO, CIERRE y RESULTADOS DE LA PLANIFICACIÓN
-
-| ID     | Fase       | Nombre               | Descripción |
-| ------ | ---------- | -------------------- | ----------- |
-| **E1** | **Inicio** | Acta de Constitución |             |
-| **E2** | **Inicio** | Contexto             |  Definir el contexto del proyecto, motivaciones y objetivos generales|
-| **E3** | **Planificación** | Metodología             |  Definir el contexto del proyecto, motivaciones y objetivos generales|
-| **E4** | **Planificación** | Planificación temporal del proyecto  |  Realizar una primera planificación inicial temporal |
-| **E5** | **Planificación** | Costes del proyecto  |  Realizar una estimación de los costes de personal, material y de costes indirectos|
-| **E6** | **Planificación** |  Arranque del proyecto |  Definir la lista de características del sistema y el estilo arquitectónico |
+| ID     | Fase       | Nombre        | Descripción                                                          |
+| ------ | ---------- | ------------- | -------------------------------------------------------------------- |
+| **E1** | **Cierre** | Memoria       | Memoria del proyecto                                                 |
+| **E2** | **Cierre** | Código Fuente | Definir el contexto del proyecto, motivaciones y objetivos generales |
+| **E3** | **Cierre** | Presentación  | Definir el contexto del proyecto, motivaciones y objetivos generales |
 
 ## Hitos del proyecto
 
-TODO
+| ID      | Fase              | Nombre                 | Descripción                                                                                                                              |
+| ------- | ----------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **H1**  | **Inicio**        | Consitución inicial    | Definición inicial del proyecto (contexto), objetivos y metodología                                                                      |
+| **H2**  | **Planificación** | Definición del Alcance | Definición de alcance, requisitos e historias de usuario                                                                                 |
+| **H3**  | **Planificación** | Planificación Temporal | Realizar una primera planificación inicial temporal                                                                                      |
+| **H4**  | **Planificación** | Definición de Costes   | Realizar una estimación de los costes de personal, material y de costes indirectos                                                       |
+| **H5**  | **Planificación** | Diseño Arquitectónico  | Definición estructural, creación de repositorios y configuración inicial de los servicios a desarrollar                                  |
+| **H6**  | **Desarrollo**    | Definición de Entornos | Definir y establecer entornos de desarrollo, despliegue y control de calidad                                                             |
+| **H7**  | **Desarrollo**    | MVP                    | Elaboración base de un mínimo producto viable incluyendo los objetivos core                                                              |
+| **H8**  | **Desarrollo**    | Versión final          | Elaboración de una versión funcional final                                                                                               |
+| **H8**  | **Desarrollo**    | Versión refinada       | Elaboración de una versión funcional final revisada, probada y refinada                                                                  |
+| **H9**  | **Control**       | Monitoreo              | Elaboración de informes de control y monitorización del progreso, desempeño y resultados obtenidos durante las iteraciones de desarrollo |
+| **H9**  | **Cierre**        | Go Live                | Despliegue a producción de la versión final del producto                                                                                 |
+| **H10** | **Cierre**        | Defensa                | Presentación y defensa del trabajo realizado                                                                                             |
 
-| ID     | Fase       | Nombre       | Descripción                     |
-| ------ | ---------- | ------------ | ------------------------------- |
-| **H1** | **Inicio** | Constitución | Definición inicial del proyecto |
+## Estructura de la Organización
 
-## Criterios de salida/abandono del proyecto
-### Criterios de salida
-TODO
-### Criterios de Abandono
-TODO
+El proyecto será dirigido y desarrollado por:
 
-## Estructura de la Organización y Autoridad
-### Equipo directivo
-El equipo directivo se encuentra compuesto por Jose Montiel Nieves y Pedro Alonso Pontiga. La principal obligación del equipo directivo es velar por el buen desarrollo del proyecto y planificar el mismo. Las decisiones de implementación del proyecto se realizaran mediante mediacion y unanimidad del equipo directivo.
+- José Montiel Nieves
+- Pedro Alonso Pontiga
+
+### Dirección y organización
+
+La dirección del proyecto será llevada en conjunto entre ambos miembros tomando decisiones mediante acuerdos y procesos de decisión basados en conocimientos y especialidades.
+
+La principal obligación del equipo directivo es velar por el buen desarrollo del proyecto y planificar el mismo.
+
 ### Equipo de desarrollo
-El equipo de desarrollo se encuentra compuesto por dos desarrolladores FullStack Jose Montiel Nieves y Pedro Alonso Pontiga. Principalmente este equipo se encontrara dividido en dos subgrupos BackEnd y FrontEnd. De los cuales Jose Montiel es director del FrontEnd y Pedro Alonso es director del BackEnd para las decisiones de implementación.
+
+El desarrollo del proyecto se repartirá entre ambos miembros como desarrolladores FullStack, sin embargo, la responsabilidad, debido a los campos de especialización de los miembros, será dividida en dos subgrupos BackEnd y FrontEnd.
+
+- Director de frontend: Jose Montiel Nieves.
+- Director de backend: Pedro Alonso Pontiga.
 
 ## Firmas
