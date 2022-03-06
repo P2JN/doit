@@ -9,12 +9,7 @@ La memoria hace uso de la plantilla original del Dr. Pablo Trinidad Martín-Arro
 ## Gestión
 
 ### Documentación
-- INICIO
-    - [Acta de Constitución](/docs/01-inicio/acta-constitucion.md)
-- PLANIFICACIÓN
-- DESARROLLO
-- SEGUIMIENTO
-- CIERRE
+[WIKI](https://github.com/P2JN/doit/wiki)
 
 ## Diseño y Arquitectura
 
