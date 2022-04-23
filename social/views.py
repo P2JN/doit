@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 
-from post.models import Post
+from social.models import Post
 
 
 class PostCRUD(APIView):

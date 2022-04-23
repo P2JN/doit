@@ -2,7 +2,7 @@ from mongoengine import Document, fields
 
 
 class Meta:
-    app_label = 'post'
+    app_label = 'social'
 
 
 class Post(Document):
