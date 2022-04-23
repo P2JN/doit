@@ -18,9 +18,18 @@ from django.urls import path, include
 from rest_framework_mongoengine import routers
 
 from social.views import PostViewSet
+from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet
 
 router = routers.DefaultRouter()
+
+# Social API
 router.register(r'post', PostViewSet, "post")
+
+# Goals API
+router.register(r'goal', GoalViewSet, "goal")
+router.register(r'objective', ObjectiveViewSet, "objective")
+router.register(r'tracking', TrackingViewSet, "tracking")
+
 
 urlpatterns = [
     path('api/', include(router.urls)),
