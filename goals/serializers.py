@@ -9,7 +9,7 @@ class GoalSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Goal
         depth = 2
-        fields = ['title', 'description', 'unit', 'type',
+        fields = ['id', 'title', 'description', 'unit', 'type',
                   'creationDate', 'startDate', 'deadline',
                   'objectives', 'createdBy', 'participants', 'posts', 'trackings']
 
@@ -17,10 +17,10 @@ class GoalSerializer(serializers.DocumentSerializer):
 class ObjectiveSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Objective
-        fields = ['quantity', 'frequency', 'goal']
+        fields = ['id', 'quantity', 'frequency', 'goal']
 
 
 class TrackingSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Tracking
-        fields = ['date', 'amount', 'goal']
+        fields = ['id', 'date', 'amount', 'goal']

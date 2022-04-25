@@ -9,13 +9,13 @@ from social.models import Post, User, Notification
 class PostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'creationDate']
+        fields = ['id', 'title', 'content', 'creationDate']
 
 
 class UserSerializer(serializers.DocumentSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'birthDate', 'firstName', 'lastName']
+        fields = ['id', 'username', 'email', 'password', 'birthDate', 'firstName', 'lastName']
 
 
 class NotificationSerializer(serializers.DocumentSerializer):
@@ -24,7 +24,7 @@ class NotificationSerializer(serializers.DocumentSerializer):
 
     class Meta:
         model = Notification
-        fields = ['title', 'content', 'creationDate', 'user', 'userId']
+        fields = ['id', 'title', 'content', 'creationDate', 'user', 'userId']
 
     def create(self, validated_data):
         user_id = validated_data.pop('userId')
