@@ -24,8 +24,8 @@ router = routers.DefaultRouter()
 
 # Social API
 router.register(r'post', PostViewSet, "post")
-router.register(r'user', UserViewSet, "post")
-router.register(r'notification', NotificationViewSet, "post")
+router.register(r'user', UserViewSet, "user")
+router.register(r'notification', NotificationViewSet, "notification")
 
 # Goals API
 router.register(r'goal', GoalViewSet, "goal")
