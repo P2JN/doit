@@ -1,6 +1,6 @@
+from bson import DBRef
 from rest_framework_mongoengine import serializers
-from utils.querys import get_obj_or_404
-from social.models import Post, User, Notification
+from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost
 
 
 # Serializers define the API representation.
@@ -9,27 +9,48 @@ from social.models import Post, User, Notification
 class PostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'creationDate']
+        fields = ['id', 'title', 'content', 'creationDate', 'createdBy', 'goal']
 
 
 class UserSerializer(serializers.DocumentSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'birthDate', 'firstName', 'lastName']
+        fields = ['id', 'username', 'email', 'password', 'birthDate', 'firstName', 'lastName', 'followers']
+        read_only_fields = ['followers']
 
 
 class NotificationSerializer(serializers.DocumentSerializer):
-    user = serializers.serializers.CharField(source="user.id", read_only=True)
-    userId = serializers.serializers.CharField(required=False)
-
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'content', 'creationDate', 'user', 'userId']
+        fields = ['id', 'title', 'content', 'creationDate', 'user']
+
+
+class FollowSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = Follow
+        fields = ['id', 'user', 'follower']
 
     def create(self, validated_data):
-        user_id = validated_data.pop('userId')
-        user = get_obj_or_404(User, id=user_id)
-        instance = super(NotificationSerializer, self).create(validated_data)
-        instance.user = user
+        instance = Follow.objects.create(**validated_data)
         instance.save()
+        instance.user.followers.append(DBRef('follow', instance.id))
+        instance.user.save()
         return instance
+
+
+class ParticipateSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = Participate
+        fields = ['id', 'user', 'goal']
+
+
+class LikeTrackingSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = LikeTracking
+        fields = ['id', 'user', 'tracking']
+
+
+class LikePostSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = LikePost
+        fields = ['id', 'user', 'post']
