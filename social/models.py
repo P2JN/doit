@@ -2,6 +2,8 @@ from datetime import datetime
 
 from mongoengine import Document, fields
 
+from goals.models import Tracking, Goal
+
 
 class User(Document):
     username = fields.StringField(max_length=30, required=True)
@@ -10,12 +12,15 @@ class User(Document):
     birthDate = fields.DateTimeField()
     firstName = fields.StringField(max_length=30, required=True)
     lastName = fields.StringField(max_length=60, required=True)
+    followers = fields.ListField(fields.ReferenceField("Follow"))
 
 
 class Post(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
     creationDate = fields.DateTimeField(default=datetime.utcnow)
+    createdBy = fields.ReferenceField(User)
+    goal = fields.ReferenceField(Goal)
 
 
 class Notification(Document):
@@ -23,3 +28,43 @@ class Notification(Document):
     content = fields.StringField(max_length=1250)
     creationDate = fields.DateTimeField(default=datetime.utcnow)
     user = fields.ReferenceField(User)
+
+
+class LikeTracking(Document):
+    tracking = fields.ReferenceField(Tracking, required=True)
+    user = fields.ReferenceField(User, required=True)
+    meta = {
+        'indexes': [
+            {'fields': ['tracking', 'user'], 'unique': True}
+        ]
+    }
+
+
+class LikePost(Document):
+    post = fields.ReferenceField(Post, required=True)
+    user = fields.ReferenceField(User, required=True)
+    meta = {
+        'indexes': [
+            {'fields': ['post', 'user'], 'unique': True}
+        ]
+    }
+
+
+class Follow(Document):
+    user = fields.ReferenceField(User, required=True)
+    follower = fields.ReferenceField(User, required=True)
+    meta = {
+        'indexes': [
+            {'fields': ['user', 'follower'], 'unique': True}
+        ]
+    }
+
+
+class Participate(Document):
+    user = fields.ReferenceField(User, required=True)
+    goal = fields.ReferenceField(Goal, required=True)
+    meta = {
+        'indexes': [
+            {'fields': ['user', 'goal'], 'unique': True}
+        ]
+    }

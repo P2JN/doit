@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_mongoengine import routers
 
-from social.views import PostViewSet, UserViewSet, NotificationViewSet
+from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
+    LikePostViewSet
 from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet
 
 router = routers.DefaultRouter()
@@ -26,6 +27,10 @@ router = routers.DefaultRouter()
 router.register(r'post', PostViewSet, "post")
 router.register(r'user', UserViewSet, "user")
 router.register(r'notification', NotificationViewSet, "notification")
+router.register(r'follow', FollowViewSet, 'follow')
+router.register(r'participate', ParticipateViewSet, 'participate')
+router.register(r'likePost', LikePostViewSet, 'likePost')
+router.register(r'likeTracking', LikePostViewSet, 'likeTracking')
 
 # Goals API
 router.register(r'goal', GoalViewSet, "goal")
