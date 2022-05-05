@@ -9,13 +9,15 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
 class PostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'creationDate', 'createdBy', 'goal']
+        fields = ['id', 'title', 'content',
+                  'creationDate', 'createdBy', 'goal']
 
 
 class UserSerializer(serializers.DocumentSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'birthDate', 'firstName', 'lastName', 'followers']
+        fields = ['id', 'username', 'email', 'password',
+                  'birthDate', 'firstName', 'lastName', 'followers']
         read_only_fields = ['followers']
 
 
@@ -29,13 +31,6 @@ class FollowSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Follow
         fields = ['id', 'user', 'follower']
-
-    def create(self, validated_data):
-        instance = Follow.objects.create(**validated_data)
-        instance.save()
-        instance.user.followers.append(DBRef('follow', instance.id))
-        instance.user.save()
-        return instance
 
 
 class ParticipateSerializer(serializers.DocumentSerializer):

@@ -19,20 +19,20 @@ class Post(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
     creationDate = fields.DateTimeField(default=datetime.utcnow)
-    createdBy = fields.ReferenceField(User)
-    goal = fields.ReferenceField(Goal)
+    createdBy = fields.ReferenceField('User', required=True)
+    goal = fields.ReferenceField('Goal')
 
 
 class Notification(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
     creationDate = fields.DateTimeField(default=datetime.utcnow)
-    user = fields.ReferenceField(User)
+    user = fields.ReferenceField('User', required=True)
 
 
 class LikeTracking(Document):
-    tracking = fields.ReferenceField(Tracking, required=True)
-    user = fields.ReferenceField(User, required=True)
+    tracking = fields.ReferenceField('Tracking', required=True)
+    user = fields.ReferenceField('User', required=True)
     meta = {
         'indexes': [
             {'fields': ['tracking', 'user'], 'unique': True}
@@ -41,8 +41,8 @@ class LikeTracking(Document):
 
 
 class LikePost(Document):
-    post = fields.ReferenceField(Post, required=True)
-    user = fields.ReferenceField(User, required=True)
+    post = fields.ReferenceField('Post', required=True)
+    user = fields.ReferenceField('User', required=True)
     meta = {
         'indexes': [
             {'fields': ['post', 'user'], 'unique': True}
@@ -51,8 +51,8 @@ class LikePost(Document):
 
 
 class Follow(Document):
-    user = fields.ReferenceField(User, required=True)
-    follower = fields.ReferenceField(User, required=True)
+    user = fields.ReferenceField('User', required=True)
+    follower = fields.ReferenceField('User', required=True)
     meta = {
         'indexes': [
             {'fields': ['user', 'follower'], 'unique': True}
@@ -61,8 +61,8 @@ class Follow(Document):
 
 
 class Participate(Document):
-    user = fields.ReferenceField(User, required=True)
-    goal = fields.ReferenceField(Goal, required=True)
+    user = fields.ReferenceField('User', required=True)
+    goal = fields.ReferenceField('Goal', required=True)
     meta = {
         'indexes': [
             {'fields': ['user', 'goal'], 'unique': True}
