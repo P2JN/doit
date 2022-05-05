@@ -17,8 +17,7 @@ class UserSerializer(serializers.DocumentSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password',
-                  'birthDate', 'firstName', 'lastName', 'followers']
-        read_only_fields = ['followers']
+                  'birthDate', 'firstName', 'lastName']
 
 
 class NotificationSerializer(serializers.DocumentSerializer):

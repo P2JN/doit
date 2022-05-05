@@ -9,8 +9,7 @@ class GoalSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Goal
         fields = ['id', 'title', 'description', 'unit', 'type',
-                  'creationDate', 'startDate', 'deadline',
-                  'objectives', 'createdBy', 'participants', 'posts', 'trackings']
+                  'creationDate', 'startDate', 'deadline', 'createdBy']
 
 
 class ObjectiveSerializer(serializers.DocumentSerializer):

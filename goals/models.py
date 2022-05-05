@@ -30,13 +30,7 @@ class Goal(Document):
     startDate = fields.DateTimeField(default=datetime.utcnow)
     deadline = fields.DateTimeField(future=True)
 
-    objectives = fields.ListField(fields.ReferenceField('Objective'))
-
     createdBy = fields.ReferenceField('User')
-    participants = fields.ListField(fields.ReferenceField('User'))
-
-    posts = fields.ListField(fields.ReferenceField('Post'))
-    trackings = fields.ListField(fields.ReferenceField('Tracking'))
 
 
 class Objective(Document):

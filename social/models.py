@@ -12,7 +12,6 @@ class User(Document):
     birthDate = fields.DateTimeField()
     firstName = fields.StringField(max_length=30, required=True)
     lastName = fields.StringField(max_length=60, required=True)
-    followers = fields.ListField(fields.ReferenceField("Follow"))
 
 
 class Post(Document):

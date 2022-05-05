@@ -1,8 +1,4 @@
-
-from social.models import Participate
-
-
-class FilterSet():
+class FilterSet:
 
     def __init__(self, my_filter_fields, my_custom_filter_fields, query_params, queryset):
         self.my_filter_fields = my_filter_fields
@@ -20,13 +16,14 @@ class FilterSet():
         return filtering_kwargs
 
     def get_custom_kwargs_for_filtering(self):
-        print("get_custom_kwargs_for_filtering")
         filtering_kwargs = {'id__in': []}
         for (field, callback) in self.my_custom_filter_fields:
             field_value = self.query_params.get(field)
             if field_value:
                 filtering_kwargs['id__in'] = filtering_kwargs['id__in'] + \
                     callback(field_value)
+        if len(filtering_kwargs['id__in']) == 0:
+            filtering_kwargs = {}
         return filtering_kwargs
 
     def filter(self):
