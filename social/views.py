@@ -15,7 +15,8 @@ class PostViewSet(viewsets.ModelViewSet):
         post=value).values_list('post')])]
 
     def filter_queryset(self, queryset):
-        post_filter = FilterSet(self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
 
@@ -25,22 +26,25 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     filter_fields = ['username', 'email', 'password',
-                  'birthDate', 'firstName', 'lastName']
-    custom_filter_fields = [('postLikes', lambda value: [post.id for post in LikePost.objects.filter(post=value)
-                             .values_list('user')]),
-                            ('trackLikes', lambda value: [track.id for track in LikeTracking.objects.filter(
-                                tracking=value).values_list('user')]),
-                            ('goal', lambda value: [user.id for user in Participate.objects.filter(goal=value)
-                             .values_list('user')]),
-                            ('followers', lambda value: [user.id for user in Follow.objects.filter(user=value)
-                             .values_list('follower')]),
-                            ('following', lambda value: [user.id for user in Follow.objects.filter(follower=value)
-                             .values_list('user')]),
-                            ('postCreator', lambda value: [post.id for post in Post.objects.filter(id=value)
-                             .values_list('createdBy')])]
+                     'birthDate', 'firstName', 'lastName']
+    custom_filter_fields = [
+        ('postLikes', lambda value: [post.id for post in LikePost.objects.filter(post=value)
+                                     .values_list('user')]),
+        ('trackLikes', lambda value: [track.id for track in LikeTracking.objects.filter(
+            tracking=value).values_list('user')]),
+        ('goal', lambda value: [user.id for user in Participate.objects.filter(goal=value)
+                                .values_list('user')]),
+        ('followers', lambda value: [user.id for user in Follow.objects.filter(user=value)
+                                     .values_list('follower')]),
+        ('following', lambda value: [user.id for user in Follow.objects.filter(follower=value)
+                                     .values_list('user')]),
+        ('postCreator', lambda value: [post.id for post in Post.objects.filter(id=value)
+                                       .values_list('createdBy')])
+    ]
 
     def filter_queryset(self, queryset):
-        post_filter = FilterSet(self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
 
@@ -53,7 +57,8 @@ class NotificationViewSet(viewsets.ModelViewSet):
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
-        post_filter = FilterSet(self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
 
@@ -66,7 +71,8 @@ class FollowViewSet(viewsets.ModelViewSet):
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
-        post_filter = FilterSet(self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
 
@@ -79,7 +85,8 @@ class ParticipateViewSet(viewsets.ModelViewSet):
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
-        post_filter = FilterSet(self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
 
@@ -92,7 +99,8 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
-        post_filter = FilterSet(self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
 
@@ -105,6 +113,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
-        post_filter = FilterSet(self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
