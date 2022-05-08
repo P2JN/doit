@@ -42,7 +42,7 @@ class TrackingViewSet(viewsets.ModelViewSet):
     queryset = Tracking.objects.all()
     serializer_class = TrackingSerializer
 
-    filter_fields = ['date', 'amount', 'goal']
+    filter_fields = ['date', 'amount', 'goal', 'user']
     custom_filter_fields = [('likes', lambda value: [tracking.id for tracking in LikeTracking.objects.filter(
         user=value).values_list('tracking')])]
 
