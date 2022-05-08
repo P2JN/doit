@@ -1,9 +1,6 @@
 from rest_framework_mongoengine import serializers
 
 from goals.models import Goal, Objective, Tracking
-
-
-# Serializers define the API representation.
 from social.models import LikeTracking
 
 

@@ -12,10 +12,10 @@ class PostSerializer(serializers.DocumentSerializer):
         model = Post
         fields = ['id', 'title', 'content',
                   'creationDate', 'createdBy', 'goal', 'likes']
+        read_only_fields = ['creationDate']
 
     def get_likes(self, obj):
-        likes = LikePost.objects(post=obj).count()
-        return likes
+        return LikePost.objects(post=obj).count()
 
 
 class UserSerializer(serializers.DocumentSerializer):
@@ -31,12 +31,10 @@ class UserSerializer(serializers.DocumentSerializer):
         }
 
     def get_numFollowers(self, obj):
-        numFollowers = Follow.objects(user=obj).count()
-        return numFollowers
+        return Follow.objects(user=obj).count()
 
     def get_numFollowing(self, obj):
-        numFollowing = Follow.objects(follower=obj).count()
-        return numFollowing
+        return Follow.objects(follower=obj).count()
 
 
 class NotificationSerializer(serializers.DocumentSerializer):
