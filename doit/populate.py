@@ -1,4 +1,6 @@
 import random
+from datetime import datetime
+
 from goals.models import Frequency, Goal, Objective, Tracking
 from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification
 
@@ -13,11 +15,14 @@ def populate_users(n):
         name = names[int(random.random() * len(names))]
         last_name = last_names[int(random.random() * len(last_names))]
 
+        initial = datetime(1975, 1, 1)
+        final = datetime(2017, 1, 1)
+
         user = User(
             username=name.lower() + last_name.lower(),
             email=name.lower() + last_name.lower() + '@mail.com',
             password='123123123',
-            birthDate='01/01/1990',
+            birthDate=initial + (final - initial) * random.random(),
             firstName=name,
             lastName=last_name,
         )
@@ -31,7 +36,8 @@ def populate_goals(users):
             title='Goal ' + str(i),
             description='This is a goal description',
             deadline=str(int(random.random() * 12) + 1) + '/' + str(int(random.random()
-                                                                        * 28) + 1) + '/' + str(int(random.random() * 100) + 1900),
+                                                                        * 28) + 1) + '/' + str(
+                int(random.random() * 100) + 1900),
             unit='km',
             type='private',
             createdBy=users[i],
@@ -59,7 +65,6 @@ def populate_participations(users, goals):
 
 
 def drop_all():
-
     LikePost.objects.all().delete()
     LikeTracking.objects.all().delete()
     Follow.objects.all().delete()

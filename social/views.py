@@ -12,7 +12,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
     filter_fields = ['title', 'content', 'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [('likes', lambda value: [post.id for post in LikePost.objects.filter(
-        post=value).values_list('post')])]
+        post=value).values_list('post')]), ('follows', lambda value: [post.id for post in Post.objects.filter(
+        createdBy__in=Follow.objects.filter(
+            follower=value).values_list('user'))])]
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
@@ -29,17 +31,17 @@ class UserViewSet(viewsets.ModelViewSet):
                      'birthDate', 'firstName', 'lastName']
     custom_filter_fields = [
         ('postLikes', lambda value: [post.id for post in LikePost.objects.filter(post=value)
-                                     .values_list('user')]),
+         .values_list('user')]),
         ('trackLikes', lambda value: [track.id for track in LikeTracking.objects.filter(
             tracking=value).values_list('user')]),
         ('goal', lambda value: [user.id for user in Participate.objects.filter(goal=value)
-                                .values_list('user')]),
+         .values_list('user')]),
         ('followers', lambda value: [user.id for user in Follow.objects.filter(user=value)
-                                     .values_list('follower')]),
+         .values_list('follower')]),
         ('following', lambda value: [user.id for user in Follow.objects.filter(follower=value)
-                                     .values_list('user')]),
+         .values_list('user')]),
         ('postCreator', lambda value: [post.id for post in Post.objects.filter(id=value)
-                                       .values_list('createdBy')])
+         .values_list('createdBy')])
     ]
 
     def filter_queryset(self, queryset):
