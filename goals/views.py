@@ -15,7 +15,11 @@ class GoalViewSet(viewsets.ModelViewSet):
                      'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [
         ('participant', lambda value: [goal.id for goal in Participate.objects.filter(
-            user=value).values_list('goal')])]
+            user=value).values_list('goal')]),
+        ('likedBy', lambda value: [goal.id for goal in LikeTracking.objects.filter(
+            user=value).values_list('goal')]),
+        ('search', lambda value: Goal.objects.search_text(value).values_list('id')),
+    ]
 
     def filter_queryset(self, queryset):
         goal_filter = FilterSet(
