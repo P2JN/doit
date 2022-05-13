@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import mongoengine
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,7 +77,18 @@ WSGI_APPLICATION = 'doit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-mongoengine.connect("DOIT")
+
+if os.environ.get('DOCKER'):
+    mongoengine.connect(
+        db='doit',
+        host='mongo',
+        port=27017,
+        username='root',
+        password='root'
+    )
+else:
+    mongoengine.connect("DOIT")
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

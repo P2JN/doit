@@ -21,10 +21,10 @@ ENV LIBRARY_PATH=/lib:/usr/lib
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
+ENV DOCKER True
 
 WORKDIR /app
 
 COPY . /app/
-COPY docker-settings.py /app/doit/settings.py
 
 RUN pip3 --no-cache-dir install -r requirements.txt
