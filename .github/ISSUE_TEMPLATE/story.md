@@ -1,9 +1,10 @@
 ---
 name: Story
 about: Historias de usuario de desarrollo
-title: "Story: "
+title: 'Story: '
 labels: story
-assignees: ""
+assignees: ''
+
 ---
 
 ## descripción

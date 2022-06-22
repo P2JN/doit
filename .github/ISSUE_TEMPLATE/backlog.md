@@ -1,9 +1,10 @@
 ---
 name: Backlog
 about: Plantilla de backlog
-title: ""
-labels: backlog
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 **Projecto**: DOIT

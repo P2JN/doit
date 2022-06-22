@@ -1,9 +1,10 @@
 ---
 name: Change request
 about: Petición de cambio de una funcionalidad existente
-title: "CR: "
-labels: change
-assignees: ""
+title: 'CR: '
+labels: ''
+assignees: ''
+
 ---
 
 **solicitante/s**: @
