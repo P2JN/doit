@@ -1,0 +1,26 @@
+{
+  "typography": {
+    "fontSize": 11,
+    "fontFamily": "'Barlow', sans-serif;"
+  },
+  "palette": {
+    "primary": {
+      "main": "#93C08C"
+    },
+    "secondary": {
+      "main": "#83C6FF"
+    },
+    "error": {
+      "main": "#FE4646"
+    },
+    "warning": {
+      "main": "#FEA446"
+    },
+    "info": {
+      "main": "#414040"
+    },
+    "success": {
+      "main": "#93C08C"
+    }
+  }
+}

@@ -1,2 +1,9 @@
 # Env
 env/*
+
+
+*/__pycache__/*
+/__pycache__/*
+
+*/_data/*
+/_data/*
