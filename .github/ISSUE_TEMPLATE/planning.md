@@ -3,7 +3,8 @@ name: Planning
 about: Planificación de un capitulo
 title: Planning
 labels: planning
-assignees: ""
+assignees: ''
+
 ---
 
 **Projecto**: DOIT

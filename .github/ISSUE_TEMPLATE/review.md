@@ -3,7 +3,8 @@ name: Review
 about: Review
 title: Review X
 labels: review
-assignees: ""
+assignees: ''
+
 ---
 
 **Projecto**: DOIT
@@ -11,7 +12,15 @@ assignees: ""
 **Capítulo**: x ·
 **Fecha**: a/b/c
 
-## métricas
+## objetivos
+
+| O Padre | Issue | Titulo  | Descripción | Prioridad | Cumplido |
+| ------- | ----- | ------- | ----------- | --------- | -------- |
+| OP1     | #X    | Summary | Description | Priority  | ✅ ❌    |
+| OS1     | #X    | Summary | Description | Priority  | ✅ ❌    |
+| OA1     | #X    | Summary | Description | Priority  | ✅ ❌    |
+
+## desarrollo
 
 **Tareas Completadas**: x
 
@@ -40,13 +49,17 @@ assignees: ""
 - #issue
 - #issue
 
-## objetivos
+## calidad
 
-| O Padre | Issue | Titulo  | Descripción | Prioridad | Cumplido |
-| ------- | ----- | ------- | ----------- | --------- | -------- |
-| OP1     | #X    | Summary | Description | Priority  | ✅ ❌    |
-| OS1     | #X    | Summary | Description | Priority  | ✅ ❌    |
-| OA1     | #X    | Summary | Description | Priority  | ✅ ❌    |
+| Métrica                              | Valor | Unidad      | Dif |
+| ------------------------------------ | ----- | ----------- | --- |
+| Desviación de PHs completados        | a     | PHs         | n/a |
+| Desviación temporal                  | a     | horas       | n/a |
+| Presupuesto Consumido                | a     | %           | n/a |
+| Tendencia de la calidad del código   | a     | code smells | n/a |
+| Calidad del código                   | a     | code smells | n/a |
+| Bugs reportados por usuarios pilotos | a     | nº reportes | n/a |
+| Valoración cuantitativa del producto | a     | pts         | n/a |
 
 ## comentarios
 
