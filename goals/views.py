@@ -1,12 +1,17 @@
+import datetime
+
 from rest_framework_mongoengine import viewsets
+from rest_framework.response import Response
+from rest_framework_mongoengine.generics import get_object_or_404
 
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from utils.filters import FilterSet
-from goals.models import Goal, Objective, Tracking
+from goals.models import Goal, Objective, Tracking, Frequency
 
-from social.models import Participate, LikeTracking
+from social.models import Participate, LikeTracking, User
 
 
+# ViewSet views
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     serializer_class = GoalSerializer
@@ -55,3 +60,31 @@ class TrackingViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return tracking_filter.filter()
+
+
+# Custom endpoints
+class ObjectiveProgress(viewsets.GenericAPIView):
+
+    def get(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.query_params.get('userId'))
+        objective = get_object_or_404(Objective.objects.filter(id=request.query_params.get('objectiveId')))
+        trackings = Tracking.objects.filter(user=user, goal=objective.goal)
+        progress = 0.0
+        today = datetime.datetime.now()
+        for tracking in trackings:
+            if objective.frequency == Frequency.DAILY and (tracking.date - today).days == 0:
+                progress += tracking.amount
+            elif objective.frequency == Frequency.WEEKLY:
+                start = tracking.date - datetime.timedelta(days=tracking.date.weekday())
+                end = start + datetime.timedelta(days=6)
+                if start <= today <= end:
+                    progress += tracking.amount
+            elif objective.frequency == Frequency.MONTHLY and (
+                    today.month == tracking.date.month and today.year == tracking.date.year):
+                progress += tracking.amount
+            elif objective.frequency == Frequency.YEARLY and today.year == tracking.date.year:
+                progress += tracking.amount
+            elif objective.frequency == Frequency.TOTAL:
+                progress += tracking.amount
+        return Response(
+            {'progress': progress}, status=200)

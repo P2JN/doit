@@ -21,7 +21,7 @@ from frontend.views import app
 
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
     LikePostViewSet, LikeTrackingViewSet
-from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet
+from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, ObjectiveProgress
 
 router = routers.DefaultRouter()
 
@@ -42,6 +42,7 @@ router.register(r'tracking', TrackingViewSet, "tracking")
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('api/objectiveProgress/', ObjectiveProgress.as_view()),
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
     re_path('', app),
