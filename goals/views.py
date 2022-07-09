@@ -65,9 +65,9 @@ class TrackingViewSet(viewsets.ModelViewSet):
 # Custom endpoints
 class ObjectiveProgress(viewsets.GenericAPIView):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, objective_id, *args, **kwargs):
         user = User.objects.get(id=request.query_params.get('userId'))
-        objective = get_object_or_404(Objective.objects.filter(id=request.query_params.get('objectiveId')))
+        objective = get_object_or_404(Objective.objects.filter(id=objective_id))
         trackings = Tracking.objects.filter(user=user, goal=objective.goal)
         progress = 0.0
         today = datetime.datetime.now()

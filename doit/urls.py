@@ -41,10 +41,10 @@ router.register(r'tracking', TrackingViewSet, "tracking")
 
 
 urlpatterns = [
+    path('api/goal/<str:objective_id>/my-progress/', ObjectiveProgress.as_view()),
     path('api/', include(router.urls)),
-    path('api/objectiveProgress/', ObjectiveProgress.as_view()),
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
     re_path('', app),
-    
+
 ]
