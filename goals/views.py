@@ -63,28 +63,28 @@ class TrackingViewSet(viewsets.ModelViewSet):
 
 
 # Custom endpoints
-class ObjectiveProgress(viewsets.GenericAPIView):
+class GoalProgress(viewsets.GenericAPIView):
 
-    def get(self, request, objective_id, *args, **kwargs):
+    def get(self, request, goal_id, *args, **kwargs):
         user = User.objects.get(id=request.query_params.get('userId'))
-        objective = get_object_or_404(Objective.objects.filter(id=objective_id))
-        trackings = Tracking.objects.filter(user=user, goal=objective.goal)
-        progress = 0.0
+        objectives = Objective.objects.filter(goal=goal_id)
+        trackings = Tracking.objects.filter(user=user, goal=goal_id)
+        progress = {Frequency.DAILY: -1.0, Frequency.WEEKLY: -1.0, Frequency.MONTHLY: -1.0, Frequency.YEARLY: -1.0,
+                    Frequency.TOTAL: -1.0}
+        for objective in objectives:
+            progress[objective.frequency] = 0.0
         today = datetime.datetime.now()
+        startWeek = today - datetime.timedelta(days=today.weekday())
+        endWeek = startWeek + datetime.timedelta(days=6)
         for tracking in trackings:
-            if objective.frequency == Frequency.DAILY and (tracking.date - today).days == 0:
-                progress += tracking.amount
-            elif objective.frequency == Frequency.WEEKLY:
-                start = tracking.date - datetime.timedelta(days=tracking.date.weekday())
-                end = start + datetime.timedelta(days=6)
-                if start <= today <= end:
-                    progress += tracking.amount
-            elif objective.frequency == Frequency.MONTHLY and (
-                    today.month == tracking.date.month and today.year == tracking.date.year):
-                progress += tracking.amount
-            elif objective.frequency == Frequency.YEARLY and today.year == tracking.date.year:
-                progress += tracking.amount
-            elif objective.frequency == Frequency.TOTAL:
-                progress += tracking.amount
-        return Response(
-            {'progress': progress}, status=200)
+            if progress[Frequency.DAILY] != -1.0 and tracking.date - today == 0:
+                progress[Frequency.DAILY] += tracking.amount
+            if progress[Frequency.WEEKLY] != -1.0 and startWeek <= today <= endWeek:
+                progress[Frequency.WEEKLY] += tracking.amount
+            if progress[Frequency.MONTHLY] != -1.0 and today.month == tracking.date.month and today.year == tracking.date.year:
+                progress[Frequency.MONTHLY] += tracking.amount
+            if progress[Frequency.YEARLY] != -1.0 and today.year == tracking.date.year:
+                progress[Frequency.YEARLY] += tracking.amount
+            if progress[Frequency.TOTAL] != -1.0:
+                progress[Frequency.TOTAL] += tracking.amount
+        return Response(progress, status=200)
