@@ -37,6 +37,7 @@ env:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   build:
