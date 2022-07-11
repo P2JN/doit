@@ -4,20 +4,20 @@ on:
   pull_request:
     branches: ["main", "develop"]
 
-services:
-  mongodb:
-    image: mongo
-    env:
-      MONGO_INITDB_DATABASE: doit
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    ports:
-      - 27017:27017
-    options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5
-
 jobs:
   django:
     runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo
+        env:
+          MONGO_INITDB_DATABASE: doit
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: root
+        ports:
+          - 27017:27017
+        options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
@@ -33,8 +33,8 @@ jobs:
         run: |
           python manage.py test
 
-  react_app:
-      runs-on: ubuntu-latest
+  react:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -53,17 +53,11 @@ jobs:
           cd frontend && npm run test
 
   docker:
-    requires:
-      - django
-      - react_app
     runs-on: ubuntu-latest
 
     steps:
       - name: Build Docker image
         uses: actions/build-docker-image@v2
         with:
-          docker-image:
-            name: doit
-            path: .
-          docker-image-build-args:
-            BUILD_ARGS: --build-arg PYTHON_VERSION=3.9
+          docker-image: doit/doit
+          docker-context: .
