@@ -15,6 +15,7 @@ import mongoengine
 import os
 
 
+SITE_ID = 1
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,7 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'corsheaders',
     'rest_framework',
-    'rest_framework_mongoengine'
+    'rest_framework_mongoengine',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +56,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    # django's inbuild authentication backend
+    'django.contrib.auth.backends.ModelBackend',
+
+    # django's allauth authentication backend
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ROOT_URLCONF = 'doit.urls'
@@ -76,6 +89,16 @@ WSGI_APPLICATION = 'doit.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'doit',
+        'USER': 'doit',
+        'PASSWORD': 'doit',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 
 if os.environ.get('DOCKER'):
     mongoengine.connect(
