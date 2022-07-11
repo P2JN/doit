@@ -18,8 +18,8 @@ services:
 
   web:
     build: .
-    image: app:latest
-    container_name: app
+    image: doit:latest
+    container_name: doit
     command: bash -c "python manage.py runserver 0.0.0.0:8000"
     env_file: docker.env
     volumes:
