@@ -22,7 +22,7 @@ const AppPages = () => (
     <Routes>
       <Route path="/landing" element={<LandingPage />} />
 
-      <Route path="/home" element={<HomePage />} />
+      <Route path="/home/*" element={<HomePage />} />
       <Route path="/feed" element={<FeedPage />} />
       <Route path="/explore" element={<ExplorePage />} />
       <Route path="/notifications" element={<NotificationsPage />} />
