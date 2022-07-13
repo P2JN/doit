@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
-import { CircularProgress, Skeleton } from "@mui/material";
+import { Alert, Button, CircularProgress, Skeleton } from "@mui/material";
 
 import { Page } from "layout";
 import { goalService } from "services";
@@ -8,7 +8,11 @@ import { GoalTypes } from "types";
 import { GoalTeaser, ModalDrawer, TrackingForm } from "components/organisms";
 
 const HomePage = () => {
-  const { data: goals, isLoading: loadingGoals } = goalService.useMyGoals();
+  const {
+    data: goals,
+    isLoading: loadingGoals,
+    refetch,
+  } = goalService.useMyGoals();
 
   const navigate = useNavigate();
 
@@ -16,6 +20,19 @@ const HomePage = () => {
     <Page title="Home">
       <div className="flex flex-col gap-3">
         {loadingGoals && <CircularProgress />}
+        {!loadingGoals && !goals?.length && (
+          <Alert
+            severity="info"
+            className="my-7"
+            action={
+              <Button color="inherit" size="small" onClick={() => refetch()}>
+                Reintentar
+              </Button>
+            }
+          >
+            No se han encontrado objetivos
+          </Alert>
+        )}
         {goals?.map((goal) => (
           <GoalTeaserProvider {...goal} />
         ))}
