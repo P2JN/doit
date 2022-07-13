@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Button, Icon } from "@mui/material";
 
 import { CustomPage } from "layout";
+import { useActiveUser } from "store";
+import { socialService } from "services";
 
 import Logo from "assets/Logo.svg";
 import Comunity from "assets/Comunity.svg";
@@ -10,6 +12,14 @@ import Goals from "assets/Goals.svg";
 import Check from "assets/Check.svg";
 
 const LandingPage = () => {
+  const { setActiveUser } = useActiveUser();
+
+  // TODO: remove this and use the logged in user
+  const { data: users } = socialService.useUsers();
+  useEffect(() => {
+    users?.[0] && setActiveUser(users[0]);
+  }, [users]);
+
   useEffect(() => {
     let cancelled = false;
 

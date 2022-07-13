@@ -4,15 +4,20 @@ import { Alert, Button, CircularProgress, Skeleton } from "@mui/material";
 import { Page } from "layout";
 import { goalService } from "services";
 import { GoalTypes } from "types";
+import { useActiveUser } from "store";
 
 import { GoalTeaser, ModalDrawer, TrackingForm } from "components/organisms";
 
 const HomePage = () => {
+  const { activeUser } = useActiveUser();
+
+  // -------------------------------------------------
+
   const {
     data: goals,
     isLoading: loadingGoals,
     refetch,
-  } = goalService.useMyGoals();
+  } = goalService.useGoalsByParticipant(activeUser?.id);
 
   const navigate = useNavigate();
 
