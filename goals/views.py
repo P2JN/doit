@@ -68,13 +68,17 @@ class GoalProgress(viewsets.GenericAPIView):
     def get(self, request, goal_id, *args, **kwargs):
         user = User.objects.get(id=request.query_params.get('user_id'))
         objectives = Objective.objects.filter(goal=goal_id)
+        
+        trackings = []
         progress = dict()
+        
         for objective in objectives:
             progress[objective.frequency] = 0.0
 
         today = datetime.datetime.now().date()
-        startWeek = today - datetime.timedelta(days=today.weekday())
-        endWeek = startWeek + datetime.timedelta(days=6)
+        start_week = today - datetime.timedelta(days=today.weekday())
+        end_week = start_week + datetime.timedelta(days=6)
+        
         if Frequency.TOTAL in progress:
             trackings = Tracking.objects.filter(user=user)
         elif Frequency.YEARLY in progress:
@@ -87,15 +91,16 @@ class GoalProgress(viewsets.GenericAPIView):
                                                 date__gte=today.replace(day=1))
         elif Frequency.WEEKLY in progress:
             trackings = Tracking.objects.filter(user=user,
-                                                date__lte=endWeek,
-                                                date__gte=startWeek)
+                                                date__lte=end_week,
+                                                date__gte=start_week)
         elif Frequency.DAILY in progress:
             trackings = Tracking.objects.filter(user=user,
                                                 date__gte=today)
+        
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
                 progress[Frequency.DAILY] += tracking.amount
-            if Frequency.WEEKLY in progress and startWeek <= today <= endWeek:
+            if Frequency.WEEKLY in progress and start_week <= today <= end_week:
                 progress[Frequency.WEEKLY] += tracking.amount
             if Frequency.MONTHLY in progress and today.month == tracking.date.month and today.year == tracking.date.year:
                 progress[Frequency.MONTHLY] += tracking.amount
@@ -103,4 +108,5 @@ class GoalProgress(viewsets.GenericAPIView):
                 progress[Frequency.YEARLY] += tracking.amount
             if Frequency.TOTAL in progress:
                 progress[Frequency.TOTAL] += tracking.amount
+
         return Response(progress, status=200)

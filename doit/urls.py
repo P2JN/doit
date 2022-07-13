@@ -41,10 +41,12 @@ router.register(r'tracking', TrackingViewSet, "tracking")
 
 
 urlpatterns = [
-    path('api/goal/<str:goal_id>/my-progress/', GoalProgress.as_view()),
+    path('api/goal/<str:goal_id>/my-progress', GoalProgress.as_view()),
     path('api/', include(router.urls)),
+    
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
+    
     re_path('', app),
 
 ]
