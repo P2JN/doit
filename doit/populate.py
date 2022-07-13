@@ -40,7 +40,6 @@ def populate_followers(users):
 
 def populate_goals(users):
     for i in range(users.count()):
-
         start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
         deadline = start_date + timedelta(days=random.randint(1, 30))
 
@@ -58,12 +57,15 @@ def populate_goals(users):
 
 def populate_objectives(goals):
     for goal in goals:
+        frequency_list = list(Frequency)
         for _ in range(int(random.random() * 3)):
+            frequency = random.choice(frequency_list)
             objective = Objective(
                 quantity=int(random.random() * 100),
-                frequency=random.choice(list(Frequency)),
+                frequency=frequency,
                 goal=goal,
             )
+            frequency_list.remove(frequency)
             objective.save()
 
 

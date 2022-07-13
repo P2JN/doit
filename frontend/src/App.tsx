@@ -4,11 +4,12 @@ import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material";
 
 import { AppPages } from "routes";
 import { AppNavbar } from "layout";
-
-import StoreProvider from "store/provider";
+import { StoreProvider } from "store";
 import { queryClient } from "services/config";
+
+import { NotificationProvider } from "components/organisms";
+
 import theme from "styles/theme.config.json";
-import { NotificationProvider } from "components/3-organisms";
 
 function App() {
   return (
