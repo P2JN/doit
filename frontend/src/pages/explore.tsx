@@ -24,6 +24,7 @@ const ExplorePage = () => {
         variant: "error",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGoalError, goalError]);
 
   return (
