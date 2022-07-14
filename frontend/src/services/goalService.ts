@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 import { GoalTypes } from "types";
 import { Id } from "types/apiTypes";
@@ -6,11 +6,8 @@ import { Id } from "types/apiTypes";
 import { axiosInstance } from "./config";
 
 const requests = {
-  getGoals: (filters?: string[]) =>
-    axiosInstance
-      .get("/goal/" + (!!filters ? "?" + filters?.join("&") : ""))
-      .then((response) => response.data),
-  // TODO: change hardcoded user example for the logged in user
+  getGoals: () => axiosInstance.get("/goal/").then((response) => response.data),
+
   getGoalsByParticipant: (participantId?: Id) =>
     axiosInstance
       .get("/goal/?participant=" + (participantId || "missing"))
@@ -21,7 +18,6 @@ const requests = {
       .get("/goal/" + (id || "missing"))
       .then((response) => response.data),
 
-  // TODO: change hardcoded user example for the logged in user
   getGoalProgressByParticipant: (id?: Id, participantId?: Id) =>
     axiosInstance
       .get(
@@ -30,6 +26,11 @@ const requests = {
           "/my-progress?user_id=" +
           (participantId || "missing")
       )
+      .then((response) => response.data),
+
+  createTracking: (tracking: GoalTypes.Tracking) =>
+    axiosInstance
+      .post("/tracking/", tracking)
       .then((response) => response.data),
 };
 
@@ -54,6 +55,10 @@ const goalService = {
     useQuery<GoalTypes.Progress, Error>(`goal-${id}-my-progress`, () =>
       requests.getGoalProgressByParticipant(id, participantId)
     ),
+
+  // Create a tracking
+  useCreateTracking: () =>
+    useMutation<any, Error, GoalTypes.Tracking>(requests.createTracking),
 };
 
 export default goalService;

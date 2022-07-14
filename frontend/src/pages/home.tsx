@@ -1,4 +1,5 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 import { Alert, Button, CircularProgress, Skeleton } from "@mui/material";
 
 import { Page } from "layout";
@@ -10,8 +11,6 @@ import { GoalTeaser, ModalDrawer, TrackingForm } from "components/organisms";
 
 const HomePage = () => {
   const { activeUser } = useActiveUser();
-
-  // -------------------------------------------------
 
   const {
     data: goals,
@@ -60,8 +59,18 @@ const HomePage = () => {
 export default HomePage;
 
 const GoalTeaserProvider = (goal: GoalTypes.Goal) => {
-  const { data: progress, isLoading: loadingProgress } =
-    goalService.useMyGoalProgress(goal.id);
+  const [params] = useSearchParams();
+
+  const { activeUser } = useActiveUser();
+  const {
+    data: progress,
+    isLoading: loadingProgress,
+    refetch,
+  } = goalService.useMyGoalProgress(goal.id, activeUser?.id);
+
+  useEffect(() => {
+    if (params.get("refresh") === goal?.id) refetch();
+  }, [goal?.id, params, refetch]);
 
   return loadingProgress ? (
     <Skeleton />

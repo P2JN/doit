@@ -34,6 +34,6 @@ export type Tracking = {
   goal: Id;
   user: Id;
 
-  date: string;
-  quantity: number;
+  date?: string;
+  amount: number;
 };
