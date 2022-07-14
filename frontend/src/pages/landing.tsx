@@ -18,6 +18,7 @@ const LandingPage = () => {
   const { data: users } = socialService.useUsers();
   useEffect(() => {
     users?.[0] && setActiveUser(users[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users]);
 
   useEffect(() => {
