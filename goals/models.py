@@ -39,6 +39,12 @@ class Objective(Document):
 
     goal = fields.ReferenceField('Goal')
 
+    meta = {
+        'indexes': [
+            {'fields': ['frequency', 'goal'], 'unique': True}
+        ]
+    }
+
 
 class Tracking (Document):
     date = fields.DateTimeField(default=datetime.utcnow)

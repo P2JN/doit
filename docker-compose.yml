@@ -4,7 +4,6 @@ services:
   db:
     image: mongo
     container_name: mongo
-    env_file: docker.env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
@@ -21,7 +20,8 @@ services:
     image: doit:latest
     container_name: doit
     command: bash -c "python manage.py runserver 0.0.0.0:8000"
-    env_file: docker.env
+    environment: 
+      - DOCKER=true
     volumes:
       - ${PWD}:/app
     ports:
