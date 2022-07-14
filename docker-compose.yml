@@ -17,13 +17,11 @@ services:
 
   web:
     build: .
-    image: doit
+    image: doit:latest
     container_name: doit
     command: bash -c "python manage.py runserver 0.0.0.0:8000"
     environment: 
       - DOCKER=true
-    volumes:
-      - ${PWD}:/app
     ports:
       - 8000:8000
     depends_on:
