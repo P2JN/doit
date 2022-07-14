@@ -17,7 +17,7 @@ services:
 
   web:
     build: .
-    image: doit:latest
+    image: doit
     container_name: doit
     command: bash -c "python manage.py runserver 0.0.0.0:8000"
     environment: 
@@ -25,6 +25,6 @@ services:
     volumes:
       - ${PWD}:/app
     ports:
-      - 80:8000
+      - 8000:8000
     depends_on:
       - db
