@@ -1,10 +1,9 @@
-version: "3"
+version: "3.7"
 
 services:
   db:
     image: mongo
     container_name: mongo
-    env_file: docker.env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
@@ -17,11 +16,9 @@ services:
       - 27017:27017
 
   web:
-    build: .
-    image: ghcr.io/p2jn/doit
+    image: ghcr.io/p2jn/doit-prod
     container_name: doit
     command: bash -c "python manage.py runserver 0.0.0.0:80"
-    env_file: docker.env
     volumes:
       - ${WEBAPP_STORAGE_HOME}:/app
     ports:

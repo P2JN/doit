@@ -1,10 +1,8 @@
-name: Release Prod Package
+name: Release Package
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches: ["main", "develop"]
 
 # This workflow will build and push a Docker container to an Azure Web App when a commit is pushed to your default branch.
 #
@@ -32,15 +30,12 @@ on:
 # For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples
 
-env:
-  AZURE_WEBAPP_NAME: doit-app # set this to the name of your Azure Web App
-
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -59,9 +54,12 @@ jobs:
       - name: Lowercase the repo name and username
         run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
 
+      - name: Extract branch name
+        run: echo "BRANCH=${GITHUB_REF#refs/heads/}" >>${GITHUB_ENV}
+
       - name: Build and push container image to registry
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ghcr.io/${{ env.REPO }}-prod
+          tags: ghcr.io/${{ env.REPO }}-${{ env.BRANCH }}
           file: ./Dockerfile
