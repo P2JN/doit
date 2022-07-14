@@ -15,6 +15,7 @@ const NotificationsPage = () => {
       title: "Notification Test Completed",
       variant: "success",
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
