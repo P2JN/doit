@@ -84,6 +84,38 @@ TEMPLATES = [
     },
 ]
 
+ACCOUNT_FORMS = {
+    'login': 'auth.forms.InterceptorLoginForm',
+    'signup': 'auth.forms.InterceptorSignupForm',
+    'add_email': 'allauth.account.forms.AddEmailForm',
+    'change_password': 'allauth.account.forms.ChangePasswordForm',
+    'set_password': 'allauth.account.forms.SetPasswordForm',
+    'reset_password': 'allauth.account.forms.ResetPasswordForm',
+    'reset_password_from_key': 'allauth.account.forms.ResetPasswordKeyForm',
+    'disconnect': 'allauth.socialaccount.forms.DisconnectForm',
+}
+SOCIALACCOUNT_FORMS = {
+    'signup': 'auth.formsGoogle.MyCustomSocialSignupForm',
+}
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        "APP": {
+            "client_id": "605126668659-jn9gha2l0p5q5rmsl6b1i4cnetim91n6.apps.googleusercontent.com",
+            "secret": "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",
+            "key": ""
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+SOCIALACCOUNT_STORE_TOKENS = True
+
 WSGI_APPLICATION = 'doit.wsgi.application'
 
 # Database

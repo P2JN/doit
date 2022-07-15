@@ -47,6 +47,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
     path('accounts/', include('allauth.urls')),
-    re_path('', app),
+    # re_path('', app),
 
 ]
