@@ -13,8 +13,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import mongoengine
 import os
+from dotenv import load_dotenv
 
-
+load_dotenv()  # take environment variables from .env.
 SITE_ID = 1
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -68,6 +69,8 @@ AUTHENTICATION_BACKENDS = [
 
 ROOT_URLCONF = 'doit.urls'
 
+SOCIALACCOUNT_STORE_TOKENS = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -97,24 +100,26 @@ ACCOUNT_FORMS = {
 SOCIALACCOUNT_FORMS = {
     'signup': 'auth.formsGoogle.MyCustomSocialSignupForm',
 }
+SOCIALACCOUNT_AUTO_SIGNUP = False
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         "APP": {
-            "client_id": "605126668659-jn9gha2l0p5q5rmsl6b1i4cnetim91n6.apps.googleusercontent.com",
-            "secret": "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",
+            "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+            "secret": os.environ.get("GOOGLE_SECRET_ID"),
             "key": ""
         },
         'SCOPE': [
             'profile',
             'email',
+            'https://www.googleapis.com/auth/calendar'
         ],
         'AUTH_PARAMS': {
-            'access_type': 'online',
+            'prompt': 'consent',
+            'access_type': 'offline',
         }
     }
 }
-
-SOCIALACCOUNT_STORE_TOKENS = True
 
 WSGI_APPLICATION = 'doit.wsgi.application'
 
@@ -142,7 +147,6 @@ if os.environ.get('DOCKER'):
     )
 else:
     mongoengine.connect("DOIT")
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -185,7 +189,6 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 # dev env CORS SETTINGS
 BASEURL = 'http://localhost:8000'
