@@ -69,8 +69,6 @@ AUTHENTICATION_BACKENDS = [
 
 ROOT_URLCONF = 'doit.urls'
 
-SOCIALACCOUNT_STORE_TOKENS = True
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -88,19 +86,16 @@ TEMPLATES = [
 ]
 
 ACCOUNT_FORMS = {
-    'login': 'auth.forms.InterceptorLoginForm',
     'signup': 'auth.forms.InterceptorSignupForm',
-    'add_email': 'allauth.account.forms.AddEmailForm',
-    'change_password': 'allauth.account.forms.ChangePasswordForm',
-    'set_password': 'allauth.account.forms.SetPasswordForm',
-    'reset_password': 'allauth.account.forms.ResetPasswordForm',
-    'reset_password_from_key': 'allauth.account.forms.ResetPasswordKeyForm',
-    'disconnect': 'allauth.socialaccount.forms.DisconnectForm',
 }
-SOCIALACCOUNT_FORMS = {
-    'signup': 'auth.formsGoogle.MyCustomSocialSignupForm',
-}
+
+SOCIALACCOUNT_FORMS = {'signup': 'auth.forms.InterceptorSignupFormGoogle'}
+
+SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
+
 SOCIALACCOUNT_AUTO_SIGNUP = False
+
+SOCIALACCOUNT_STORE_TOKENS = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

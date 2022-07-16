@@ -1,32 +1,31 @@
-from allauth.account.forms import SignupForm, LoginForm
+from allauth.account.forms import SignupForm
+from allauth.socialaccount.forms import SignupForm as SignupFormGoogle
 from social.models import User
 
 
 class InterceptorSignupForm(SignupForm):
 
     def save(self, request):
-        # Ensure you call the parent class's save.
-        # .save() returns a User object.
         user = super(InterceptorSignupForm, self).save(request)
 
-        # Add your own processing here.
-        mongoUser = User(user_id=user.id, username=user.username, email=user.email, password=user.password)
-        mongoUser.save()
-        # You must return the original result.
+        # Saving user in mongo database
+        mongo_user = User(user_id=user.id, username=user.username, email=user.email, password=user.password,
+                          firstName=user.username)
+        # TODO cuando los formularios de front esten listos pillar el firstname del user
+        mongo_user.save()
+
         return user
 
 
-class InterceptorLoginForm(LoginForm):
+class InterceptorSignupFormGoogle(SignupFormGoogle):
 
     def save(self, request):
-        # Ensure you call the parent class's save.
-        # .save() returns a User object.
-        user = super(InterceptorLoginForm, self).login(request)
+        user = super(InterceptorSignupFormGoogle, self).save(request)
 
-        mongoUser = User.objects().get(user_id=user.id)
-        if mongoUser:
-            mongoUser = User(user_id=user.id, username=user.username, email=user.email, password=user.password)
-            mongoUser.save()
+        # Saving user in mongo database
+        google_data = self.sociallogin.account.extra_data
+        mongo_user = User(user_id=user.id, username=user.username, email=user.email, password=user.password,
+                          firstName=google_data.get("name"))
+        mongo_user.save()
 
-        # You must return the original result.
         return user
