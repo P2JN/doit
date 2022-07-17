@@ -39,8 +39,8 @@ const LogInForm = () => {
             content: "Empecemos a cumplir objetivos!",
             type: "transient",
           });
-          window.location.reload();
-          navigate("/home");
+          navigate("/loading");
+          setTimeout(() => navigate("/home"), 1000);
         },
       });
   };

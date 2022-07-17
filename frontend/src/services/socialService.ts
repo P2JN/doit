@@ -23,13 +23,13 @@ const requests = {
     axiosInstance.post("/auth/login/", login).then((response) => response.data),
 
   logOutUser: () =>
-    axiosInstance.post("/auth/logout").then((response) => response.data),
+    axiosInstance.post("/auth/logout/").then((response) => response.data),
 
   getActiveUser: () =>
     axiosInstance.get("/auth/user/").then((response) => response.data),
 };
 
-const goalService = {
+const socialService = {
   // USERS
   // Use all the users
   useUsers: () =>
@@ -43,7 +43,7 @@ const goalService = {
     ),
   // Use active user
   useActiveUser: () =>
-    useQuery<SocialTypes.User, AxiosError>("activeUser", () =>
+    useQuery<{ mongoUser: SocialTypes.User }, AxiosError>("activeUser", () =>
       requests.getActiveUser()
     ),
   // Create an user
@@ -58,6 +58,9 @@ const goalService = {
       "login",
       requests.logInUser
     ),
+  // Log out an user
+  useLogout: () =>
+    useMutation<any, AxiosError, any>("logout", requests.logOutUser),
 };
 
-export default goalService;
+export default socialService;

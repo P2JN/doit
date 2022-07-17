@@ -39,7 +39,8 @@ const UserForm = () => {
             content: "Ya puedes comenzar a crear objetivos!",
             type: "transient",
           });
-          navigate("/home");
+          navigate("/loading");
+          setTimeout(() => navigate("/home"), 1000);
         },
       });
   };

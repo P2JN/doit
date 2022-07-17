@@ -23,7 +23,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 
     def save(self, request):
         user = super(CustomRegisterSerializer, self).save(request)
-        mongo_user = User(user_id=user.id, username=user.username, email=user.email, password=user.password,
+        mongo_user = MongoUser(user_id=user.id, username=user.username, email=user.email, password=user.password,
                           firstName=user.first_name)
         mongo_user.save()
         return user

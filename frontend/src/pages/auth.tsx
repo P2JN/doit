@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { CustomPage } from "layout";
 import Logo from "assets/Logo.svg";
@@ -9,12 +9,16 @@ import { Divider } from "@mui/material";
 
 const AuthPage = () => {
   const { action } = useParams();
+  const navigate = useNavigate();
 
   return (
     <CustomPage>
       <section className="flex h-screen w-screen items-center justify-center bg-gray-100">
         <Card>
-          <header className="flex justify-center">
+          <header
+            onClick={() => navigate("/landing")}
+            className="flex justify-center"
+          >
             <img src={Logo} alt="Logo" />
           </header>
 

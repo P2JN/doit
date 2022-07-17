@@ -8,15 +8,17 @@ import {
   PersonOutlineOutlined,
   PowerSettingsNewOutlined,
 } from "@mui/icons-material";
-
-import Logo from "assets/Logo.svg";
 import { Divider, Icon } from "@mui/material";
+
+import { socialService } from "services";
+import Logo from "assets/Logo.svg";
 
 const NavLink = (props: {
   to: string;
   icon: ReactNode;
   title: string;
   badge?: string;
+  onClick?: () => any;
 }) => (
   <Link
     to={props.to}
@@ -25,6 +27,7 @@ const NavLink = (props: {
       " " +
       (useMatch(props.to) ? "font-bold text-primary" : "")
     }
+    onClick={props.onClick}
   >
     <span className="h-7">{props.icon}</span>
     <span className="hidden md:block">{props.title}</span>
@@ -32,6 +35,8 @@ const NavLink = (props: {
 );
 
 const AppNavbar = () => {
+  const { mutate: logout } = socialService.useLogout();
+
   return (
     <nav className="fixed bottom-0 z-20 w-full border-t bg-white md:relative md:h-screen md:w-1/3 md:border-t-0 xl:w-1/5">
       <aside className="flex items-center justify-between gap-5 px-4 py-3 md:h-full md:flex-col md:items-start md:px-8">
@@ -62,9 +67,10 @@ const AppNavbar = () => {
             title="Profile"
           />
           <NavLink
-            to="/landing"
+            to="/logout"
             icon={<PowerSettingsNewOutlined />}
             title="Log out"
+            onClick={() => logout({})}
           />
         </section>
       </aside>

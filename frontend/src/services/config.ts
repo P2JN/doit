@@ -42,30 +42,22 @@ axiosInstance.interceptors.response.use(
 );
 
 // Session interceptors
-axiosInstance.interceptors.response.use(
-  (response) => {
-    if (response.data.key) {
-      console.log(response, response.data.key);
-      localStorage.setItem("token", response.data.key);
-      localStorage.setItem("isAdmin", response.data.isAdmin);
-    }
-    return response;
-  },
-  (error) => {
-    if (error.response.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("isAdmin");
-      window.location.href = "/login";
-    } else if (error.response.status === 402) {
-      window.location.href = "/profile/payments";
-    } else {
-      return Promise.reject(error);
-    }
+axiosInstance.interceptors.response.use((response) => {
+  console.log("intercepted", response, response.data.key);
+
+  if (response.data.key) {
+    localStorage.setItem("token", response.data.key);
   }
-);
+
+  return response;
+});
 
 axiosInstance.interceptors.request.use((config) => {
+  // if the request endpoint includes "auth" remove the token
+  if (config.url?.includes("/auth/logout")) {
+    localStorage.removeItem("token");
+  }
+
   const token = localStorage.getItem("token");
   if (config.headers)
     if (token) {
