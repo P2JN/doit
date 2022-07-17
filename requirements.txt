@@ -18,3 +18,4 @@ psycopg2-binary==2.9.3
 django-allauth==0.51.0
 django-cors-headers==3.13.0
 python-dotenv==0.20.0
+dj-rest-auth==2.2.4
