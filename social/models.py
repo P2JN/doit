@@ -6,7 +6,7 @@ from goals.models import Tracking, Goal
 
 
 class User(Document):
-    user_id = fields.IntField(required=True, unique=True)
+    user_id = fields.IntField()
     username = fields.StringField(max_length=30, required=True)
     email = fields.EmailField(required=True)
     password = fields.StringField()

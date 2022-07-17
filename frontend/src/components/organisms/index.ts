@@ -7,6 +7,9 @@ import GoalForm from "./goalForm";
 import TrackingForm from "./trackingForm";
 import ObjectivesForm from "./objectivesForm";
 
+import LogInForm from "./loginForm";
+import UserForm from "./userForm";
+
 // TEASERS
 import { GoalTeaser, GoalTeaserInfo } from "./goalTeaser";
 
@@ -15,7 +18,9 @@ export {
   GoalTeaser,
   GoalTeaserInfo,
   ObjectivesForm,
-  TrackingForm,
   NotificationProvider,
   ModalDrawer,
+  TrackingForm,
+  LogInForm,
+  UserForm,
 };

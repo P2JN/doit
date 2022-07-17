@@ -42,39 +42,39 @@ axiosInstance.interceptors.response.use(
 );
 
 // Session interceptors
-// axiosInstance.interceptors.response.use(
-//   (response) => {
-//     if (response.data.token && response.data.id) {
-//       localStorage.setItem("token", response.data.token);
-//       localStorage.setItem("userId", response.data.id);
-//       localStorage.setItem("isAdmin", response.data.isAdmin);
-//     }
-//     return response;
-//   },
-//   (error) => {
-//     if (error.response.status === 401) {
-//       localStorage.removeItem("token");
-//       localStorage.removeItem("userId");
-//       localStorage.removeItem("isAdmin");
-//       window.location.href = "/login";
-//     } else if (error.response.status === 402) {
-//       window.location.href = "/profile/payments";
-//     } else {
-//       return Promise.reject(error);
-//     }
-//   }
-// );
+axiosInstance.interceptors.response.use(
+  (response) => {
+    if (response.data.key) {
+      console.log(response, response.data.key);
+      localStorage.setItem("token", response.data.key);
+      localStorage.setItem("isAdmin", response.data.isAdmin);
+    }
+    return response;
+  },
+  (error) => {
+    if (error.response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("isAdmin");
+      window.location.href = "/login";
+    } else if (error.response.status === 402) {
+      window.location.href = "/profile/payments";
+    } else {
+      return Promise.reject(error);
+    }
+  }
+);
 
-// axiosInstance.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("token");
-//   if (config.headers)
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     } else {
-//       delete config.headers.Authorization;
-//     }
-//   return config;
-// });
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (config.headers)
+    if (token) {
+      config.headers.Authorization = `Token ${token}`;
+    } else {
+      delete config.headers.Authorization;
+    }
+  return config;
+});
 
 // React Query
 
