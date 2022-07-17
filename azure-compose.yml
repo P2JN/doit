@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  mongo:
+    image: ghcr.io/p2jn/doit-mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=doit
+
+  web:
+    image: ghcr.io/p2jn/doit-main
+    command: python manage.py runserver 0.0.0.0:80
+    environment:
+      - DOCKER=true
+    ports:
+      - 80:80
+    depends_on:
+      - db

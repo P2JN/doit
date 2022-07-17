@@ -14,7 +14,10 @@ RUN apt-get update \
     libc-dev \
     bash \
     git \
-    && pip3 install --upgrade pip
+    curl \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash \
+    && apt-get install -y nodejs \
+    && pip3 install --upgrade pip 
 
 
 ENV LIBRARY_PATH=/lib:/usr/lib
@@ -28,3 +31,4 @@ WORKDIR /app
 COPY . /app/
 
 RUN pip3 --no-cache-dir install -r requirements.txt
+RUN cd ./frontend && npm install && npm run build
