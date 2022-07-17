@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { useMutation, useQuery } from "react-query";
 
 import { GoalTypes } from "types";
@@ -13,9 +14,9 @@ const requests = {
       .get("/goal/?participant=" + (participantId || "missing"))
       .then((response) => response.data),
 
-  getGoal: (id?: number) =>
+  getGoal: (id?: Id) =>
     axiosInstance
-      .get("/goal/" + (id || "missing"))
+      .get("/goal/" + (id || "missing") + "/")
       .then((response) => response.data),
 
   getGoalProgressByParticipant: (id?: Id, participantId?: Id) =>
@@ -28,6 +29,19 @@ const requests = {
       )
       .then((response) => response.data),
 
+  createGoal: (goal: GoalTypes.Goal) =>
+    axiosInstance.post("/goal/", goal).then((response) => response.data),
+
+  createObjective: (objective: GoalTypes.Objective) =>
+    axiosInstance
+      .post("/objective/", objective)
+      .then((response) => response.data),
+
+  createParticipation: (participation: GoalTypes.Participation) =>
+    axiosInstance
+      .post("/participate/", participation)
+      .then((response) => response.data),
+
   createTracking: (tracking: GoalTypes.Tracking) =>
     axiosInstance
       .post("/tracking/", tracking)
@@ -38,27 +52,43 @@ const goalService = {
   // GOALS
   // Use all the goals
   useGoals: () =>
-    useQuery<GoalTypes.Goal[], Error>("goals", () => requests.getGoals()),
+    useQuery<GoalTypes.Goal[], AxiosError>("goals", () => requests.getGoals()),
 
   // Use my goals
   useGoalsByParticipant: (participantId?: Id) =>
-    useQuery<GoalTypes.Goal[], Error>("my-goals", () =>
+    useQuery<GoalTypes.Goal[], AxiosError>("my-goals", () =>
       requests.getGoalsByParticipant(participantId)
     ),
 
   // Use a goal specifying its id
-  useGoal: (id?: number) =>
-    useQuery<GoalTypes.Goal, Error>(`goal-${id}`, () => requests.getGoal(id)),
+  useGoal: (id?: Id) =>
+    useQuery<GoalTypes.Goal, AxiosError>(`goal-${id}`, () =>
+      requests.getGoal(id)
+    ),
 
   // Use my goal progress specifying its id
   useMyGoalProgress: (id?: Id, participantId?: Id) =>
-    useQuery<GoalTypes.Progress, Error>(`goal-${id}-my-progress`, () =>
+    useQuery<GoalTypes.Progress, AxiosError>(`goal-${id}-my-progress`, () =>
       requests.getGoalProgressByParticipant(id, participantId)
+    ),
+
+  // Create a goal
+  useCreateGoal: () =>
+    useMutation<any, AxiosError, GoalTypes.Goal>(requests.createGoal),
+
+  // Ceate an objective
+  useCreateObjective: () =>
+    useMutation<any, AxiosError, GoalTypes.Objective>(requests.createObjective),
+
+  // Create a participation
+  useCreateParticipation: () =>
+    useMutation<any, AxiosError, GoalTypes.Participation>(
+      requests.createParticipation
     ),
 
   // Create a tracking
   useCreateTracking: () =>
-    useMutation<any, Error, GoalTypes.Tracking>(requests.createTracking),
+    useMutation<any, AxiosError, GoalTypes.Tracking>(requests.createTracking),
 };
 
 export default goalService;

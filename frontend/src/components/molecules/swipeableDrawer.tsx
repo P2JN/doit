@@ -30,7 +30,6 @@ export default function Component(props: {
       <Global
         styles={{
           ".MuiDrawer-root > .MuiPaper-root": {
-            height: `calc(50% - ${drawerBleeding}px)`,
             overflow: "visible",
           },
         }}
