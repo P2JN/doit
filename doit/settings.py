@@ -143,6 +143,10 @@ if os.environ.get('DOCKER'):
 else:
     mongoengine.connect("DOIT")
 
+# Email validation
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
