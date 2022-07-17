@@ -1,7 +1,9 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from social.models import User
+from dj_rest_auth.serializers import UserDetailsSerializer
+from social.models import User as MongoUser
+from social.serializers import UserSerializer
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -25,3 +27,15 @@ class CustomRegisterSerializer(RegisterSerializer):
                           firstName=user.first_name)
         mongo_user.save()
         return user
+
+
+class CustomUserDetailsSerializer(UserDetailsSerializer):
+    mongoUser = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'mongoUser')
+
+    def get_mongoUser(self, obj):
+        user = MongoUser.objects.get(user_id=obj.id)
+        return UserSerializer(user).data

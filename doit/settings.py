@@ -72,7 +72,9 @@ AUTHENTICATION_BACKENDS = [
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'auth.authSerializer.CustomRegisterSerializer',
 }
-
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'auth.authSerializer.CustomUserDetailsSerializer',
+}
 ROOT_URLCONF = 'doit.urls'
 
 TEMPLATES = [
@@ -95,6 +97,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
+
+
+
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
 
 SOCIALACCOUNT_STORE_TOKENS = True
