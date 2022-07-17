@@ -3,9 +3,19 @@ import NotificationProvider from "./notificationProvider";
 import ModalDrawer from "./modalDrawer";
 
 // FORMS
+import GoalForm from "./goalForm";
 import TrackingForm from "./trackingForm";
+import ObjectivesForm from "./objectivesForm";
 
 // TEASERS
-import GoalTeaser from "./goalTeaser";
+import { GoalTeaser, GoalTeaserInfo } from "./goalTeaser";
 
-export { GoalTeaser, NotificationProvider, ModalDrawer, TrackingForm };
+export {
+  GoalForm,
+  GoalTeaser,
+  GoalTeaserInfo,
+  ObjectivesForm,
+  TrackingForm,
+  NotificationProvider,
+  ModalDrawer,
+};

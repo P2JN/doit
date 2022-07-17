@@ -9,7 +9,7 @@ const Page = (props: {
   return (
     <main className="h-[calc(100vh-65px)] w-full overflow-auto px-4 py-3 md:h-screen">
       <section className="animate-fade-in block md:w-3/4">
-        <section className="flex flex-col justify-between gap-y-2 md:flex-row md:items-center">
+        <section className="flex flex-col justify-between gap-y-2 md:mb-7 md:flex-row md:items-center">
           {props.title && (
             <Typography variant="h3" className="overflow-hidden text-ellipsis">
               {props.title}

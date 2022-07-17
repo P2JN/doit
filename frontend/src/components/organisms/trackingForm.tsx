@@ -52,7 +52,9 @@ const TrackingForm = () => {
           name="amount"
           rules={{ required: true, min: 1 }}
           control={control}
-          render={({ field }) => <TextField type="number" {...field} />}
+          render={({ field }) => (
+            <TextField label="Cantidad" type="number" {...field} />
+          )}
         />
 
         <Button size="large" variant="outlined" type="submit">
