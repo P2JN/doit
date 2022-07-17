@@ -84,6 +84,7 @@ const ObjectivesForm = () => {
         {["daily", "weekly", "monthly", "yearly", "total"].map(
           (type, index) => (
             <Controller
+              key={type + index}
               name={type as GoalTypes.Frequency}
               control={control}
               render={({ field }) => (

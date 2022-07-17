@@ -9,7 +9,11 @@ const ParsedError = (error: AxiosError) => {
       </p>
 
       {Object.entries(error.response?.data as any).map(([key, value]) => (
-        <p>{`${key}: ${value}`}</p>
+        <p key={key}>
+          <>
+            {key}: {value}
+          </>
+        </p>
       ))}
     </Alert>
   );
