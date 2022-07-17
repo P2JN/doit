@@ -41,11 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_mongoengine',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'dj_rest_auth',
 ]
 
 MIDDLEWARE = [
