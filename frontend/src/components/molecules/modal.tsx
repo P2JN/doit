@@ -1,41 +1,35 @@
 import { ReactNode } from "react";
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
 } from "@mui/material";
+import { Close } from "@mui/icons-material";
 
 const Component = (props: {
   title: string;
   children?: ReactNode;
   onClose?: () => void;
-  onConfirm?: () => void;
 }) => {
   return (
-    <Dialog open={true} className="hidden md:inline">
+    <Dialog
+      open={true}
+      className="hidden md:inline"
+      onClose={props.onClose}
+      closeAfterTransition
+    >
       <div className="min-w-[400px]">
-        <DialogTitle>{props.title}</DialogTitle>
+        <div className="flex items-center justify-between">
+          <DialogTitle>{props.title}</DialogTitle>
+          <DialogActions>
+            <IconButton onClick={props.onClose}>
+              <Close />
+            </IconButton>
+          </DialogActions>
+        </div>
         <DialogContent>{props.children}</DialogContent>
-        <DialogActions>
-          {!!props.onClose && (
-            <Button
-              variant="text"
-              onClick={() => !!props.onClose && props.onClose()}
-            >
-              Cerrar
-            </Button>
-          )}
-          {!!props.onConfirm && (
-            <Button
-              variant="outlined"
-              onClick={() => !!props.onConfirm && props.onConfirm()}
-            >
-              Confirmar
-            </Button>
-          )}
-        </DialogActions>
       </div>
     </Dialog>
   );

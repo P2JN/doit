@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
+import { Chip, IconButton, Typography } from "@mui/material";
 
 import { GoalTypes } from "types";
 
@@ -22,10 +22,12 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
         </IconButton>
       </header>
       <section className="flex flex-col gap-3">
-        {goal.objectives.map((obj) => (
+        {goal.objectives?.map((obj) => (
           <ProgressBar
             title={obj.frequency}
-            completed={goal.progress?.[obj.frequency] || 0}
+            completed={
+              goal.progress?.[obj.frequency as GoalTypes.Frequency] || 0
+            }
             expected={undefined}
             objective={obj.quantity}
           />
@@ -35,4 +37,18 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
   );
 };
 
-export default GoalTeaser;
+const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
+  return (
+    <Card>
+      <header className="flex items-center justify-between">
+        <Typography variant="h4">{goal.title}</Typography>
+        {goal.type && <Chip label={goal.type} color="info" />}
+      </header>
+      {goal.description && (
+        <Typography variant="body1">{goal.description}</Typography>
+      )}
+    </Card>
+  );
+};
+
+export { GoalTeaser, GoalTeaserInfo };

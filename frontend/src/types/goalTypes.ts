@@ -5,14 +5,20 @@ export type Goal = {
   title: string;
   description: string;
   unit: string;
-  type: "challenge" | "cooperative" | "private";
-  creationDate: string;
-  startDate: string;
-  deadline: string;
-  createdBy: Id;
-  objectives: Objective[];
+  type: GoalType | GoalTypeEnumValues;
+  creationDate?: string;
+  startDate?: string;
+  deadline?: string;
+  createdBy?: Id;
+  objectives?: Objective[];
   progress?: Progress;
 };
+
+export type GoalType = "challenge" | "cooperative" | "private";
+export type GoalTypeEnumValues =
+  | "GoalType.CHALLENGE"
+  | "GoalType.COOP"
+  | "GoalType.PRIVATE";
 
 export type Progress = {
   total?: number;
@@ -25,15 +31,29 @@ export type Progress = {
 export type Objective = {
   id?: Id;
   quantity: number;
-  frequency: "total" | "daily" | "weekly" | "monthly" | "yearly";
+  frequency: Frequency | FrequencyEnumValues;
   goal: Id;
 };
+
+export type Frequency = "total" | "daily" | "weekly" | "monthly" | "yearly";
+export type FrequencyEnumValues =
+  | "GoalType.TOTAL"
+  | "GoalType.DAILY"
+  | "GoalType.WEEKLY"
+  | "GoalType.MONTHLY"
+  | "GoalType.YEARLY";
 
 export type Tracking = {
   id?: Id;
   goal: Id;
   user: Id;
 
-  date: string;
-  quantity: number;
+  date?: string;
+  amount: number;
+};
+
+export type Participation = {
+  id?: Id;
+  goal?: Id;
+  user?: Id;
 };
