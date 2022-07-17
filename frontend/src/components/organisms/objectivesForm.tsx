@@ -24,9 +24,6 @@ const ObjectivesForm = () => {
   const navigate = useNavigate();
   const { addNotification } = useNotificationStore();
 
-  const [toCreate, setToCreate] = useState(-1);
-  const [created, setCreated] = useState(0);
-
   const {
     mutate: createObjective,
     isLoading,
@@ -37,9 +34,6 @@ const ObjectivesForm = () => {
   const { control, handleSubmit } = useForm<GoalTypes.Progress>();
 
   const onSubmit = (formValues: GoalTypes.Progress) => {
-    setToCreate(
-      Object.values(formValues).reduce((a, b) => a + (b && b > 0 ? 1 : 0), 0)
-    );
     if (goalId && formValues)
       Object.entries(formValues).forEach(([key, value]) => {
         if (value && value > 0) {
@@ -51,23 +45,27 @@ const ObjectivesForm = () => {
                 key.toUpperCase()) as GoalTypes.FrequencyEnumValues,
             },
             {
-              onSuccess: () => setCreated(created + 1),
+              onError: (error) => {
+                addNotification({
+                  title: "Error al crear objetivo",
+                  content: error.message,
+                  type: "transient",
+                  variant: "error",
+                });
+              },
             }
           );
         }
       });
-  };
 
-  useEffect(() => {
-    if (!isError && !isLoading && created === toCreate) {
-      addNotification({
-        title: "Objetivos temporales añadidos",
-        content: "Ya puedes empezar a generar progreso!",
-        type: "transient",
-      });
-      navigate("/home?refresh=goals");
-    }
-  }, [isLoading, isError, created, toCreate, addNotification, navigate]);
+    addNotification({
+      title: "Listo!",
+      content: "Ya puedes empezar a generar progreso!",
+      type: "transient",
+    });
+
+    navigate("/home?refresh=goals");
+  };
 
   const labels = ["Diario", "Semanal", "Mensual", "Anual", "Total"];
 
