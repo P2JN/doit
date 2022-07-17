@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -68,6 +68,10 @@ AUTHENTICATION_BACKENDS = [
     # django's allauth authentication backend
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'auth.authSerializer.CustomRegisterSerializer',
+}
 
 ROOT_URLCONF = 'doit.urls'
 
@@ -86,13 +90,11 @@ TEMPLATES = [
         },
     },
 ]
-
-ACCOUNT_FORMS = {
-    'signup': 'auth.forms.InterceptorSignupForm',
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
 }
-
-SOCIALACCOUNT_FORMS = {'signup': 'auth.forms.InterceptorSignupFormGoogle'}
-
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
 
 SOCIALACCOUNT_AUTO_SIGNUP = False
