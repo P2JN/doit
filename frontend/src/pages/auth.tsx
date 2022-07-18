@@ -1,8 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import GoogleLogin from "react-google-login";
 
 import { CustomPage } from "layout";
-import { GOOGLE_CALLBACK_URL } from "services/config";
 
 import Logo from "assets/Logo.svg";
 
@@ -32,19 +30,7 @@ const AuthPage = () => {
 
           <Divider className="my-3" />
 
-          <GoogleLogin
-            clientId="605126668659-326bu79q9vmltj590botg09m1kpbcles.apps.googleusercontent.com"
-            buttonText="Iniciar sesión con Google"
-            onSuccess={(x) => console.log(x)}
-            onFailure={(y) => console.log(y)}
-            cookiePolicy={"single_host_origin"}
-            redirectUri={GOOGLE_CALLBACK_URL}
-            className="border border-blue-100"
-          />
-
-          <Divider className="my-3" />
-
-          <span className="text-sm">
+          <span className="text-xs">
             {action === "register"
               ? "¿Ya tienes una cuenta? "
               : "¿Aún no tienes una cuenta? "}
@@ -53,7 +39,7 @@ const AuthPage = () => {
               to={action === "register" ? "/auth/login" : "/auth/register"}
             >
               <strong>
-                {action === "register" ? "Inicia sesión" : "Regístrate"}
+                {action === "register" ? "Inicia sesión" : "Registrate"}
               </strong>
             </Link>
           </span>

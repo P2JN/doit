@@ -11,8 +11,9 @@ const BASE_URL =
   (isLocal ? ":8000" : "");
 
 export const API_URL = BASE_URL + "/api";
-export const GOOGLE_CALLBACK_URL =
-  BASE_URL + "/accounts/google/login/callback/";
+
+export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+export const GOOGLE_CALLBACK_URL = "http://localhost:3000/auth/login";
 
 // Axios
 

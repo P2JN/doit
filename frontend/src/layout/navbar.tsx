@@ -10,7 +10,9 @@ import {
 } from "@mui/icons-material";
 import { Divider, Icon } from "@mui/material";
 
+import { useActiveUser } from "store";
 import { socialService } from "services";
+
 import Logo from "assets/Logo.svg";
 
 const NavLink = (props: {
@@ -35,6 +37,7 @@ const NavLink = (props: {
 );
 
 const AppNavbar = () => {
+  const { activeUser } = useActiveUser();
   const { mutate: logout } = socialService.useLogout();
 
   return (
@@ -64,7 +67,7 @@ const AppNavbar = () => {
           <NavLink
             to="/profile"
             icon={<PersonOutlineOutlined />}
-            title="Profile"
+            title={"@" + activeUser?.username}
           />
           <NavLink
             to="/logout"
