@@ -6,12 +6,13 @@ from goals.models import Tracking, Goal
 
 
 class User(Document):
+    user_id = fields.IntField()
     username = fields.StringField(max_length=30, required=True)
     email = fields.EmailField(required=True)
     password = fields.StringField()
     birthDate = fields.DateTimeField()
     firstName = fields.StringField(max_length=30, required=True)
-    lastName = fields.StringField(max_length=60, required=True)
+    lastName = fields.StringField(max_length=60)
 
 
 class Post(Document):

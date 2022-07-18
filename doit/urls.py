@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from rest_framework_mongoengine import routers
+
+from auth.googleOAuth2Adapter import GoogleLogin
 from doit.views import PopulateDB
 from frontend.views import app
 
@@ -46,7 +48,10 @@ urlpatterns = [
     
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
-    
-    re_path('', app),
+    path('accounts/', include('allauth.urls')),
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/signup/', include('dj_rest_auth.registration.urls')),
+    path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
 
+    re_path('', app),
 ]

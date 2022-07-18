@@ -18,7 +18,7 @@ export const useActiveUser = () => {
   const { state, dispatch } = useContext(Store);
   const { activeUser } = state.app;
 
-  const setActiveUser = (activeUser: SocialTypes.User) => {
+  const setActiveUser = (activeUser?: SocialTypes.User) => {
     dispatch({ type: "SET_ACTIVE_USER", payload: activeUser });
   };
 
