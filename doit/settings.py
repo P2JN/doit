@@ -134,21 +134,21 @@ WSGI_APPLICATION = 'doit.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'doit',
-        'USER': 'doit',
-        'PASSWORD': 'doit',
-        'HOST': '127.0.0.1',
+        'NAME': os.environ.get("POSTGRES_NAME"),
+        'USER': os.environ.get("POSTGRES_USER"),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
+        'HOST': os.environ.get("POSTGRES_HOST"),
         'PORT': '5432',
     }
 }
 
 if os.environ.get('DOCKER'):
     mongoengine.connect(
-        db='doit',
+        db=os.environ.get("MONGO_INITDB_DATABASE"),
         host='mongo',
         port=27017,
-        username='root',
-        password='root'
+        username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
+        password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"),
     )
 else:
     mongoengine.connect("DOIT")
