@@ -11,6 +11,8 @@ const BASE_URL =
   (isLocal ? ":8000" : "");
 
 export const API_URL = BASE_URL + "/api";
+export const GOOGLE_CALLBACK_URL =
+  BASE_URL + "/accounts/google/login/callback/";
 
 // Axios
 
