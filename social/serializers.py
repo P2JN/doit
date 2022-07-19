@@ -47,22 +47,22 @@ class NotificationSerializer(serializers.DocumentSerializer):
 class FollowSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Follow
-        fields = ['id', 'user', 'follower']
+        fields = ['id', 'createdBy', 'follower']
 
 
 class ParticipateSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Participate
-        fields = ['id', 'user', 'goal']
+        fields = ['id', 'createdBy', 'goal']
 
 
 class LikeTrackingSerializer(serializers.DocumentSerializer):
     class Meta:
         model = LikeTracking
-        fields = ['id', 'user', 'tracking']
+        fields = ['id', 'createdBy', 'tracking']
 
 
 class LikePostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = LikePost
-        fields = ['id', 'user', 'post']
+        fields = ['id', 'createdBy', 'post']

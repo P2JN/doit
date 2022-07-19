@@ -83,7 +83,7 @@ class ParticipateViewSet(viewsets.ModelViewSet):
     queryset = Participate.objects.all()
     serializer_class = ParticipateSerializer
 
-    filter_fields = ['user', 'goal']
+    filter_fields = ['createdBy', 'goal']
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
@@ -97,7 +97,7 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
     queryset = LikeTracking.objects.all()
     serializer_class = LikeTrackingSerializer
 
-    filter_fields = ['like', 'tracking']
+    filter_fields = ['createdBy', 'tracking']
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
@@ -111,7 +111,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
     queryset = LikePost.objects.all()
     serializer_class = LikePostSerializer
 
-    filter_fields = ['like', 'post']
+    filter_fields = ['createdBy', 'post']
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):

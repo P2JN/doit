@@ -1,14 +1,14 @@
 import datetime
 
-from rest_framework_mongoengine import viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_mongoengine.generics import get_object_or_404
+from rest_framework_mongoengine import viewsets
 
-from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
-from utils.filters import FilterSet
+from auth.permissions import IsOwnerOrReadOnly
 from goals.models import Goal, Objective, Tracking, Frequency
-
+from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Participate, LikeTracking, User
+from utils.filters import FilterSet
 
 
 # ViewSet views
@@ -69,35 +69,35 @@ class GoalProgress(viewsets.GenericAPIView):
         user = User.objects.get(id=request.query_params.get('user_id'))
         goal = Goal.objects.get(id=goal_id)
         objectives = Objective.objects.filter(goal=goal_id)
-        
+
         trackings = []
         progress = dict()
-        
+
         for objective in objectives:
             progress[objective.frequency] = 0.0
 
         today = datetime.datetime.now().date()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        
+
         if Frequency.TOTAL in progress:
-            trackings = Tracking.objects.filter(user=user, goal=goal)
+            trackings = Tracking.objects.filter(createdBy=user, goal=goal)
         elif Frequency.YEARLY in progress:
-            trackings = Tracking.objects.filter(user=user, goal=goal,
+            trackings = Tracking.objects.filter(createdBy=user, goal=goal,
                                                 date__lte=today.replace(month=12, day=31),
                                                 date__gte=today.replace(month=1, day=1))
         elif Frequency.MONTHLY in progress:
-            trackings = Tracking.objects.filter(user=user, goal=goal,
+            trackings = Tracking.objects.filter(createdBy=user, goal=goal,
                                                 date__lte=today.replace(day=31),
                                                 date__gte=today.replace(day=1))
         elif Frequency.WEEKLY in progress:
-            trackings = Tracking.objects.filter(user=user, goal=goal,
+            trackings = Tracking.objects.filter(createdBy=user, goal=goal,
                                                 date__lte=end_week,
                                                 date__gte=start_week)
         elif Frequency.DAILY in progress:
-            trackings = Tracking.objects.filter(user=user, goal=goal,
+            trackings = Tracking.objects.filter(createdBy=user, goal=goal,
                                                 date__gte=today)
-        
+
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
                 progress[Frequency.DAILY] += tracking.amount
