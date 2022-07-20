@@ -1,4 +1,11 @@
-import { Route, Routes, useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import {
   Alert,
   Button,
@@ -15,16 +22,22 @@ import {
   TrackChanges,
 } from "@mui/icons-material";
 
+import { GoalTypes } from "types";
 import { Page } from "layout";
 import { goalService } from "services";
 
+import { ModalDrawer } from "components/organisms";
 import {
-  ModalDrawer,
+  GoalFeedTab,
+  GoalInfoTab,
+  GoalLeaderboardTab,
+  GoalStatsTab,
+  GoalTrackingsTab,
   ObjectivesForm,
   TrackingForm,
-} from "components/organisms";
+} from "components/templates";
 
-type GoalTabs = "info" | "feed" | "trackings" | "leaderboard" | "stats";
+type GoalTabsType = "info" | "feed" | "trackings" | "leaderboard" | "stats";
 
 const GoalDetailPage = () => {
   const { goalId, activeTab } = useParams();
@@ -36,6 +49,14 @@ const GoalDetailPage = () => {
   } = goalService.useGoal(goalId);
 
   const navigate = useNavigate();
+
+  const [params, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (params.get("refresh") === "goal") {
+      refetch();
+      setSearchParams("");
+    }
+  }, [goalId, params, refetch, setSearchParams]);
 
   const handleChange = (_: any, tab: string) => {
     navigate(`/goals/${goalId}/${tab}`);
@@ -52,8 +73,10 @@ const GoalDetailPage = () => {
   return (
     <Page title={goal?.title || "Objetivo sin título"}>
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <Typography variant="h5">{labels[activeTab as GoalTabs]}</Typography>
+        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+          <Typography variant="h5">
+            {labels[activeTab as GoalTabsType]}
+          </Typography>
 
           <Tabs
             value={activeTab}
@@ -64,7 +87,7 @@ const GoalDetailPage = () => {
           >
             <Tab value={"info"} icon={<Info />} />
             <Tab value={"feed"} icon={<Feed />} />
-            <Tab value={"leaders"} icon={<Leaderboard />} />
+            <Tab value={"leaderboard"} icon={<Leaderboard />} />
             <Tab value={"trackings"} icon={<TrackChanges />} />
             <Tab value={"stats"} icon={<Timeline />} />
           </Tabs>
@@ -83,6 +106,7 @@ const GoalDetailPage = () => {
             No se ha encontrado el objetivo
           </Alert>
         )}
+        {activeTab && goal && <GoalTabs activeTab={activeTab} goal={goal} />}
       </div>
       <GoalModals />
     </Page>
@@ -117,5 +141,18 @@ const GoalModals = () => {
       />
       <Route path="/:goalId" element={<></>} />
     </Routes>
+  );
+};
+
+const GoalTabs = (props: { activeTab: string; goal: GoalTypes.Goal }) => {
+  const { activeTab, goal } = props;
+  return (
+    <section>
+      {activeTab === "info" && <GoalInfoTab {...goal} />}
+      {activeTab === "feed" && <GoalFeedTab />}
+      {activeTab === "trackings" && <GoalTrackingsTab />}
+      {activeTab === "leaderboard" && <GoalLeaderboardTab />}
+      {activeTab === "stats" && <GoalStatsTab />}
+    </section>
   );
 };
