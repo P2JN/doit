@@ -23,6 +23,13 @@ class Post(Document):
     createdBy = fields.ReferenceField('User', required=True)
     goal = fields.ReferenceField('Goal')
 
+    meta = {'indexes': [
+        {'fields': ['$title', "$content"],
+         'default_language': 'spanish',
+         'weights': {'title': 10, 'content': 2}
+         }
+    ]}
+
 
 class Notification(Document):
     title = fields.StringField(max_length=30, required=True)
