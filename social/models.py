@@ -14,6 +14,12 @@ class User(Document):
     firstName = fields.StringField(max_length=30, required=True)
     lastName = fields.StringField(max_length=60)
 
+    meta = {'indexes': [
+        {'fields': ['$username', "$email", "$firstName", "$lastName"],
+         'default_language': 'spanish',
+         'weights': {'username': 10, 'email': 8, 'firstName': 5, 'lastName': 5}
+         }
+    ]}
 
 class Post(Document):
     title = fields.StringField(max_length=30, required=True)
