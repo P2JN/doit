@@ -9,9 +9,11 @@
 .MuiButton-text {
   @apply !font-bold;
 }
+
 .Mui-disabled .MuiRadio-root {
   @apply !text-primary;
 }
+
 .Mui-disabled {
   @apply !text-black;
 }

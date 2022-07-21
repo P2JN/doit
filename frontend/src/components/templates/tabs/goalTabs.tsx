@@ -83,6 +83,7 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
           <>
             {goal.objectives?.map((obj) => (
               <ProgressBar
+                key={obj.id}
                 title={
                   texts.objectiveLabels[obj.frequency as GoalTypes.Frequency]
                 }
