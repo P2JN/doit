@@ -46,8 +46,6 @@ axiosInstance.interceptors.response.use(
 
 // Session interceptors
 axiosInstance.interceptors.response.use((response) => {
-  console.log("intercepted", response, response.data.key);
-
   if (response.data.key) {
     localStorage.setItem("token", response.data.key);
   }
@@ -56,8 +54,8 @@ axiosInstance.interceptors.response.use((response) => {
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  // if the request endpoint includes "auth" remove the token
-  if (config.url?.includes("/auth/logout")) {
+  // if the request origin includes "logout" or "login" remove the token
+  if (config.url?.includes("logout") || config.url?.includes("login")) {
     localStorage.removeItem("token");
   }
 

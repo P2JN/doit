@@ -3,16 +3,23 @@ import { Add } from "@mui/icons-material";
 import { Chip, IconButton, Typography } from "@mui/material";
 
 import { GoalTypes } from "types";
+import { texts } from "utils";
 
 import { Card } from "components/atoms";
 import { ProgressBar } from "components/molecules";
 
 const GoalTeaser = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
   return (
     <Card>
       <header className="flex items-center justify-between">
-        <div className="text-xl font-bold">{goal.title}</div>
+        <Typography variant="h5">
+          <strong className="cursor-pointer" onClick={onOpenGoal}>
+            {goal.title}
+          </strong>
+        </Typography>
         <IconButton
           color="primary"
           size="large"
@@ -21,10 +28,13 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
           <Add />
         </IconButton>
       </header>
-      <section className="flex flex-col gap-3">
+      <section
+        className="flex cursor-pointer flex-col gap-3"
+        onClick={onOpenGoal}
+      >
         {goal.objectives?.map((obj) => (
           <ProgressBar
-            title={obj.frequency}
+            title={texts.objectiveLabels[obj.frequency as GoalTypes.Frequency]}
             completed={
               goal.progress?.[obj.frequency as GoalTypes.Frequency] || 0
             }
@@ -38,14 +48,22 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
 };
 
 const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
   return (
     <Card>
-      <header className="flex items-center justify-between">
-        <Typography variant="h4">{goal.title}</Typography>
+      <header
+        className="flex items-center justify-between"
+        onClick={onOpenGoal}
+      >
+        <Typography variant="h5">{goal.title}</Typography>
         {goal.type && <Chip label={goal.type} color="info" />}
       </header>
       {goal.description && (
-        <Typography variant="body1">{goal.description}</Typography>
+        <Typography variant="body1" onClick={onOpenGoal}>
+          {goal.description}
+        </Typography>
       )}
     </Card>
   );

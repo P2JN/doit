@@ -41,7 +41,12 @@ const AppNavbar = () => {
   const { mutate: logout } = socialService.useLogout();
 
   return (
-    <nav className="fixed bottom-0 z-20 w-full border-t bg-white md:relative md:h-screen md:w-1/3 md:border-t-0 xl:w-1/5">
+    <nav
+      className={
+        "fixed bottom-0 z-20 w-full border-t bg-white md:relative md:h-screen md:w-1/3 md:border-t-0 xl:w-1/5 " +
+        (!activeUser ? "hidden" : "")
+      }
+    >
       <aside className="flex items-center justify-between gap-5 px-4 py-3 md:h-full md:flex-col md:items-start md:px-8">
         <Link to="/landing" className="flex items-center justify-start gap-5">
           <Icon>

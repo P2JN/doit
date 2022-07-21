@@ -10,7 +10,7 @@ class GoalSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Goal
         fields = ['id', 'title', 'description', 'unit', 'type',
-                  'creationDate', 'startDate', 'deadline', 'createdBy', 'objectives']
+                  'creationDate', 'createdBy', 'objectives']
         read_only_fields = ['creationDate']
 
     def get_objectives(self, obj):
