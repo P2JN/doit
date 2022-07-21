@@ -1,5 +1,5 @@
 from rest_framework_mongoengine import serializers
-from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost
+from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost, Comment
 
 
 # Serializers define the API representation.
@@ -66,3 +66,10 @@ class LikePostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = LikePost
         fields = ['id', 'user', 'post']
+
+
+class CommentSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'createdBy', 'creationDate', 'post']
+        read_only_fields = ['creationDate']

@@ -1,8 +1,8 @@
 from rest_framework_mongoengine import viewsets
 
-from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost
+from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost, Comment
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
-    ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer
+    ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
 from utils.filters import FilterSet
 
 
@@ -113,6 +113,20 @@ class LikePostViewSet(viewsets.ModelViewSet):
     serializer_class = LikePostSerializer
 
     filter_fields = ['like', 'post']
+    custom_filter_fields = []
+
+    def filter_queryset(self, queryset):
+        post_filter = FilterSet(
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+
+        return post_filter.filter()
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    filter_fields = ['content', 'createdBy', 'creationDate', 'post']
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):

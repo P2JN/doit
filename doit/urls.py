@@ -22,7 +22,7 @@ from doit.views import PopulateDB
 from frontend.views import app
 
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
-    LikePostViewSet, LikeTrackingViewSet
+    LikePostViewSet, LikeTrackingViewSet, CommentViewSet
 from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress
 
 router = routers.DefaultRouter()
@@ -35,6 +35,7 @@ router.register(r'follow', FollowViewSet, 'follow')
 router.register(r'participate', ParticipateViewSet, 'participate')
 router.register(r'likePost', LikePostViewSet, 'likePost')
 router.register(r'likeTracking', LikeTrackingViewSet, 'likeTracking')
+router.register(r'comment', CommentViewSet, 'comment')
 
 # Goals API
 router.register(r'goal', GoalViewSet, "goal")
