@@ -1,8 +1,20 @@
 import NotificationProvider from "./notificationProvider";
 
 import ModalDrawer from "./modalDrawer";
+import CommentSection from "./commentSection";
 
 // TEASERS
-import { GoalTeaser, GoalTeaserInfo } from "./goalTeaser";
+import { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced } from "./goalTeaser";
+import { PostTeaser } from "./postTeaser";
+import { UserTeaserReduced } from "./userTeaser";
 
-export { GoalTeaser, GoalTeaserInfo, NotificationProvider, ModalDrawer };
+export {
+  GoalTeaser,
+  GoalTeaserInfo,
+  GoalTeaserReduced,
+  PostTeaser,
+  UserTeaserReduced,
+  NotificationProvider,
+  ModalDrawer,
+  CommentSection,
+};
