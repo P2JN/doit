@@ -131,6 +131,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
-            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset,search_text=True)
 
         return post_filter.filter()
