@@ -69,4 +69,23 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
   );
 };
 
-export { GoalTeaser, GoalTeaserInfo };
+const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
+  return (
+    <Card>
+      <header
+        className="flex items-center justify-between"
+        onClick={onOpenGoal}
+      >
+        <Typography variant="h5">
+          <strong className="cursor-pointer">{goal.title}</strong>
+        </Typography>
+        {goal.type && <Chip label={goal.type} color="info" />}
+      </header>
+    </Card>
+  );
+};
+
+export { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced };

@@ -2,6 +2,7 @@
 import GoalForm from "./forms/goalForm";
 import TrackingForm from "./forms/trackingForm";
 import ObjectivesForm from "./forms/objectivesForm";
+import CommentForm from "./forms/commentForm";
 
 import LogInForm from "./forms/loginForm";
 import UserForm from "./forms/userForm";
@@ -21,6 +22,7 @@ export {
   GoalForm,
   ObjectivesForm,
   TrackingForm,
+  CommentForm,
   LogInForm,
   UserForm,
   GoalInfoTab,

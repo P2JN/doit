@@ -27,10 +27,13 @@ const HomePage = () => {
 
   const navigate = useNavigate();
 
-  const [params] = useSearchParams();
+  const [params, setSearchParams] = useSearchParams();
   useEffect(() => {
-    if (params.get("refresh") === "goals") refetch();
-  }, [params, refetch]);
+    if (params.get("refresh") === "goals") {
+      refetch();
+      setSearchParams("");
+    }
+  }, [params, refetch, setSearchParams]);
 
   return (
     <Page title="Home">
