@@ -1,10 +1,11 @@
 class FilterSet:
 
-    def __init__(self, my_filter_fields, my_custom_filter_fields, query_params, queryset):
+    def __init__(self, my_filter_fields, my_custom_filter_fields, query_params, queryset, search_text=False):
         self.my_filter_fields = my_filter_fields
         self.my_custom_filter_fields = my_custom_filter_fields
         self.query_params = query_params
         self.queryset = queryset
+        self.search_text = search_text
 
     def get_kwargs_for_filtering(self):
         filtering_kwargs = {}
@@ -35,4 +36,6 @@ class FilterSet:
         kwargs = self.get_kwargs_for_filtering()
         custom_kwargs = self.get_custom_kwargs_for_filtering()
         queryset = self.queryset.filter(**kwargs).filter(**custom_kwargs)
+        if self.search_text and self.query_params.get("search_text"):
+            queryset = queryset.search_text(self.query_params.get("search_text"))
         return queryset

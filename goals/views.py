@@ -28,7 +28,7 @@ class GoalViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         goal_filter = FilterSet(
-            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset, search_text=True)
 
         return goal_filter.filter()
 
@@ -69,17 +69,17 @@ class GoalProgress(viewsets.GenericAPIView):
         user = User.objects.get(id=request.query_params.get('user_id'))
         goal = Goal.objects.get(id=goal_id)
         objectives = Objective.objects.filter(goal=goal_id)
-        
+
         trackings = []
         progress = dict()
-        
+
         for objective in objectives:
             progress[objective.frequency] = 0.0
 
         today = datetime.datetime.now().date()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        
+
         if Frequency.TOTAL in progress:
             trackings = Tracking.objects.filter(user=user, goal=goal)
         elif Frequency.YEARLY in progress:
@@ -97,7 +97,7 @@ class GoalProgress(viewsets.GenericAPIView):
         elif Frequency.DAILY in progress:
             trackings = Tracking.objects.filter(user=user, goal=goal,
                                                 date__gte=today)
-        
+
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
                 progress[Frequency.DAILY] += tracking.amount
