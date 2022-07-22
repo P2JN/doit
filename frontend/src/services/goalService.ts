@@ -32,9 +32,27 @@ const requests = {
   createGoal: (goal: GoalTypes.Goal) =>
     axiosInstance.post("/goal/", goal).then((response) => response.data),
 
+  updateGoal: (goal: GoalTypes.Goal) =>
+    axiosInstance
+      .put("/goal/" + goal.id + "/", goal)
+      .then((response) => response.data),
+
+  deleteGoal: (id: Id) =>
+    axiosInstance.delete("/goal/" + id + "/").then((response) => response.data),
+
   createObjective: (objective: GoalTypes.Objective) =>
     axiosInstance
       .post("/objective/", objective)
+      .then((response) => response.data),
+
+  updateObjective: (objective: GoalTypes.Objective) =>
+    axiosInstance
+      .put("/objective/" + objective.id + "/", objective)
+      .then((response) => response.data),
+
+  deleteObjective: (objectiveId: Id) =>
+    axiosInstance
+      .delete("/objective/" + objectiveId + "/")
       .then((response) => response.data),
 
   createParticipation: (participation: GoalTypes.Participation) =>
@@ -66,6 +84,10 @@ const goalService = {
       requests.getGoal(id)
     ),
 
+  // Use delete goal
+  useDeleteGoal: () =>
+    useMutation<void, AxiosError, Id>(`delete-goal`, requests.deleteGoal),
+
   // Use my goal progress specifying its id
   useMyGoalProgress: (id?: Id, participantId?: Id) =>
     useQuery<GoalTypes.Progress, AxiosError>(`goal-${id}-my-progress`, () =>
@@ -76,9 +98,21 @@ const goalService = {
   useCreateGoal: () =>
     useMutation<any, AxiosError, GoalTypes.Goal>(requests.createGoal),
 
+  // Update a goal
+  useUpdateGoal: () =>
+    useMutation<any, AxiosError, GoalTypes.Goal>(requests.updateGoal),
+
   // Ceate an objective
   useCreateObjective: () =>
     useMutation<any, AxiosError, GoalTypes.Objective>(requests.createObjective),
+
+  // Update an objective
+  useUpdateObjective: () =>
+    useMutation<any, AxiosError, GoalTypes.Objective>(requests.updateObjective),
+
+  // Delete an objective
+  useDeleteObjective: () =>
+    useMutation<any, AxiosError, Id>(requests.deleteObjective),
 
   // Create a participation
   useCreateParticipation: () =>

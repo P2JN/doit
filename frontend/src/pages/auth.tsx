@@ -5,7 +5,7 @@ import { CustomPage } from "layout";
 import Logo from "assets/Logo.svg";
 
 import { Card } from "components/atoms";
-import { UserForm, LogInForm } from "components/organisms";
+import { UserForm, LogInForm } from "components/templates";
 import { Divider } from "@mui/material";
 
 const AuthPage = () => {

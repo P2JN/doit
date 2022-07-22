@@ -14,12 +14,15 @@ import {
 import { useActiveUser, useNotificationStore } from "store";
 import { goalService } from "services";
 import { GoalTypes } from "types";
+import { formParsers } from "utils";
 
 import { ParsedError } from "components/atoms";
 
-const GoalForm = () => {
+const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
   const navigate = useNavigate();
   const { addNotification } = useNotificationStore();
+
+  const isUpdate = !!props.initial;
 
   const {
     mutate: createGoal,
@@ -27,6 +30,13 @@ const GoalForm = () => {
     isError,
     error,
   } = goalService.useCreateGoal();
+
+  const {
+    mutate: updateGoal,
+    isLoading: loadingUpdate,
+    isError: isUpdateError,
+    error: updateError,
+  } = goalService.useUpdateGoal();
 
   const { mutate: createParticipation, isLoading: loadingParticipation } =
     goalService.useCreateParticipation();
@@ -37,33 +47,60 @@ const GoalForm = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<GoalTypes.Goal>();
+  } = useForm<GoalTypes.Goal>({
+    defaultValues:
+      {
+        ...props.initial,
+        type: formParsers.fromGoalTypeToEnumValue(
+          props.initial?.type as GoalTypes.GoalType
+        ),
+      } || {},
+  });
+
+  const onCreateGoal = (goal: GoalTypes.Goal) => {
+    createGoal(
+      { ...goal, createdBy: activeUser?.id },
+      {
+        onSuccess: (data) =>
+          createParticipation(
+            {
+              goal: data.id,
+              user: activeUser?.id,
+            },
+            {
+              onSuccess: () => {
+                addNotification({
+                  title: "Objetivo creado",
+                  content:
+                    "Ahora añade tus objetivos temporales y empieza a cumplirlos!",
+                  type: "transient",
+                });
+                navigate("/home/" + data.id + "/objectives");
+              },
+            }
+          ),
+      }
+    );
+  };
+
+  const onUpdateGoal = (goal: GoalTypes.Goal) => {
+    updateGoal(goal, {
+      onSuccess: () => {
+        addNotification({
+          title: "Objetivo actualizado",
+          content: "Los datos del objetivo se han actualizado correctamente",
+          type: "transient",
+        });
+        navigate("/goals/" + goal.id + "/info?refresh=");
+      },
+    });
+  };
 
   const onSubmit = (formValues: GoalTypes.Goal) => {
-    if (formValues)
-      createGoal(
-        { ...formValues, createdBy: activeUser?.id },
-        {
-          onSuccess: (data) =>
-            createParticipation(
-              {
-                goal: data.id,
-                user: activeUser?.id,
-              },
-              {
-                onSuccess: () => {
-                  addNotification({
-                    title: "Objetivo creado",
-                    content:
-                      "Ahora añade tus objetivos temporales y empieza a cumplirlos!",
-                    type: "transient",
-                  });
-                  navigate("/home/" + data.id + "/objectives");
-                },
-              }
-            ),
-        }
-      );
+    if (formValues) {
+      if (isUpdate) onUpdateGoal(formValues);
+      else onCreateGoal(formValues);
+    }
   };
 
   return (
@@ -75,7 +112,7 @@ const GoalForm = () => {
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">
-              <TextField label="Título" {...field} />
+              <TextField disabled={props.disabled} label="Título" {...field} />
               {errors.title && (
                 <FormHelperText error>{errors.title.message}</FormHelperText>
               )}
@@ -89,7 +126,12 @@ const GoalForm = () => {
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">
-              <TextField label="Descripción" multiline {...field} />
+              <TextField
+                disabled={props.disabled}
+                label="Descripción"
+                multiline
+                {...field}
+              />
               {errors.description && (
                 <FormHelperText error>
                   {errors.description.message || "Demasiado largo"}
@@ -105,7 +147,7 @@ const GoalForm = () => {
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">
-              <TextField label="Unidad" {...field} />
+              <TextField disabled={props.disabled} label="Unidad" {...field} />
               {errors.unit && (
                 <FormHelperText error>
                   {errors.unit.message || "Demasiado largo"}
@@ -125,17 +167,17 @@ const GoalForm = () => {
               <RadioGroup row {...field}>
                 <FormControlLabel
                   value="GoalType.PRIVATE"
-                  control={<Radio />}
+                  control={<Radio disabled={props.disabled} />}
                   label="Privado"
                 />
                 <FormControlLabel
                   value="GoalType.CHALLENGE"
-                  control={<Radio />}
+                  control={<Radio disabled={props.disabled} />}
                   label="Reto"
                 />
                 <FormControlLabel
                   value="GoalType.COOP"
-                  control={<Radio />}
+                  control={<Radio disabled={props.disabled} />}
                   label="Cooperativo"
                 />
               </RadioGroup>
@@ -146,16 +188,21 @@ const GoalForm = () => {
           )}
         />
 
-        <Button size="large" variant="outlined" type="submit">
-          <strong>Confirmar</strong>
-          {isLoading && <CircularProgress size={20} />}
-        </Button>
+        {!props.disabled && (
+          <Button size="large" variant="outlined" type="submit">
+            <strong>{isUpdate ? "Actualizar" : "Crear"}</strong>
+            {isLoading && <CircularProgress size={20} />}
+          </Button>
+        )}
       </div>
-      {isLoading && <FormHelperText>Guardando...</FormHelperText>}
+      {(isLoading || loadingUpdate) && (
+        <FormHelperText>Guardando...</FormHelperText>
+      )}
       {loadingParticipation && (
         <FormHelperText>Creando participación...</FormHelperText>
       )}
       {isError && <ParsedError {...error} />}
+      {isUpdateError && <ParsedError {...updateError} />}
     </form>
   );
 };

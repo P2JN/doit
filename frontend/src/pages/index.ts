@@ -8,6 +8,8 @@ import FeedPage from "./feed";
 import ExplorePage from "./explore";
 import NotificationsPage from "./notifications";
 
+import GoalDetailPage from "./goalDetails";
+
 export {
   HomePage,
   FeedPage,
@@ -17,4 +19,5 @@ export {
   ErrorPage,
   AuthPage,
   LoadingPage,
+  GoalDetailPage,
 };
