@@ -81,7 +81,7 @@ const LogInForm = () => {
           {isLoading && <CircularProgress size={20} />}
         </Button>
       </div>
-      {isLoading && <FormHelperText>Guardando...</FormHelperText>}
+      {isLoading && <FormHelperText>Cargando...</FormHelperText>}
       {isError && <ParsedError {...error} />}
     </form>
   );

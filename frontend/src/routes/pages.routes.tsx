@@ -10,6 +10,7 @@ import {
   AuthPage,
   NotificationsPage,
   LoadingPage,
+  GoalDetailPage,
 } from "pages";
 
 const AppPages = () => {
@@ -22,20 +23,26 @@ const AppPages = () => {
       <Route path="/loading" element={<LoadingPage />} />
       <Route path="/logout" element={<Navigate to="/auth/login" />} />
 
-      {activeUser && (
+      {activeUser ? (
         <>
           <Route path="/home/*" element={<HomePage />} />
           <Route path="/feed" element={<FeedPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route
+            path="/goals/:goalId/:activeTab/*"
+            element={<GoalDetailPage />}
+          />
         </>
+      ) : (
+        <Route path="*" element={<Navigate to="/auth/login" />} />
       )}
-      <Route path="*" element={<Navigate to="/auth/login" />} />
 
       <Route
         path="/404"
         element={<ErrorPage errorMessage="404!, not found!" />}
       />
+      <Route path="*" element={<Navigate to="/404" />} />
     </Routes>
   );
 };

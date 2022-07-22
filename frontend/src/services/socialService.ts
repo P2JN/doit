@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import { useMutation, useQuery } from "react-query";
 
 import { SocialTypes } from "types";
+import { Id } from "types/apiTypes";
 
 import { axiosInstance } from "./config";
 
@@ -11,9 +12,9 @@ const requests = {
       .get("/user/" + (!!filters ? "?" + filters?.join("&") : ""))
       .then((response) => response.data),
 
-  getUser: (id?: number) =>
+  getUser: (id?: Id) =>
     axiosInstance
-      .get("/user/" + (id || "missing"))
+      .get("/user/" + (id || "missing") + "/")
       .then((response) => response.data),
 
   createUser: (user: SocialTypes.User) =>
@@ -27,6 +28,11 @@ const requests = {
 
   getActiveUser: () =>
     axiosInstance.get("/auth/user/").then((response) => response.data),
+
+  getFeedPosts: (userId?: Id) =>
+    axiosInstance
+      .get("/post/?follower=" + (userId || "missing"))
+      .then((response) => response.data),
 };
 
 const socialService = {
@@ -37,7 +43,7 @@ const socialService = {
       requests.getUsers()
     ),
   // Use an user specifying its id
-  useUser: (id?: number) =>
+  useUser: (id?: Id) =>
     useQuery<SocialTypes.User, AxiosError>(`user-${id}`, () =>
       requests.getUser(id)
     ),
@@ -51,6 +57,12 @@ const socialService = {
     useMutation<any, AxiosError, SocialTypes.User>(
       "create-user",
       requests.createUser
+    ),
+
+  // Use feed posts
+  useFeedPosts: (userId?: Id) =>
+    useQuery<SocialTypes.Post[], AxiosError>("feed-posts", () =>
+      requests.getFeedPosts(userId)
     ),
   // Log in an user
   useLogin: () =>

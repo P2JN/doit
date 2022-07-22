@@ -6,6 +6,18 @@
 @tailwind components;
 /* Stop purging. */
 
+.MuiButton-text {
+  @apply !font-bold;
+}
+
+.Mui-disabled .MuiRadio-root {
+  @apply !text-primary;
+}
+
+.Mui-disabled {
+  @apply !text-black;
+}
+
 /* Your own custom component styles */
 
 /* Start purging... */

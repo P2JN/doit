@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import Enum
 from mongoengine import Document, fields
 
+
 # Enums
 
 
@@ -18,6 +19,7 @@ class GoalType(str, Enum):
     COOP = 'cooperative'
     PRIVATE = 'private'
 
+
 # Models
 
 
@@ -31,6 +33,13 @@ class Goal(Document):
     deadline = fields.DateTimeField(future=True)
 
     createdBy = fields.ReferenceField('User')
+
+    meta = {'indexes': [
+        {'fields': ['$title', "$description"],
+         'default_language': 'spanish',
+         'weights': {'title': 10, 'content': 2}
+         }
+    ]}
 
 
 class Objective(Document):
@@ -46,7 +55,7 @@ class Objective(Document):
     }
 
 
-class Tracking (Document):
+class Tracking(Document):
     date = fields.DateTimeField(default=datetime.utcnow)
     amount = fields.FloatField(required=True, min_value=0)
 
