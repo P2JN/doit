@@ -13,13 +13,8 @@ import { goalService } from "services";
 import { GoalTypes } from "types";
 import { useActiveUser } from "store";
 
-import {
-  GoalForm,
-  GoalTeaser,
-  ModalDrawer,
-  ObjectivesForm,
-  TrackingForm,
-} from "components/organisms";
+import { GoalTeaser, ModalDrawer } from "components/organisms";
+import { GoalForm, ObjectivesForm, TrackingForm } from "components/templates";
 
 const HomePage = () => {
   const { activeUser } = useActiveUser();
@@ -32,10 +27,13 @@ const HomePage = () => {
 
   const navigate = useNavigate();
 
-  const [params] = useSearchParams();
+  const [params, setSearchParams] = useSearchParams();
   useEffect(() => {
-    if (params.get("refresh") === "goals") refetch();
-  }, [params, refetch]);
+    if (params.get("refresh") === "goals") {
+      refetch();
+      setSearchParams("");
+    }
+  }, [params, refetch, setSearchParams]);
 
   return (
     <Page title="Home">
@@ -119,10 +117,11 @@ const GoalTeaserProvider = (goal: GoalTypes.Goal) => {
     refetch,
   } = goalService.useMyGoalProgress(goal.id, activeUser?.id);
 
-  const [params] = useSearchParams();
+  const [params, setSearchParams] = useSearchParams();
   useEffect(() => {
     if (params.get("refresh") === goal?.id) refetch();
-  }, [goal?.id, params, refetch]);
+    setSearchParams("");
+  }, [goal?.id, params, refetch, setSearchParams]);
 
   return loadingProgress ? (
     <Skeleton />

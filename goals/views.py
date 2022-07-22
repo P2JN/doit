@@ -28,7 +28,7 @@ class GoalViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         goal_filter = FilterSet(
-            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset, search_text=True)
 
         return goal_filter.filter()
 
@@ -101,7 +101,7 @@ class GoalProgress(viewsets.GenericAPIView):
         elif Frequency.DAILY in progress:
             trackings = Tracking.objects.filter(user__in=users, goal=goal,
                                                 date__gte=today)
-
+        
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
                 progress[Frequency.DAILY] += tracking.amount

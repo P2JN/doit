@@ -15,6 +15,24 @@ export type User = {
   startDate: string;
 };
 
+export type Post = {
+  id?: Id;
+  title: string;
+  content: string;
+  creationDate: string;
+
+  createdBy: Id;
+  goal: Id;
+};
+
+export type Comment = {
+  id?: Id;
+  content: string;
+  creationDate: string;
+  createdBy: Id;
+  post: Id;
+};
+
 export type LogIn = {
   username: string;
   password: string;

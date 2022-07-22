@@ -33,7 +33,7 @@ const UserForm = () => {
   const onSubmit = (formValues: SocialTypes.User) => {
     if (formValues)
       createUser(formValues, {
-        onSuccess: (data) => {
+        onSuccess: () => {
           addNotification({
             title: "Registro completado, bienvenido!",
             content: "Ya puedes comenzar a crear objetivos!",
