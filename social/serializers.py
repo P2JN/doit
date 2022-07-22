@@ -47,7 +47,7 @@ class NotificationSerializer(serializers.DocumentSerializer):
 class FollowSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Follow
-        fields = ['id', 'createdBy', 'follower']
+        fields = ['id', 'user', 'follower']
 
 
 class ParticipateSerializer(serializers.DocumentSerializer):

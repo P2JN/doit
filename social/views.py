@@ -32,11 +32,11 @@ class UserViewSet(viewsets.ModelViewSet):
                      'birthDate', 'firstName', 'lastName']
     custom_filter_fields = [
         ('postLikes', lambda value: [post.id for post in LikePost.objects.filter(post=value)
-         .values_list('user')]),
+         .values_list('createdBy')]),
         ('trackLikes', lambda value: [track.id for track in LikeTracking.objects.filter(
-            tracking=value).values_list('user')]),
+            tracking=value).values_list('createdBy')]),
         ('goal', lambda value: [user.id for user in Participate.objects.filter(goal=value)
-         .values_list('user')]),
+         .values_list('createdBy')]),
         ('followers', lambda value: [user.id for user in Follow.objects.filter(user=value)
          .values_list('follower')]),
         ('following', lambda value: [user.id for user in Follow.objects.filter(follower=value)

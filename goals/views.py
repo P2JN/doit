@@ -20,9 +20,9 @@ class GoalViewSet(viewsets.ModelViewSet):
                      'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [
         ('participant', lambda value: [goal.id for goal in Participate.objects.filter(
-            user=value).values_list('goal')]),
+            createdBy=value).values_list('goal')]),
         ('likedBy', lambda value: [goal.id for goal in LikeTracking.objects.filter(
-            user=value).values_list('goal')]),
+            createdBy=value).values_list('goal')]),
         ('search', lambda value: Goal.objects.search_text(value).values_list('id')),
     ]
 
@@ -51,9 +51,9 @@ class TrackingViewSet(viewsets.ModelViewSet):
     queryset = Tracking.objects.all()
     serializer_class = TrackingSerializer
 
-    filter_fields = ['date', 'amount', 'goal', 'user']
+    filter_fields = ['date', 'amount', 'goal', 'createdBy']
     custom_filter_fields = [('likes', lambda value: [tracking.id for tracking in LikeTracking.objects.filter(
-        user=value).values_list('tracking')])]
+        createdBy=value).values_list('tracking')])]
 
     def filter_queryset(self, queryset):
         tracking_filter = FilterSet(
