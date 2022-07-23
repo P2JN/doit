@@ -87,7 +87,6 @@ class FollowViewSet(viewsets.ModelViewSet):
 class ParticipateViewSet(viewsets.ModelViewSet):
     queryset = Participate.objects.all()
     serializer_class = ParticipateSerializer
-    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly, IsPrivateGoal)
 
     filter_fields = ['createdBy', 'goal']
     custom_filter_fields = []

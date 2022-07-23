@@ -50,7 +50,6 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
 class TrackingViewSet(viewsets.ModelViewSet):
     queryset = Tracking.objects.all()
     serializer_class = TrackingSerializer
-    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly, IsParticipating)
 
     filter_fields = ['date', 'amount', 'goal', 'createdBy']
     custom_filter_fields = [('likes', lambda value: [tracking.id for tracking in LikeTracking.objects.filter(
