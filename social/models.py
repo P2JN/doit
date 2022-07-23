@@ -21,6 +21,7 @@ class User(Document):
          }
     ]}
 
+
 class Post(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
@@ -90,3 +91,17 @@ class Participate(Document):
             {'fields': ['createdBy', 'goal'], 'unique': True}
         ]
     }
+
+
+class Comment(Document):
+    content = fields.StringField(max_length=1250)
+    creationDate = fields.DateTimeField(default=datetime.utcnow)
+    createdBy = fields.ReferenceField('User', required=True)
+    post = fields.ReferenceField('Post', required=True)
+
+    meta = {'indexes': [
+        {'fields': ['$content'],
+         'default_language': 'spanish',
+         'weights': {'content': 10}
+         }
+    ]}
