@@ -1,22 +1,10 @@
-import { useEffect } from "react";
 import { Alert } from "@mui/material";
 
 import { Page } from "layout";
 import { useNotificationStore } from "store";
 
 const NotificationsPage = () => {
-  const { notifications, addNotification, dismissNotification } =
-    useNotificationStore();
-
-  useEffect(() => {
-    // Notification Demo
-    addNotification({
-      content: "This is a notification test",
-      title: "Notification Test Completed",
-      variant: "success",
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { notifications, dismissNotification } = useNotificationStore();
 
   return (
     <Page title="Notifications">

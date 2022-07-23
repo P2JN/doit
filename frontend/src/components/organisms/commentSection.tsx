@@ -33,7 +33,7 @@ const CommentSection = (post: SocialTypes.Post) => {
           </Typography>
           {post.id && (
             <PostCounters
-              comments={post.numComments}
+              comments={comments?.length || post.numComments}
               likes={post.likes}
               postId={post.id}
             />
