@@ -1,15 +1,41 @@
 import { Controller, useForm } from "react-hook-form";
-import { Button, FormHelperText, TextField } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
+import {
+  Button,
+  CircularProgress,
+  FormHelperText,
+  TextField,
+} from "@mui/material";
 
-const CommentForm = () => {
+import { socialService } from "services";
+import { Id } from "types/apiTypes";
+import { useActiveUser } from "store";
+
+const CommentForm = (props: { postId?: Id }) => {
+  const { activeUser } = useActiveUser();
+
+  const [_, setSearchParams] = useSearchParams();
+
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<{ message: string }>();
 
+  const { mutate: createComment, isLoading } = socialService.useCreateComment();
+
   const onSubmit = (data: { message: string }) => {
-    console.log(data);
+    if (data.message && activeUser?.id && props.postId)
+      createComment(
+        {
+          content: data.message,
+          createdBy: activeUser.id,
+          post: props.postId,
+        },
+        {
+          onSuccess: () => setSearchParams("?refresh=" + props.postId),
+        }
+      );
   };
 
   return (
@@ -36,6 +62,7 @@ const CommentForm = () => {
 
         <Button size="large" variant="outlined" type="submit">
           <strong>Enviar</strong>
+          {isLoading && <CircularProgress />}
         </Button>
       </div>
     </form>
