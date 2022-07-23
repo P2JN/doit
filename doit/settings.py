@@ -68,13 +68,15 @@ AUTHENTICATION_BACKENDS = [
     # django's allauth authentication backend
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-
+# Rest auth config
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'auth.authSerializer.CustomRegisterSerializer',
 }
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'auth.authSerializer.CustomUserDetailsSerializer',
 }
+
+
 ROOT_URLCONF = 'doit.urls'
 
 TEMPLATES = [
@@ -92,6 +94,9 @@ TEMPLATES = [
         },
     },
 ]
+
+# Django rest framework config
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -99,9 +104,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
         'auth.permissions.IsOwnerOrReadOnly',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
+
+# AllAuth config
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
 
 SOCIALACCOUNT_STORE_TOKENS = True
