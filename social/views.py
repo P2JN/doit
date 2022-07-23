@@ -1,5 +1,9 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_mongoengine import viewsets
+from rest_framework.response import Response
 
+from auth.permissions import IsOwnerOrReadOnly, IsPrivateGoal
+from goals.models import Goal
 from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer
@@ -83,6 +87,7 @@ class FollowViewSet(viewsets.ModelViewSet):
 class ParticipateViewSet(viewsets.ModelViewSet):
     queryset = Participate.objects.all()
     serializer_class = ParticipateSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly, IsPrivateGoal,)
 
     filter_fields = ['createdBy', 'goal']
     custom_filter_fields = []
@@ -120,3 +125,13 @@ class LikePostViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
+
+
+# Custom endpoints
+class UserIsParticipating(viewsets.GenericAPIView):
+    def get(self, request, goal_id, *args, **kwargs):
+        user = User.objects.get(id=request.query_params.get("user_id"))
+        goal = Goal.objects.get(id=goal_id)
+        if len(Participate.objects.filter(createdBy=user, goal=goal)) > 0:
+            return Response(True)
+        return Response(False)
