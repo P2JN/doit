@@ -21,6 +21,7 @@ class User(Document):
          }
     ]}
 
+
 class Post(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
