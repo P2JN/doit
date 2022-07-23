@@ -64,6 +64,16 @@ const requests = {
     axiosInstance
       .post("/tracking/", tracking)
       .then((response) => response.data),
+
+  getIsParticipating: (goalId?: Id, participantId?: Id) =>
+    axiosInstance
+      .get(
+        "/goal/" +
+          (goalId || "missing") +
+          "/is-participating?user_id=" +
+          (participantId || "missing")
+      )
+      .then((response) => response.data),
 };
 
 const goalService = {
@@ -123,6 +133,13 @@ const goalService = {
   // Create a tracking
   useCreateTracking: () =>
     useMutation<any, AxiosError, GoalTypes.Tracking>(requests.createTracking),
+
+  // Use is participating check
+  useIsParticipating: (goalId?: Id, participantId?: Id) =>
+    useQuery<boolean, AxiosError>(
+      `goal-${goalId}-is-participating-${participantId}`,
+      () => requests.getIsParticipating(goalId, participantId)
+    ),
 };
 
 export default goalService;

@@ -37,7 +37,7 @@ class TrackingSerializer(serializers.DocumentSerializer):
 
     class Meta:
         model = Tracking
-        fields = ['id', 'date', 'amount', 'user', 'goal', 'likes']
+        fields = ['id', 'date', 'amount', 'createdBy', 'goal', 'likes']
         read_only_fields = ['date']
 
     def get_likes(self, obj):

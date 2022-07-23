@@ -85,7 +85,12 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
         <Typography variant="h5">
           <strong className="cursor-pointer">{goal.title}</strong>
         </Typography>
-        {goal.type && <Chip label={goal.type} color="info" />}
+        {goal.type && (
+          <Chip
+            label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
+            color="info"
+          />
+        )}
       </header>
     </Card>
   );

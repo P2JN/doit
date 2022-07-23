@@ -38,4 +38,6 @@ class FilterSet:
         queryset = self.queryset.filter(**kwargs).filter(**custom_kwargs)
         if self.search_text and self.query_params.get("search_text"):
             queryset = queryset.search_text(self.query_params.get("search_text"))
+        if self.query_params.get("order_by"):
+            queryset = queryset.order_by(self.query_params.get("order_by"))
         return queryset

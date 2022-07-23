@@ -1,34 +1,30 @@
-import { Typography } from "@mui/material";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { CircularProgress, Typography } from "@mui/material";
+import { CommentOutlined, FavoriteBorder } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
-import { useActiveUser } from "store";
+import { socialService } from "services";
 
 import { Card } from "components/atoms";
 import { Comment, PostCounters } from "components/molecules";
 import { CommentForm } from "components/templates";
 
 const CommentSection = (post: SocialTypes.Post) => {
-  const { activeUser } = useActiveUser();
-  const mockedComments = (): SocialTypes.Comment[] => {
-    return activeUser?.id
-      ? [
-          {
-            id: "1",
-            content: "This is a comment",
-            createdBy: activeUser?.id,
-            creationDate: "2020-01-01",
-            post: post?.id || "",
-          },
-          {
-            id: "2",
-            content: "This is a comment",
-            createdBy: activeUser?.id,
-            creationDate: "2020-01-01",
-            post: post?.id || "",
-          },
-        ]
-      : ([] as SocialTypes.Comment[]);
-  };
+  const {
+    data: comments,
+    isLoading,
+    refetch,
+  } = socialService.usePostComments(post.id);
+
+  const [params, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (params.get("refresh") === post.id) {
+      refetch();
+      setSearchParams("");
+    }
+  }, [post.id, params, refetch, setSearchParams]);
+
   return (
     <div className="flex flex-col gap-3">
       <Card>
@@ -37,15 +33,26 @@ const CommentSection = (post: SocialTypes.Post) => {
             <strong>Comentarios</strong>
           </Typography>
           {post.id && <PostCounters comments={2} likes={3} postId={post.id} />}
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-2">
+              {comments?.length}
+              <CommentOutlined />
+            </span>
+            <span className="flex items-center gap-2">
+              {post.likes}
+              <FavoriteBorder />
+            </span>
+          </div>
         </div>
       </Card>
       <section className="flex flex-col gap-3 overflow-auto pb-3">
-        {mockedComments()?.map((comment) => (
+        {comments?.map((comment) => (
           <Comment {...comment} />
         ))}
+        {isLoading && <CircularProgress />}
       </section>
       <Card>
-        <CommentForm />
+        <CommentForm postId={post.id} />
       </Card>
     </div>
   );

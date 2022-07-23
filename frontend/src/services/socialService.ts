@@ -35,6 +35,14 @@ const requests = {
       .then((response) => response.data),
 
   getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
+
+  getPostComments: (postId?: Id) =>
+    axiosInstance
+      .get("/comment/?post=" + (postId || "missing"))
+      .then((response) => response.data),
+
+  createComment: (comment: SocialTypes.Comment) =>
+    axiosInstance.post("/comment/", comment).then((response) => response.data),
 };
 
 const socialService = {
@@ -60,19 +68,27 @@ const socialService = {
       "create-user",
       requests.createUser
     ),
-
   // Use feed posts
   useFeedPosts: (userId?: Id) =>
-    useQuery<SocialTypes.Post[], AxiosError>("feed-posts", () =>
+    useQuery<SocialTypes.Post[], AxiosError>("feed-posts-" + userId, () =>
       requests.getFeedPosts(userId)
     ),
-
   // use all the posts
   usePosts: () =>
     useQuery<SocialTypes.Post[], AxiosError>("posts", () =>
       requests.getPosts()
     ),
-
+  // Use post comments
+  usePostComments: (postId?: Id) =>
+    useQuery<SocialTypes.Comment[], AxiosError>("post-comments-" + postId, () =>
+      requests.getPostComments(postId)
+    ),
+  // Use create comment
+  useCreateComment: () =>
+    useMutation<any, AxiosError, SocialTypes.Comment>(
+      "create-comment",
+      requests.createComment
+    ),
   // Log in an user
   useLogin: () =>
     useMutation<any, AxiosError, SocialTypes.LogIn>(

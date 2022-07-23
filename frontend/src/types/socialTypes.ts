@@ -33,7 +33,7 @@ export type Post = {
 export type Comment = {
   id?: Id;
   content: string;
-  creationDate: string;
+  creationDate?: string;
   createdBy: Id;
   post: Id;
 };
