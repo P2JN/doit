@@ -1,32 +1,41 @@
+import { AxiosError } from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Divider, Typography } from "@mui/material";
 
-import { useActiveUser } from "store";
+import { useActiveUser, useNotificationStore } from "store";
 import { goalService } from "services";
 import { GoalTypes } from "types";
 import { texts } from "utils";
 
+import { ParsedError } from "components/atoms";
 import { ProgressBar } from "components/molecules";
 import { GoalForm, ObjectivesForm } from "components/templates";
-import { ParsedError } from "components/atoms";
 
 const GoalInfoTab = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
   const [editObjectivesEnabled, setEditObjectivesEnabled] = useState(false);
   const [editGoalEnabled, setEditGoalEnabled] = useState(false);
 
+  const { addNotification } = useNotificationStore();
+
   const { activeUser } = useActiveUser();
   const isOwner = useMemo(
     () => activeUser?.id === goal.createdBy,
     [activeUser?.id, goal.createdBy]
   );
+  const isPersonal = useMemo(() => goal.type === "private", [goal.type]);
+
+  const { data: isParticipating, refetch: refetchParticipating } =
+    goalService.useIsParticipating(goal.id, activeUser?.id);
 
   const {
     mutate: deleteGoal,
     isError: isDeleteError,
     error: deleteError,
   } = goalService.useDeleteGoal();
+
+  const { mutate: participate } = goalService.useCreateParticipation();
 
   const { data: progress, refetch } = goalService.useMyGoalProgress(
     goal?.id,
@@ -37,15 +46,47 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
   useEffect(() => {
     if (params.get("refresh") === goal.id) {
       refetch();
+      refetchParticipating();
       setSearchParams("");
     }
-  }, [goal.id, params, refetch, setSearchParams]);
+  }, [goal.id, params, refetch, setSearchParams, refetchParticipating]);
 
   const onDelete = () => {
     if (goal?.id) {
       deleteGoal(goal.id, {
         onSuccess: () => navigate("/home?refresh=goals"),
       });
+    }
+  };
+
+  const onParticipate = () => {
+    if (goal?.id && activeUser?.id) {
+      participate(
+        {
+          createdBy: activeUser.id,
+          goal: goal.id,
+        },
+        {
+          onSuccess: () => {
+            addNotification({
+              title: "Te has unido a este objetivo",
+              content: "Felicidades, comienza a registrar tu progreso!",
+              type: "transient",
+              variant: "success",
+            });
+            setSearchParams("?refresh=" + goal.id);
+          },
+          onError: (error: AxiosError) => {
+            addNotification({
+              title: "Error, no puedes participar",
+              content: error.message,
+              type: "transient",
+              variant: "error",
+            });
+            setSearchParams("?refresh=" + goal.id);
+          },
+        }
+      );
     }
   };
 
@@ -94,28 +135,32 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
                 objective={obj.quantity}
               />
             ))}
-            <div className="flex justify-center">
-              <Button
-                color="primary"
-                size="large"
-                onClick={() => navigate("track")}
-              >
-                Nuevo progreso
-              </Button>
-            </div>
+            {(isOwner || isParticipating) && (
+              <div className="flex justify-center">
+                <Button
+                  color="primary"
+                  size="large"
+                  onClick={() => navigate("track")}
+                >
+                  Nuevo progreso
+                </Button>
+              </div>
+            )}
           </>
         ) : (
           <ObjectivesForm initial={goal.objectives} />
         )}
       </div>
-      {!isOwner && (
+      {!isOwner && !isParticipating && (
         <>
           <Divider />
           <div className="flex items-center justify-between">
             <Typography variant="h5">
-              Aún no estas participando en este objetivo
+              {!isPersonal
+                ? "Aún no estas participando en este objetivo"
+                : "Este objetivo es personal"}
             </Typography>
-            <Button>Participar</Button>
+            {!isPersonal && <Button onClick={onParticipate}>Participar</Button>}
           </div>
         </>
       )}

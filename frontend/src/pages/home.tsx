@@ -79,7 +79,7 @@ const HomeModals = () => {
         element={
           <ModalDrawer
             title="Crear nuevo objetivo"
-            onClose={() => navigate(-1)}
+            onClose={() => navigate("/home?refresh=goals")}
           >
             <GoalForm />
           </ModalDrawer>
@@ -88,7 +88,10 @@ const HomeModals = () => {
       <Route
         path="/:goalId/track"
         element={
-          <ModalDrawer title="Registrar progreso" onClose={() => navigate(-1)}>
+          <ModalDrawer
+            title="Registrar progreso"
+            onClose={() => navigate("/home?refresh=goals")}
+          >
             <TrackingForm />
           </ModalDrawer>
         }
