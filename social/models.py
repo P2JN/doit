@@ -47,22 +47,22 @@ class Notification(Document):
 
 class LikeTracking(Document):
     tracking = fields.ReferenceField('Tracking', required=True)
-    user = fields.ReferenceField('User', required=True)
+    createdBy = fields.ReferenceField('User', required=True)
 
     meta = {
         'indexes': [
-            {'fields': ['tracking', 'user'], 'unique': True}
+            {'fields': ['tracking', 'createdBy'], 'unique': True}
         ]
     }
 
 
 class LikePost(Document):
     post = fields.ReferenceField('Post', required=True)
-    user = fields.ReferenceField('User', required=True)
+    createdBy = fields.ReferenceField('User', required=True)
 
     meta = {
         'indexes': [
-            {'fields': ['post', 'user'], 'unique': True}
+            {'fields': ['post', 'createdBy'], 'unique': True}
         ]
     }
 
@@ -81,12 +81,12 @@ class Follow(Document):
 
 
 class Participate(Document):
-    user = fields.ReferenceField(
+    createdBy = fields.ReferenceField(
         'User', required=True, reverse_delete_rule=CASCADE)
     goal = fields.ReferenceField(
         'Goal', required=True, reverse_delete_rule=CASCADE)
     meta = {
         'indexes': [
-            {'fields': ['user', 'goal'], 'unique': True}
+            {'fields': ['createdBy', 'goal'], 'unique': True}
         ]
     }
