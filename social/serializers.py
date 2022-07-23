@@ -7,15 +7,19 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
 
 class PostSerializer(serializers.DocumentSerializer):
     likes = serializers.serializers.SerializerMethodField()
+    numComments = serializers.serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'content',
-                  'creationDate', 'createdBy', 'goal', 'likes']
+                  'creationDate', 'createdBy', 'goal', 'likes', 'numComments']
         read_only_fields = ['creationDate']
 
     def get_likes(self, obj):
         return LikePost.objects(post=obj).count()
+
+    def get_numComments(self, obj):
+        return Comment.objects(post=obj).count()
 
 
 class UserSerializer(serializers.DocumentSerializer):
