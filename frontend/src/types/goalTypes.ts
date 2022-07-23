@@ -46,7 +46,7 @@ export type FrequencyEnumValues =
 export type Tracking = {
   id?: Id;
   goal: Id;
-  user: Id;
+  createdBy: Id;
 
   date?: string;
   amount: number;
@@ -55,5 +55,5 @@ export type Tracking = {
 export type Participation = {
   id?: Id;
   goal?: Id;
-  user?: Id;
+  createdBy?: Id;
 };

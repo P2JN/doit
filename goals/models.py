@@ -59,5 +59,5 @@ class Tracking(Document):
     date = fields.DateTimeField(default=datetime.utcnow)
     amount = fields.FloatField(required=True, min_value=0)
 
-    user = fields.ReferenceField('User')
+    createdBy = fields.ReferenceField('User')
     goal = fields.ReferenceField('Goal')
