@@ -44,3 +44,9 @@ export type LogIn = {
   username: string;
   password: string;
 };
+
+export type Follow = {
+  id?: Id;
+  follower: Id;
+  user: Id;
+};

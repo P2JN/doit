@@ -70,9 +70,9 @@ class LikePost(Document):
 
 class Follow(Document):
     user = fields.ReferenceField(
-        'User', required=True)
+        'User', required=True, reverse_delete_rule=CASCADE)
     follower = fields.ReferenceField(
-        'User', required=True)
+        'User', required=True, reverse_delete_rule=CASCADE)
 
     meta = {
         'indexes': [

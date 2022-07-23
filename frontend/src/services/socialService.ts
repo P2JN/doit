@@ -31,7 +31,7 @@ const requests = {
 
   getFeedPosts: (userId?: Id) =>
     axiosInstance
-      .get("/post/?follower=" + (userId || "missing"))
+      .get("/post/?follows=" + (userId || "missing"))
       .then((response) => response.data),
 
   getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
@@ -43,6 +43,24 @@ const requests = {
 
   createComment: (comment: SocialTypes.Comment) =>
     axiosInstance.post("/comment/", comment).then((response) => response.data),
+
+  followUser: (follow: SocialTypes.Follow) =>
+    axiosInstance.post("/follow/", follow).then((response) => response.data),
+
+  unfollowUser: (followId?: Id) =>
+    axiosInstance
+      .delete("/follow/" + (followId || "missing") + "/")
+      .then((response) => response.data),
+
+  getFollow: (userId?: Id, followerId?: Id) =>
+    axiosInstance
+      .get(
+        "/follow/?user=" +
+          (userId || "missing") +
+          "&follower=" +
+          (followerId || "missing")
+      )
+      .then((response) => response.data?.[0]),
 };
 
 const socialService = {
@@ -68,6 +86,22 @@ const socialService = {
       "create-user",
       requests.createUser
     ),
+  // follow an user
+  useFollow: () =>
+    useMutation<any, AxiosError, SocialTypes.Follow>(
+      "follow-user",
+      requests.followUser
+    ),
+  // unfollow an user
+  useUnfollow: () =>
+    useMutation<any, AxiosError, Id>("unfollow-user", requests.unfollowUser),
+  // is follwing an user
+  useFollowData: (userId?: Id, followerId?: Id) =>
+    useQuery<SocialTypes.Follow, AxiosError>(
+      `is-following-${userId}-${followerId}`,
+      () => requests.getFollow(userId, followerId)
+    ),
+
   // Use feed posts
   useFeedPosts: (userId?: Id) =>
     useQuery<SocialTypes.Post[], AxiosError>("feed-posts-" + userId, () =>

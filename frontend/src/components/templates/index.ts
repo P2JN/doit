@@ -15,6 +15,12 @@ import {
   GoalStatsTab,
   GoalTrackingsTab,
 } from "./tabs/goalTabs";
+import {
+  UserInfoTab,
+  UserFeedTab,
+  UserStatsTab,
+  UserTrackingsTab,
+} from "./tabs/userTabs";
 
 // TEASERS
 
@@ -30,4 +36,8 @@ export {
   GoalLeaderboardTab,
   GoalStatsTab,
   GoalTrackingsTab,
+  UserInfoTab,
+  UserFeedTab,
+  UserStatsTab,
+  UserTrackingsTab,
 };
