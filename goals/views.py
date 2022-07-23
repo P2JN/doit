@@ -80,28 +80,23 @@ class GoalProgress(viewsets.GenericAPIView):
         today = datetime.datetime.now().date()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        users = set()
-        if goal.type == 'cooperative':
-            users = set(Participate.objects.filter(goal=goal_id).values_list('user'))
-        users.add(user)
+        trackings = Tracking.objects
+        if goal.type != 'cooperative':
+            trackings = trackings.filter(createdBy=user)
 
         if Frequency.TOTAL in progress:
-            trackings = Tracking.objects.filter(createdBy__in=users, goal=goal)
+            trackings = trackings.filter(goal=goal)
         elif Frequency.YEARLY in progress:
-            trackings = Tracking.objects.filter(createdBy__in=users, goal=goal,
-                                                date__lte=today.replace(month=12, day=31),
-                                                date__gte=today.replace(month=1, day=1))
+            trackings = trackings.filter(goal=goal, date__lte=today.replace(month=12, day=31),
+                                         date__gte=today.replace(month=1, day=1))
         elif Frequency.MONTHLY in progress:
-            trackings = Tracking.objects.filter(createdBy__in=users, goal=goal,
-                                                date__lte=today.replace(day=31),
-                                                date__gte=today.replace(day=1))
+            trackings = trackings.filter(goal=goal, date__lte=today.replace(day=31),
+                                         date__gte=today.replace(day=1))
         elif Frequency.WEEKLY in progress:
-            trackings = Tracking.objects.filter(createdBy__in=users, goal=goal,
-                                                date__lte=end_week,
-                                                date__gte=start_week)
+            trackings = trackings.filter(goal=goal, date__lte=end_week,
+                                         date__gte=start_week)
         elif Frequency.DAILY in progress:
-            trackings = Tracking.objects.filter(createdBy__in=users, goal=goal,
-                                                date__gte=today)
+            trackings = trackings.filter(goal=goal, date__gte=today)
 
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
