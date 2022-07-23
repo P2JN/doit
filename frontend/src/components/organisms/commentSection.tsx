@@ -1,11 +1,10 @@
 import { Typography } from "@mui/material";
-import { CommentOutlined, FavoriteBorder } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
 import { useActiveUser } from "store";
 
 import { Card } from "components/atoms";
-import { Comment } from "components/molecules";
+import { Comment, PostCounters } from "components/molecules";
 import { CommentForm } from "components/templates";
 
 const CommentSection = (post: SocialTypes.Post) => {
@@ -37,16 +36,7 @@ const CommentSection = (post: SocialTypes.Post) => {
           <Typography variant="h5">
             <strong>Comentarios</strong>
           </Typography>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-2">
-              {mockedComments()?.length}
-              <CommentOutlined />
-            </span>
-            <span className="flex items-center gap-2">
-              {3}
-              <FavoriteBorder />
-            </span>
-          </div>
+          {post.id && <PostCounters comments={2} likes={3} postId={post.id} />}
         </div>
       </Card>
       <section className="flex flex-col gap-3 overflow-auto pb-3">

@@ -13,6 +13,9 @@ export type User = {
   password2?: string;
   birthDate: string;
   startDate: string;
+
+  numFollowers?: number;
+  numFollowing?: number;
 };
 
 export type Post = {
@@ -23,6 +26,8 @@ export type Post = {
 
   createdBy: Id;
   goal: Id;
+
+  likes?: number;
 };
 
 export type Comment = {

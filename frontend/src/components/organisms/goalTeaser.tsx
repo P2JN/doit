@@ -6,7 +6,7 @@ import { GoalTypes } from "types";
 import { texts } from "utils";
 
 import { Card } from "components/atoms";
-import { ProgressBar } from "components/molecules";
+import { GoalCounters, ProgressBar } from "components/molecules";
 
 const GoalTeaser = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
@@ -65,6 +65,9 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
           {goal.description}
         </Typography>
       )}
+      <footer className="flex justify-end">
+        <GoalCounters participants={2} posts={3} />
+      </footer>
     </Card>
   );
 };

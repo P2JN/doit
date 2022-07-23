@@ -6,9 +6,10 @@ import CommentSection from "./commentSection";
 // TEASERS
 import { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced } from "./goalTeaser";
 import { PostTeaser } from "./postTeaser";
-import { UserTeaserReduced } from "./userTeaser";
+import { UserTeaser, UserTeaserReduced } from "./userTeaser";
 
 export {
+  UserTeaser,
   GoalTeaser,
   GoalTeaserInfo,
   GoalTeaserReduced,

@@ -33,6 +33,8 @@ const requests = {
     axiosInstance
       .get("/post/?follower=" + (userId || "missing"))
       .then((response) => response.data),
+
+  getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
 };
 
 const socialService = {
@@ -64,6 +66,13 @@ const socialService = {
     useQuery<SocialTypes.Post[], AxiosError>("feed-posts", () =>
       requests.getFeedPosts(userId)
     ),
+
+  // use all the posts
+  usePosts: () =>
+    useQuery<SocialTypes.Post[], AxiosError>("posts", () =>
+      requests.getPosts()
+    ),
+
   // Log in an user
   useLogin: () =>
     useMutation<any, AxiosError, SocialTypes.LogIn>(
