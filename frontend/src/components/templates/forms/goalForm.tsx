@@ -65,7 +65,7 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
           createParticipation(
             {
               goal: data.id,
-              user: activeUser?.id,
+              createdBy: activeUser?.id,
             },
             {
               onSuccess: () => {

@@ -98,10 +98,9 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+        'auth.permissions.IsOwnerOrReadOnly',
     ]
 }
-
-
 
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
 
