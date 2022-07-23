@@ -66,7 +66,10 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
         </Typography>
       )}
       <footer className="flex justify-end">
-        <GoalCounters participants={2} posts={3} />
+        <GoalCounters
+          participants={goal.numParticipants}
+          posts={goal.numPosts}
+        />
       </footer>
     </Card>
   );

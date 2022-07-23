@@ -45,8 +45,8 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
           <footer className="flex justify-end">
             {post.withoutComments && post.id && (
               <PostCounters
-                comments={2}
-                likes={post.likes || 0}
+                comments={post.numComments}
+                likes={post.likes}
                 postId={post.id}
               />
             )}

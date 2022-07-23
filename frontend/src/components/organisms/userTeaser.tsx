@@ -30,7 +30,7 @@ const UserTeaser = (user: SocialTypes.User) => {
         <UserTeaserReduced {...user} />
       </header>
       <footer className="flex justify-end">
-        <UserCounters followers={user.numFollowers || 0} posts={3} />
+        <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </footer>
     </Card>
   );
