@@ -55,5 +55,5 @@ export type Tracking = {
 export type Participation = {
   id?: Id;
   goal?: Id;
-  user?: Id;
+  createdBy?: Id;
 };
