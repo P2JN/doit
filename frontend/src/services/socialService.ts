@@ -69,13 +69,13 @@ const socialService = {
 
   // Use feed posts
   useFeedPosts: (userId?: Id) =>
-    useQuery<SocialTypes.Post[], AxiosError>("feed-posts", () =>
+    useQuery<SocialTypes.Post[], AxiosError>("feed-posts-" + userId, () =>
       requests.getFeedPosts(userId)
     ),
 
   // Use post comments
   usePostComments: (postId?: Id) =>
-    useQuery<SocialTypes.Comment[], AxiosError>("post-comments", () =>
+    useQuery<SocialTypes.Comment[], AxiosError>("post-comments-" + postId, () =>
       requests.getPostComments(postId)
     ),
 

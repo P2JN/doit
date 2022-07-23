@@ -14,6 +14,7 @@ import { useActiveUser } from "store";
 const CommentForm = (props: { postId?: Id }) => {
   const { activeUser } = useActiveUser();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setSearchParams] = useSearchParams();
 
   const {

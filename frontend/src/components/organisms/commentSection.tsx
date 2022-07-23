@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { CommentOutlined, FavoriteBorder } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
-import { useActiveUser } from "store";
 import { socialService } from "services";
 
 import { Card } from "components/atoms";
@@ -12,8 +11,6 @@ import { Comment } from "components/molecules";
 import { CommentForm } from "components/templates";
 
 const CommentSection = (post: SocialTypes.Post) => {
-  const { activeUser } = useActiveUser();
-
   const {
     data: comments,
     isLoading,
@@ -51,6 +48,7 @@ const CommentSection = (post: SocialTypes.Post) => {
         {comments?.map((comment) => (
           <Comment {...comment} />
         ))}
+        {isLoading && <CircularProgress />}
       </section>
       <Card>
         <CommentForm postId={post.id} />
