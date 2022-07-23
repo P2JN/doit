@@ -20,7 +20,7 @@ services:
       - 5432:5432
 
   web:
-    image: ghcr.io/p2jn/doit-main
+    image: ghcr.io/p2jn/doit-develop
     command: python manage.py runserver 0.0.0.0:80
     environment:
       - DOCKER=true
@@ -34,4 +34,13 @@ services:
     ports:
       - 80:80
     depends_on:
-      - db
+      - mongo
+      - postgres_db
+      - migration
+
+  migration:
+    image: ghcr.io/p2jn/doit-develop
+    command: python manage.py migrate
+    depends_on:
+      - mongo
+      - postgres_db
