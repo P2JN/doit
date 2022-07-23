@@ -1,5 +1,10 @@
 import { Controller, useForm } from "react-hook-form";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { Alert, Button, CircularProgress, TextField } from "@mui/material";
 
 import { useActiveUser, useNotificationStore } from "store";
@@ -7,6 +12,7 @@ import { goalService } from "services";
 
 const TrackingForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addNotification } = useNotificationStore();
   const {
     mutate: createTracking,
@@ -42,8 +48,11 @@ const TrackingForm = () => {
               content: "Felicidades, sigue así!",
               type: "transient",
             });
-            navigate(-1);
-            setSearchParams({ refresh: goalId });
+            navigate(
+              location.pathname.split("/").slice(0, -1).join("/") +
+                "?refresh=" +
+                goalId
+            );
           },
         }
       );

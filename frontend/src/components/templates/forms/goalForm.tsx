@@ -14,7 +14,7 @@ import {
 import { useActiveUser, useNotificationStore } from "store";
 import { goalService } from "services";
 import { GoalTypes } from "types";
-import { formParsers } from "utils";
+import { formParsers, texts } from "utils";
 
 import { ParsedError } from "components/atoms";
 
@@ -168,17 +168,17 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
                 <FormControlLabel
                   value="GoalType.PRIVATE"
                   control={<Radio disabled={props.disabled} />}
-                  label="Privado"
+                  label={texts.goalTypes["private"]}
                 />
                 <FormControlLabel
                   value="GoalType.CHALLENGE"
                   control={<Radio disabled={props.disabled} />}
-                  label="Reto"
+                  label={texts.goalTypes["challenge"]}
                 />
                 <FormControlLabel
                   value="GoalType.COOP"
                   control={<Radio disabled={props.disabled} />}
-                  label="Cooperativo"
+                  label={texts.goalTypes["cooperative"]}
                 />
               </RadioGroup>
               {errors.type && (

@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_mongoengine import viewsets
 
-from auth.permissions import IsOwnerOrReadOnly
+from auth.permissions import IsOwnerOrReadOnly, IsParticipating
 from goals.models import Goal, Objective, Tracking, Frequency
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Participate, LikeTracking, User
@@ -50,6 +50,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
 class TrackingViewSet(viewsets.ModelViewSet):
     queryset = Tracking.objects.all()
     serializer_class = TrackingSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly, IsParticipating)
 
     filter_fields = ['date', 'amount', 'goal', 'createdBy']
     custom_filter_fields = [('likes', lambda value: [tracking.id for tracking in LikeTracking.objects.filter(

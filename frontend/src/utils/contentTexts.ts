@@ -6,6 +6,11 @@ const texts = {
     yearly: "Anual",
     total: "Total",
   },
+  goalTypes: {
+    challenge: "Reto",
+    cooperative: "Cooperativo",
+    private: "Personal",
+  },
 };
 
 export default texts;
