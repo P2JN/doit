@@ -12,6 +12,7 @@ import {
   LoadingPage,
   GoalDetailPage,
 } from "pages";
+import UserDetailPage from "pages/userDetails";
 
 const AppPages = () => {
   const { activeUser } = useActiveUser();
@@ -32,6 +33,10 @@ const AppPages = () => {
           <Route
             path="/goals/:goalId/:activeTab/*"
             element={<GoalDetailPage />}
+          />
+          <Route
+            path="/users/:userId/:activeTab/*"
+            element={<UserDetailPage />}
           />
         </>
       ) : (
