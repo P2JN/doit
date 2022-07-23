@@ -70,7 +70,7 @@ const AppNavbar = () => {
 
         <section className="mt-auto flex gap-3 md:block">
           <NavLink
-            to="/profile"
+            to={"/users/" + activeUser?.id + "/info"}
             icon={<PersonOutlineOutlined />}
             title={"@" + activeUser?.username}
           />
