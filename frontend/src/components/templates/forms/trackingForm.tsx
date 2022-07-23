@@ -32,7 +32,7 @@ const TrackingForm = () => {
       createTracking(
         {
           goal: goalId,
-          user: activeUser.id,
+          createdBy: activeUser.id,
           amount: data.amount,
         },
         {
