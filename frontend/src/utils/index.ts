@@ -1,4 +1,5 @@
 import formParsers from "./formParsers";
 import texts from "./contentTexts";
+import arrayUtils from "./arrayUtils";
 
-export { formParsers, texts };
+export { formParsers, texts, arrayUtils };

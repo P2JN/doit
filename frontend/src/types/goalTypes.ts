@@ -12,6 +12,9 @@ export type Goal = {
   createdBy?: Id;
   objectives?: Objective[];
   progress?: Progress;
+
+  numParticipants?: number;
+  numPosts?: number;
 };
 
 export type GoalType = "challenge" | "cooperative" | "private";

@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CircularProgress, Typography } from "@mui/material";
-import { CommentOutlined, FavoriteBorder } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
 import { socialService } from "services";
 
 import { Card } from "components/atoms";
-import { Comment } from "components/molecules";
+import { Comment, PostCounters } from "components/molecules";
 import { CommentForm } from "components/templates";
 
 const CommentSection = (post: SocialTypes.Post) => {
@@ -32,16 +31,13 @@ const CommentSection = (post: SocialTypes.Post) => {
           <Typography variant="h5">
             <strong>Comentarios</strong>
           </Typography>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-2">
-              {comments?.length}
-              <CommentOutlined />
-            </span>
-            <span className="flex items-center gap-2">
-              {post.likes}
-              <FavoriteBorder />
-            </span>
-          </div>
+          {post.id && (
+            <PostCounters
+              comments={post.numComments}
+              likes={post.likes}
+              postId={post.id}
+            />
+          )}
         </div>
       </Card>
       <section className="flex flex-col gap-3 overflow-auto pb-3">
