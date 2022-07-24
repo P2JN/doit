@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  db:
+  mongo_db:
     image: mongo
     container_name: mongo
     environment:
@@ -15,16 +15,35 @@ services:
     ports:
       - 27017:27017
 
+  postgres_db:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=doit
+      - POSTGRES_PASSWORD=doit
+      - POSTGRES_DB=doit
+      - POSTGRES_HOST=postgres_db
+    volumes:
+      - ${PWD}/_data/postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
   web:
     build: .
     image: doit:latest
     container_name: doit
-    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    command: /bin/sh -c ./startup.sh
     environment: 
       - DOCKER=true
-    volumes:
-      - ${PWD}:/app
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=doit
+      - POSTGRES_USER=doit
+      - POSTGRES_PASSWORD=doit
+      - POSTGRES_DB=doit
+      - POSTGRES_HOST=postgres_db
     ports:
-      - 80:8000
+      - 8000:8000
     depends_on:
-      - db
+      - mongo_db
+      - postgres_db

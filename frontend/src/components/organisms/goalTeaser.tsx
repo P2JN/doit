@@ -1,18 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
+import { Chip, IconButton, Typography } from "@mui/material";
 
 import { GoalTypes } from "types";
+import { texts } from "utils";
 
 import { Card } from "components/atoms";
-import { ProgressBar } from "components/molecules";
+import { GoalCounters, ProgressBar } from "components/molecules";
 
 const GoalTeaser = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
   return (
     <Card>
       <header className="flex items-center justify-between">
-        <div className="text-xl font-bold">{goal.title}</div>
+        <Typography variant="h5">
+          <strong className="cursor-pointer" onClick={onOpenGoal}>
+            {goal.title}
+          </strong>
+        </Typography>
         <IconButton
           color="primary"
           size="large"
@@ -21,11 +28,17 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
           <Add />
         </IconButton>
       </header>
-      <section className="flex flex-col gap-3">
-        {goal.objectives.map((obj) => (
+      <section
+        className="flex cursor-pointer flex-col gap-3"
+        onClick={onOpenGoal}
+      >
+        {goal.objectives?.map((obj) => (
           <ProgressBar
-            title={obj.frequency}
-            completed={goal.progress?.[obj.frequency] || 0}
+            key={obj.id}
+            title={texts.objectiveLabels[obj.frequency as GoalTypes.Frequency]}
+            completed={
+              goal.progress?.[obj.frequency as GoalTypes.Frequency] || 0
+            }
             expected={undefined}
             objective={obj.quantity}
           />
@@ -35,4 +48,48 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
   );
 };
 
-export default GoalTeaser;
+const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
+  return (
+    <Card className="cursor-pointer" onClick={onOpenGoal}>
+      <header className="flex items-center justify-between">
+        <Typography variant="h5">{goal.title}</Typography>
+        {goal.type && <Chip label={goal.type} color="info" />}
+      </header>
+      {goal.description && (
+        <Typography variant="body1">{goal.description}</Typography>
+      )}
+      <footer className="flex justify-end">
+        <GoalCounters
+          participants={goal.numParticipants}
+          posts={goal.numPosts}
+        />
+      </footer>
+    </Card>
+  );
+};
+
+const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
+  return (
+    <Card className="cursor-pointer" onClick={onOpenGoal}>
+      <header className="flex items-center justify-between">
+        <Typography variant="h5">
+          <strong>{goal.title}</strong>
+        </Typography>
+        {goal.type && (
+          <Chip
+            label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
+            color="info"
+          />
+        )}
+      </header>
+    </Card>
+  );
+};
+
+export { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced };

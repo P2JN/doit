@@ -5,6 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { grey } from "@mui/material/colors";
 import Box from "@mui/material/Box";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import { Typography } from "@mui/material";
 
 const drawerBleeding = 30;
 
@@ -22,7 +23,6 @@ export default function Component(props: {
   title: string;
   children?: ReactNode;
   onClose?: () => void;
-  onConfirm?: () => void;
 }) {
   return (
     <>
@@ -30,7 +30,6 @@ export default function Component(props: {
       <Global
         styles={{
           ".MuiDrawer-root > .MuiPaper-root": {
-            height: `calc(50% - ${drawerBleeding}px)`,
             overflow: "visible",
           },
         }}
@@ -38,7 +37,7 @@ export default function Component(props: {
       <SwipeableDrawer
         anchor="bottom"
         open={true}
-        onClose={() => props.onClose}
+        onClose={() => props.onClose && props.onClose()}
         onOpen={() => null}
         swipeAreaWidth={drawerBleeding}
         disableSwipeToOpen={false}
@@ -51,6 +50,9 @@ export default function Component(props: {
           <Puller />
         </div>
         <div className="block overflow-y-auto rounded-t-lg px-4 py-2">
+          <Typography variant="h4">{props.title}</Typography>
+          <br />
+
           {props.children}
         </div>
       </SwipeableDrawer>

@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 from goals.models import Frequency, Goal, GoalType, Objective, Tracking
-from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification
+from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification, Comment
 
 
 def populate_users(n):
@@ -73,7 +73,7 @@ def populate_participations(users, goals):
     for user in users:
         for goal in goals:
             if (user.id == goal.createdBy.id) or (random.random() < 0.15):
-                participation = Participate(user=user, goal=goal)
+                participation = Participate(createdBy=user, goal=goal)
                 participation.save()
 
 
@@ -82,7 +82,7 @@ def populate_trackings(participations):
         for _ in range(int(random.random() * 3)):
             if random.random() < 0.25:
                 tracking = Tracking(amount=int(
-                    random.random() * 100), goal=participation.goal, user=participation.user)
+                    random.random() * 100), goal=participation.goal, createdBy=participation.createdBy)
                 tracking.save()
 
 
@@ -114,11 +114,11 @@ def populate_likes(users, trackings, posts):
     for user in users:
         for tracking in trackings:
             if random.random() < 0.35:
-                like_tracking = LikeTracking(user=user, tracking=tracking)
+                like_tracking = LikeTracking(createdBy=user, tracking=tracking)
                 like_tracking.save()
         for post in posts:
             if random.random() < 0.35:
-                like_post = LikePost(user=user, post=post)
+                like_post = LikePost(createdBy=user, post=post)
                 like_post.save()
 
 
@@ -131,13 +131,14 @@ def drop_all():
 
     Participate.objects.all().delete()
     Post.objects.all().delete()
+    Comment.objects.all().delete()
     Notification.objects.all().delete()
 
     Objective.objects.all().delete()
     Tracking.objects.all().delete()
     Goal.objects.all().delete()
 
-    User.objects.all().delete()
+    User.objects.filter(user_id=None).delete()
 
 
 def populate():

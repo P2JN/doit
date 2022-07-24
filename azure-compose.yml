@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   mongo:
     image: ghcr.io/p2jn/doit-mongo
@@ -7,13 +5,34 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
       - MONGO_INITDB_DATABASE=doit
+    ports:
+      - "27017:27017"
+
+  postgres_db:
+    image: ghcr.io/p2jn/doit-postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=doit
+      - POSTGRES_PASSWORD=doit
+      - POSTGRES_DB=doit
+      - POSTGRES_HOST=postgres_db
+    ports:
+      - 5432:5432
 
   web:
-    image: ghcr.io/p2jn/doit-main
-    command: python manage.py runserver 0.0.0.0:80
+    image: ghcr.io/p2jn/doit-develop
+    command: ./startup.sh 80
     environment:
       - DOCKER=true
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=doit
+      - POSTGRES_USER=doit
+      - POSTGRES_PASSWORD=doit
+      - POSTGRES_DB=doit
+      - POSTGRES_HOST=postgres_db
     ports:
       - 80:80
     depends_on:
-      - db
+      - mongo
+      - postgres_db

@@ -12,6 +12,9 @@ const BASE_URL =
 
 export const API_URL = BASE_URL + "/api";
 
+export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+export const GOOGLE_CALLBACK_URL = "http://localhost:3000/auth/login";
+
 // Axios
 
 export const axiosInstance = Axios.create({
@@ -42,39 +45,29 @@ axiosInstance.interceptors.response.use(
 );
 
 // Session interceptors
-// axiosInstance.interceptors.response.use(
-//   (response) => {
-//     if (response.data.token && response.data.id) {
-//       localStorage.setItem("token", response.data.token);
-//       localStorage.setItem("userId", response.data.id);
-//       localStorage.setItem("isAdmin", response.data.isAdmin);
-//     }
-//     return response;
-//   },
-//   (error) => {
-//     if (error.response.status === 401) {
-//       localStorage.removeItem("token");
-//       localStorage.removeItem("userId");
-//       localStorage.removeItem("isAdmin");
-//       window.location.href = "/login";
-//     } else if (error.response.status === 402) {
-//       window.location.href = "/profile/payments";
-//     } else {
-//       return Promise.reject(error);
-//     }
-//   }
-// );
+axiosInstance.interceptors.response.use((response) => {
+  if (response.data.key) {
+    localStorage.setItem("token", response.data.key);
+  }
 
-// axiosInstance.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("token");
-//   if (config.headers)
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     } else {
-//       delete config.headers.Authorization;
-//     }
-//   return config;
-// });
+  return response;
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  // if the request origin includes "logout" or "login" remove the token
+  if (config.url?.includes("logout") || config.url?.includes("login")) {
+    localStorage.removeItem("token");
+  }
+
+  const token = localStorage.getItem("token");
+  if (config.headers)
+    if (token) {
+      config.headers.Authorization = `Token ${token}`;
+    } else {
+      delete config.headers.Authorization;
+    }
+  return config;
+});
 
 // React Query
 

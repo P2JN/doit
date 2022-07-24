@@ -13,8 +13,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import mongoengine
 import os
+from dotenv import load_dotenv
 
-
+load_dotenv()  # take environment variables from .env.
+SITE_ID = 1
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,7 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'corsheaders',
     'rest_framework',
-    'rest_framework_mongoengine'
+    'rest_framework.authtoken',
+    'rest_framework_mongoengine',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'dj_rest_auth',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +61,20 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # django's inbuild authentication backend
+    'django.contrib.auth.backends.ModelBackend',
+
+    # django's allauth authentication backend
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'auth.authSerializer.CustomRegisterSerializer',
+}
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'auth.authSerializer.CustomUserDetailsSerializer',
+}
 ROOT_URLCONF = 'doit.urls'
 
 TEMPLATES = [
@@ -70,24 +92,69 @@ TEMPLATES = [
         },
     },
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        'auth.permissions.IsOwnerOrReadOnly',
+    ]
+}
+
+SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
+
+SOCIALACCOUNT_STORE_TOKENS = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        "APP": {
+            "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+            "secret": os.environ.get("GOOGLE_SECRET_ID"),
+            "key": ""
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+            'https://www.googleapis.com/auth/calendar'
+        ],
+        'AUTH_PARAMS': {
+            'prompt': 'consent',
+            'access_type': 'offline',
+        }
+    }
+}
 
 WSGI_APPLICATION = 'doit.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get("POSTGRES_NAME"),
+        'USER': os.environ.get("POSTGRES_USER"),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
+        'HOST': os.environ.get("POSTGRES_HOST"),
+        'PORT': '5432',
+    }
+}
 
 if os.environ.get('DOCKER'):
     mongoengine.connect(
-        db='doit',
+        db=os.environ.get("MONGO_INITDB_DATABASE"),
         host='mongo',
         port=27017,
-        username='root',
-        password='root'
+        username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
+        password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"),
     )
 else:
     mongoengine.connect("DOIT")
 
+# Email validation
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -130,7 +197,6 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 # dev env CORS SETTINGS
 BASEURL = 'http://localhost:8000'
