@@ -34,6 +34,7 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
       >
         {goal.objectives?.map((obj) => (
           <ProgressBar
+            key={obj.id}
             title={texts.objectiveLabels[obj.frequency as GoalTypes.Frequency]}
             completed={
               goal.progress?.[obj.frequency as GoalTypes.Frequency] || 0

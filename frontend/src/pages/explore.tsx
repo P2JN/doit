@@ -103,8 +103,8 @@ const ExploreSection = (props: {
         animation="slide"
         className="hidden lg:block"
       >
-        {contentChunks.map((chunk) => (
-          <div className="grid grid-cols-3 gap-3 px-3">
+        {contentChunks.map((chunk, i) => (
+          <div key={"chunk-slide-" + i} className="grid grid-cols-3 gap-3 px-3">
             {chunk.map((child) => child)}
           </div>
         ))}
@@ -115,8 +115,10 @@ const ExploreSection = (props: {
         animation="slide"
         className="lg:hidden"
       >
-        {props.slides.map((child) => (
-          <div className="px-3">{child}</div>
+        {props.slides.map((child, i) => (
+          <div key={"mobile-slide-" + i} className="px-3">
+            {child}
+          </div>
         ))}
       </Carousel>
       {props.loading && <CircularProgress />}

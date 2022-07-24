@@ -54,7 +54,7 @@ const FeedPage = () => {
         )}
         <div className="flex flex-col gap-10">
           {posts?.map((post) => (
-            <PostTeaserProvider {...post} />
+            <PostTeaserProvider key={post.id} {...post} />
           ))}
         </div>
       </div>

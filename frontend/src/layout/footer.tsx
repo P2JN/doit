@@ -1,17 +1,3 @@
-import { ReactNode } from "react";
-
-import { Divider, Typography } from "@mui/material";
-
-const FooterSection = (props: { title: string; children: ReactNode }) => {
-  return (
-    <section className="col-span-1">
-      <Typography variant="h5">{props.title}</Typography>
-      <Divider />
-      <div className="mt-4 flex flex-col gap-4">{props.children}</div>
-    </section>
-  );
-};
-
 const AppFooter = () => {
   return (
     <footer className="bg-brand-lighter bottom-0 grid w-full grid-cols-1 gap-10 rounded-t-xl bg-opacity-50 px-4 py-8 md:grid-cols-3 md:px-8 lg:px-24 xl:gap-16 xl:px-48">

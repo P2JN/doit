@@ -42,7 +42,7 @@ const CommentSection = (post: SocialTypes.Post) => {
       </Card>
       <section className="flex flex-col gap-3 overflow-auto pb-3">
         {comments?.map((comment) => (
-          <Comment {...comment} />
+          <Comment key={comment.id} {...comment} />
         ))}
         {isLoading && <CircularProgress />}
       </section>
