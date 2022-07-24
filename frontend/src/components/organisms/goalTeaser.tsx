@@ -34,6 +34,7 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
       >
         {goal.objectives?.map((obj) => (
           <ProgressBar
+            key={obj.id}
             title={texts.objectiveLabels[obj.frequency as GoalTypes.Frequency]}
             completed={
               goal.progress?.[obj.frequency as GoalTypes.Frequency] || 0
@@ -52,18 +53,13 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
   const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
 
   return (
-    <Card>
-      <header
-        className="flex items-center justify-between"
-        onClick={onOpenGoal}
-      >
+    <Card className="cursor-pointer" onClick={onOpenGoal}>
+      <header className="flex items-center justify-between">
         <Typography variant="h5">{goal.title}</Typography>
         {goal.type && <Chip label={goal.type} color="info" />}
       </header>
       {goal.description && (
-        <Typography variant="body1" onClick={onOpenGoal}>
-          {goal.description}
-        </Typography>
+        <Typography variant="body1">{goal.description}</Typography>
       )}
       <footer className="flex justify-end">
         <GoalCounters
@@ -80,13 +76,10 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
   const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
 
   return (
-    <Card>
-      <header
-        className="flex items-center justify-between"
-        onClick={onOpenGoal}
-      >
+    <Card className="cursor-pointer" onClick={onOpenGoal}>
+      <header className="flex items-center justify-between">
         <Typography variant="h5">
-          <strong className="cursor-pointer">{goal.title}</strong>
+          <strong>{goal.title}</strong>
         </Typography>
         {goal.type && (
           <Chip

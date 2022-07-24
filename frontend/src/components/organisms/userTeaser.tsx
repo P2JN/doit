@@ -13,7 +13,7 @@ const UserTeaser = (user: SocialTypes.User) => {
   const navigate = useNavigate();
   const onOpenUser = () => navigate("/users/" + user.id + "/info");
   return (
-    <Card>
+    <Card className="cursor-pointer" onClick={onOpenUser}>
       <div className="-mx-7 -mt-5 flex items-center justify-between">
         {/* TODO: use real media photo */}
         <img
@@ -22,18 +22,13 @@ const UserTeaser = (user: SocialTypes.User) => {
           className="w-full text-center"
         />
       </div>
-      <header
-        className="flex cursor-pointer items-center justify-between"
-        onClick={onOpenUser}
-      >
+      <header className="flex cursor-pointer items-center justify-between">
         <Typography variant="h5">
-          <strong className="cursor-pointer" onClick={onOpenUser}>
-            {user.firstName}
-          </strong>
+          <strong onClick={onOpenUser}>{user.firstName}</strong>
         </Typography>
         <UserTeaserReduced {...user} />
       </header>
-      <footer className="flex justify-end">
+      <footer className="flex justify-end" onClick={onOpenUser}>
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </footer>
     </Card>
@@ -41,9 +36,6 @@ const UserTeaser = (user: SocialTypes.User) => {
 };
 
 const UserTeaserInfo = (user: SocialTypes.User) => {
-  const navigate = useNavigate();
-  const onOpenUser = () => navigate("/users/" + user.id + "/info");
-
   const { addNotification } = useNotificationStore();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -104,10 +96,7 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
   };
 
   return (
-    <header
-      className="flex w-full cursor-pointer items-center gap-5"
-      onClick={onOpenUser}
-    >
+    <header className="flex w-full cursor-pointer items-center gap-5">
       {/* TODO: use real media photo */}
       <Avatar
         alt="userimg"

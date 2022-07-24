@@ -31,6 +31,7 @@ const LogInForm = () => {
   } = useForm<SocialTypes.LogIn>();
 
   const onSubmit = (formValues: SocialTypes.LogIn) => {
+    localStorage.removeItem("token");
     if (formValues)
       logInUser(formValues, {
         onSuccess: () => {

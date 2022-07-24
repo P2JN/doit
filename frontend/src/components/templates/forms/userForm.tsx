@@ -31,6 +31,7 @@ const UserForm = () => {
   } = useForm<SocialTypes.User>();
 
   const onSubmit = (formValues: SocialTypes.User) => {
+    localStorage.removeItem("token");
     if (formValues)
       createUser(formValues, {
         onSuccess: () => {

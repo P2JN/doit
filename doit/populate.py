@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 from goals.models import Frequency, Goal, GoalType, Objective, Tracking
-from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification
+from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification, Comment
 
 
 def populate_users(n):
@@ -131,13 +131,14 @@ def drop_all():
 
     Participate.objects.all().delete()
     Post.objects.all().delete()
+    Comment.objects.all().delete()
     Notification.objects.all().delete()
 
     Objective.objects.all().delete()
     Tracking.objects.all().delete()
     Goal.objects.all().delete()
 
-    User.objects.all().delete()
+    User.objects.filter(user_id=None).delete()
 
 
 def populate():
