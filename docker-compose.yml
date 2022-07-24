@@ -32,7 +32,7 @@ services:
     build: .
     image: doit:latest
     container_name: doit
-    command: bash -c "python manage.py migrate && python manage.py makemigrations && python manage.py runserver 0.0.0.0:8000"
+    command: /bin/sh -c ./script.sh
     environment: 
       - DOCKER=true
       - MONGO_INITDB_ROOT_USERNAME=root
