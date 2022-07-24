@@ -32,7 +32,7 @@ services:
     build: .
     image: doit:latest
     container_name: doit
-    command: /bin/sh -c ./docker.sh
+    command: /bin/sh -c ./startup.sh
     environment: 
       - DOCKER=true
       - MONGO_INITDB_ROOT_USERNAME=root
