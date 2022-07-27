@@ -40,6 +40,12 @@ export type Comment = {
   post: Id;
 };
 
+export type Like = {
+  id?: Id;
+  createdBy: Id;
+  post: Id;
+};
+
 export type LogIn = {
   username: string;
   password: string;
