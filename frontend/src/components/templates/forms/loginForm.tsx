@@ -78,8 +78,7 @@ const LogInForm = () => {
         />
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>Confirmar</strong>
-          {isLoading && <CircularProgress size={20} />}
+          {isLoading ? <CircularProgress size={16} /> : "Confirmar"}
         </Button>
       </div>
       {isLoading && <FormHelperText>Cargando...</FormHelperText>}

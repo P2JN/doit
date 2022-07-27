@@ -3,6 +3,8 @@ import { Alert } from "@mui/material";
 import { Page } from "layout";
 import { useNotificationStore } from "store";
 
+import { DataLoader } from "components/molecules";
+
 const NotificationsPage = () => {
   const { notifications, dismissNotification } = useNotificationStore();
 
@@ -24,6 +26,7 @@ const NotificationsPage = () => {
             <p>{notification.content}</p>
           </Alert>
         ))}
+        <DataLoader hasData={notifications?.length > 0} />
       </section>
     </Page>
   );

@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 import { Link, useMatch } from "react-router-dom";
 import {
-  ContentCopyOutlined,
   ExploreOutlined,
   HomeOutlined,
+  ImageOutlined,
   NotificationsOutlined,
   PersonOutlineOutlined,
   PowerSettingsNewOutlined,
@@ -59,8 +59,8 @@ const AppNavbar = () => {
 
         <section className="flex gap-5 sm:gap-8 md:block">
           <NavLink to="/home" icon={<HomeOutlined />} title="Home" />
-          <NavLink to="/feed" icon={<ContentCopyOutlined />} title="Feed" />
-          <NavLink to="/explore" icon={<ExploreOutlined />} title="Explore" />
+          <NavLink to="/feed" icon={<ImageOutlined />} title="Feed" />
+          <NavLink to="/explore" icon={<ExploreOutlined />} title="Explora" />
           <NavLink
             to="/notifications"
             icon={<NotificationsOutlined />}

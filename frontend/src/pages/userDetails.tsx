@@ -1,13 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Tab, Tabs, Typography } from "@mui/material";
 import { Feed, Info, Timeline, TrackChanges } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
@@ -21,6 +14,7 @@ import {
   UserTrackingsTab,
 } from "components/templates";
 import { UserTeaserInfo } from "components/organisms";
+import { DataLoader } from "components/molecules";
 
 type UserTabsType = "info" | "feed" | "trackings" | "leaderboard" | "stats";
 
@@ -31,6 +25,7 @@ const UserDetailPage = () => {
     data: user,
     isLoading: loadingUser,
     refetch,
+    error,
   } = socialService.useUser(userId);
 
   const navigate = useNavigate();
@@ -56,43 +51,37 @@ const UserDetailPage = () => {
   };
 
   return (
-    <Page
-      title={user ? user.firstName + " " + user.lastName : "Usuario sin nombre"}
-    >
+    <Page title={user ? user.firstName + " " + user.lastName : "404 No existe"}>
       <div className="flex flex-col gap-3">
-        {user && <UserTeaserInfo {...user} />}
-        <div className="mt-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
-          <Typography variant="h5">
-            {labels[activeTab as UserTabsType]}
-          </Typography>
+        {user && (
+          <>
+            <UserTeaserInfo {...user} />
+            <div className="mt-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
+              <Typography variant="h5">
+                {labels[activeTab as UserTabsType]}
+              </Typography>
 
-          <Tabs
-            value={activeTab}
-            onChange={handleChange}
-            variant="scrollable"
-            scrollButtons
-            allowScrollButtonsMobile
-          >
-            <Tab value={"info"} icon={<Info />} />
-            <Tab value={"feed"} icon={<Feed />} />
-            <Tab value={"trackings"} icon={<TrackChanges />} />
-            <Tab value={"stats"} icon={<Timeline />} />
-          </Tabs>
-        </div>
-        {loadingUser && <CircularProgress />}
-        {!loadingUser && !user && (
-          <Alert
-            severity="info"
-            className="my-7"
-            action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
-                Reintentar
-              </Button>
-            }
-          >
-            No se ha encontrado el usuario
-          </Alert>
+              <Tabs
+                value={activeTab}
+                onChange={handleChange}
+                variant="scrollable"
+                scrollButtons
+                allowScrollButtonsMobile
+              >
+                <Tab value={"info"} icon={<Info />} />
+                <Tab value={"feed"} icon={<Feed />} />
+                <Tab value={"trackings"} icon={<TrackChanges />} />
+                <Tab value={"stats"} icon={<Timeline />} />
+              </Tabs>
+            </div>
+          </>
         )}
+        <DataLoader
+          isLoading={loadingUser}
+          hasData={!!user}
+          retry={refetch}
+          error={error}
+        />
         {activeTab && user && <UserTabs activeTab={activeTab} user={user} />}
       </div>
     </Page>
