@@ -1,8 +1,10 @@
 from datetime import datetime
 
-from mongoengine import Document, fields, CASCADE
+from mongoengine import Document, fields, CASCADE, NULLIFY
 
 from goals.models import Tracking, Goal
+
+from media.models import Media
 
 
 class User(Document):
@@ -13,6 +15,7 @@ class User(Document):
     birthDate = fields.DateTimeField()
     firstName = fields.StringField(max_length=30, required=True)
     lastName = fields.StringField(max_length=60)
+    media = fields.ReferenceField('Media', reverse_delete_rule=NULLIFY)
 
     meta = {'indexes': [
         {'fields': ['$username', "$email", "$firstName", "$lastName"],
@@ -29,6 +32,7 @@ class Post(Document):
 
     createdBy = fields.ReferenceField('User', required=True)
     goal = fields.ReferenceField('Goal')
+    media = fields.ReferenceField('Media', reverse_delete_rule=NULLIFY)
 
     meta = {'indexes': [
         {'fields': ['$title', "$content"],

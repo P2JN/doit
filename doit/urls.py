@@ -13,13 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path, include
 from rest_framework_mongoengine import routers
 
 from auth.googleOAuth2Adapter import GoogleLogin
+from doit import settings
 from doit.views import PopulateDB
 from frontend.views import app
+from media.views import MediaUploadApi, MediaApi
 
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
     LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating
@@ -46,6 +49,9 @@ urlpatterns = [
     # Customs endpoints
     path('api/goal/<str:goal_id>/my-progress', GoalProgress.as_view()),
     path('api/goal/<goal_id>/is-participating', UserIsParticipating.as_view()),
+    path('api/media/', MediaUploadApi.as_view()),
+    path('api/media/<media_id>', MediaApi.as_view()),
+
     # ViewSet endpoints
     path('api/', include(router.urls)),
 
@@ -57,5 +63,6 @@ urlpatterns = [
     path('api/auth/signup/', include('dj_rest_auth.registration.urls')),
     path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
 
+    # Frontend
     re_path('', app),
 ]
