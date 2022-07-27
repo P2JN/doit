@@ -34,6 +34,11 @@ const requests = {
       .get("/post/?follows=" + (userId || "missing"))
       .then((response) => response.data),
 
+  getGoalPosts: (goalId?: Id) =>
+    axiosInstance
+      .get("/post/?goal=" + (goalId || "missing"))
+      .then((response) => response.data),
+
   getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
 
   getPostComments: (postId?: Id) =>
@@ -106,6 +111,11 @@ const socialService = {
   useFeedPosts: (userId?: Id) =>
     useQuery<SocialTypes.Post[], AxiosError>("feed-posts-" + userId, () =>
       requests.getFeedPosts(userId)
+    ),
+  // Use goal posts
+  useGoalPosts: (goalId?: Id) =>
+    useQuery<SocialTypes.Post[], AxiosError>("goal-posts-" + goalId, () =>
+      requests.getGoalPosts(goalId)
     ),
   // use all the posts
   usePosts: () =>

@@ -1,18 +1,13 @@
 import { useEffect } from "react";
 import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Skeleton,
-  Typography,
-} from "@mui/material";
+import { Button, Skeleton, Typography } from "@mui/material";
 
 import { Page } from "layout";
 import { goalService } from "services";
 import { GoalTypes } from "types";
 import { useActiveUser } from "store";
 
+import { DataLoader } from "components/molecules";
 import { GoalTeaser, ModalDrawer } from "components/organisms";
 import { GoalForm, ObjectivesForm, TrackingForm } from "components/templates";
 
@@ -44,20 +39,13 @@ const HomePage = () => {
             <strong>Nuevo</strong>
           </Button>
         </div>
-        {loadingGoals && <CircularProgress />}
-        {!loadingGoals && !goals?.length && (
-          <Alert
-            severity="info"
-            className="my-7"
-            action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
-                Reintentar
-              </Button>
-            }
-          >
-            No se han encontrado objetivos
-          </Alert>
-        )}
+
+        <DataLoader
+          isLoading={loadingGoals}
+          hasData={!!goals?.length}
+          retry={refetch}
+        />
+
         {goals?.map((goal) => (
           <GoalTeaserProvider {...goal} />
         ))}

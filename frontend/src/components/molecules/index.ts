@@ -7,6 +7,8 @@ import { PostCounters, GoalCounters, UserCounters } from "./counters";
 import SwipeableDrawer from "./swipeableDrawer";
 import Modal from "./modal";
 
+import DataLoader from "./dataLoader";
+
 export {
   ProgressBar,
   Comment,
@@ -16,4 +18,5 @@ export {
   PostCounters,
   GoalCounters,
   UserCounters,
+  DataLoader,
 };
