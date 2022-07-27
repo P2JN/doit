@@ -21,6 +21,7 @@ const CommentForm = (props: { postId?: Id }) => {
     handleSubmit,
     control,
     formState: { errors },
+    setValue,
   } = useForm<{ message: string }>();
 
   const { mutate: createComment, isLoading } = socialService.useCreateComment();
@@ -34,7 +35,10 @@ const CommentForm = (props: { postId?: Id }) => {
           post: props.postId,
         },
         {
-          onSuccess: () => setSearchParams("?refresh=" + props.postId),
+          onSuccess: () => {
+            setValue("message", "");
+            setSearchParams("?refresh=" + props.postId);
+          },
         }
       );
   };
@@ -44,7 +48,10 @@ const CommentForm = (props: { postId?: Id }) => {
       <div className="flex items-end justify-between gap-3">
         <Controller
           name="message"
-          rules={{ required: "Obligatorio", maxLength: 100 }}
+          rules={{
+            required: "No puedes añadir un comentario vacío",
+            maxLength: 100,
+          }}
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">
@@ -62,8 +69,7 @@ const CommentForm = (props: { postId?: Id }) => {
         />
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>Enviar</strong>
-          {isLoading && <CircularProgress />}
+          {isLoading ? <CircularProgress size={16} /> : "Enviar"}
         </Button>
       </div>
     </form>

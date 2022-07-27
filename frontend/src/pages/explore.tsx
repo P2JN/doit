@@ -1,13 +1,14 @@
-import { ReactNode, useEffect } from "react";
-import { CircularProgress, Typography } from "@mui/material";
+import { useEffect } from "react";
+import { Typography } from "@mui/material";
 import Carousel from "react-material-ui-carousel";
+import { AxiosError } from "axios";
 
 import { Page } from "layout";
 import { useNotificationStore } from "store";
 import { goalService, socialService } from "services";
 import { arrayUtils } from "utils";
 
-import { ParsedError } from "components/atoms";
+import { DataLoader } from "components/molecules";
 import { GoalTeaserInfo, PostTeaser, UserTeaser } from "components/organisms";
 
 const ExplorePage = () => {
@@ -46,14 +47,14 @@ const ExplorePage = () => {
   }, [isGoalError, goalError]);
 
   return (
-    <Page title="Explore">
+    <Page title="Explora">
       <div className="flex flex-col gap-3">
         <Typography variant="h5">Descubre</Typography>
         <div className="flex flex-col gap-10">
           <ExploreSection
             title="Objetivos"
             loading={loadingGoals}
-            error={isGoalError ? <ParsedError {...goalError} /> : undefined}
+            error={isGoalError ? goalError : undefined}
             slides={
               goals?.map((goal) => (
                 <GoalTeaserInfo key={goal.id} {...goal} />
@@ -64,7 +65,7 @@ const ExplorePage = () => {
           <ExploreSection
             title="Usuarios"
             loading={loadingUsers}
-            error={isUserError ? <ParsedError {...userError} /> : undefined}
+            error={isUserError ? userError : undefined}
             slides={
               users?.map((user) => <UserTeaser key={user.id} {...user} />) || []
             }
@@ -73,7 +74,7 @@ const ExplorePage = () => {
           <ExploreSection
             title="Posts"
             loading={loadingPosts}
-            error={isPostError ? <ParsedError {...postError} /> : undefined}
+            error={isPostError ? postError : undefined}
             slides={
               posts?.map((post) => (
                 <PostTeaser withoutComments key={post.id} {...post} />
@@ -90,13 +91,18 @@ const ExploreSection = (props: {
   title: string;
   slides: any[];
   loading?: boolean;
-  error?: ReactNode;
+  error?: AxiosError;
 }) => {
   const contentChunks = arrayUtils.chunk(props.slides, 3);
 
   return (
     <>
       <Typography variant="h6">{props.title}</Typography>
+      <DataLoader
+        isLoading={props.loading}
+        error={props.error}
+        hasData={!!props.slides.length}
+      />
       <Carousel
         duration={1000}
         interval={5000}
@@ -121,8 +127,6 @@ const ExploreSection = (props: {
           </div>
         ))}
       </Carousel>
-      {props.loading && <CircularProgress />}
-      {props.error && props.error}
     </>
   );
 };

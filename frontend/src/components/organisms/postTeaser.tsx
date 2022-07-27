@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import { useMatch } from "react-router-dom";
 
 import { SocialTypes } from "types";
 import { goalService, socialService } from "services";
@@ -15,6 +16,8 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
   const { data: user } = socialService.useUser(post.createdBy);
   const { data: goal } = goalService.useGoal(post.goal);
 
+  const isGoalDetail = useMatch("/goals/:id/feed");
+
   return (
     <div
       className={
@@ -22,8 +25,10 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
         (post.withoutComments ? "!grid-cols-1" : "")
       }
     >
-      <div className="mb-auto  flex flex-col gap-3">
-        {goal && !post.withoutComments && <GoalTeaserReduced {...goal} />}
+      <div className="mb-auto flex flex-col gap-3">
+        {goal && !isGoalDetail && !post.withoutComments && (
+          <GoalTeaserReduced {...goal} />
+        )}
         <Card>
           <div className="-mx-7 -mt-5 flex items-center justify-between">
             {/* TODO: use real media photo */}
