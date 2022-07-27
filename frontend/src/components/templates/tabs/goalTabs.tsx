@@ -114,7 +114,7 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
   };
 
   return (
-    <section className="mb-10 flex flex-col gap-5 animate-fade-in">
+    <section className="mb-10 flex animate-fade-in flex-col gap-5">
       <div className="flex justify-between">
         <Typography variant="h5">Datos</Typography>
         {isOwner && (
@@ -234,7 +234,7 @@ const GoalFeedTab = (goal: GoalTypes.Goal) => {
       />
       <div className="flex flex-col gap-10">
         {goalPosts?.map((post) => (
-          <PostTeaser {...post} />
+          <PostTeaser key={post.id} {...post} />
         ))}
       </div>
     </section>
