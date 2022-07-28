@@ -73,7 +73,7 @@ class LikeTrackingSerializer(serializers.DocumentSerializer):
 class LikePostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = LikePost
-        fields = ['id', 'user', 'post']
+        fields = ['id', 'createdBy', 'post']
 
 
 class CommentSerializer(serializers.DocumentSerializer):
