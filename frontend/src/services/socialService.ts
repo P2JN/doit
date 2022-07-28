@@ -39,7 +39,15 @@ const requests = {
       .get("/post/?goal=" + (goalId || "missing"))
       .then((response) => response.data),
 
+  getUserPosts: (userId?: Id) =>
+    axiosInstance
+      .get("/post/?createdBy=" + (userId || "missing"))
+      .then((response) => response.data),
+
   getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
+
+  createPost: (post: SocialTypes.Post) =>
+    axiosInstance.post("/post/", post).then((response) => response.data),
 
   getPostComments: (postId?: Id) =>
     axiosInstance
@@ -133,10 +141,21 @@ const socialService = {
     useQuery<SocialTypes.Post[], AxiosError>("goal-posts-" + goalId, () =>
       requests.getGoalPosts(goalId)
     ),
+  // use user posts
+  useUserPosts: (userId?: Id) =>
+    useQuery<SocialTypes.Post[], AxiosError>("user-posts-" + userId, () =>
+      requests.getUserPosts(userId)
+    ),
   // use all the posts
   usePosts: () =>
     useQuery<SocialTypes.Post[], AxiosError>("posts", () =>
       requests.getPosts()
+    ),
+  // use create post
+  useCreatePost: () =>
+    useMutation<any, AxiosError, SocialTypes.Post>(
+      "create-post",
+      requests.createPost
     ),
   // Use post comments
   usePostComments: (postId?: Id) =>

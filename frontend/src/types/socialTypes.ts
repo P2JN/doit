@@ -26,7 +26,7 @@ export type Post = {
   creationDate: string;
 
   createdBy: Id;
-  goal: Id;
+  goal?: Id;
 
   likes?: number;
   numComments?: number;

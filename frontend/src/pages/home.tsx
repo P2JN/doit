@@ -95,7 +95,6 @@ const HomeModals = () => {
           </ModalDrawer>
         }
       />
-      <Route path="/:goalId" element={<></>} />
     </Routes>
   );
 };
