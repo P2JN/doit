@@ -13,20 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path, include
 from rest_framework_mongoengine import routers
 
 from auth.googleOAuth2Adapter import GoogleLogin
-from doit import settings
 from doit.views import PopulateDB
 from frontend.views import app
+from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress
 from media.views import MediaUploadApi, MediaApi
-
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
     LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating
-from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress
 
 router = routers.DefaultRouter()
 
