@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { CircularProgress, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 import { SocialTypes } from "types";
 import { socialService } from "services";
 
 import { Card } from "components/atoms";
-import { Comment, PostCounters } from "components/molecules";
+import { Comment, DataLoader, PostCounters } from "components/molecules";
 import { CommentForm } from "components/templates";
 
 const CommentSection = (post: SocialTypes.Post) => {
@@ -40,11 +40,11 @@ const CommentSection = (post: SocialTypes.Post) => {
           )}
         </div>
       </Card>
-      <section className="flex flex-col gap-3 overflow-auto pb-3">
+      <section className="flex flex-col gap-3 overflow-auto py-2">
         {comments?.map((comment) => (
           <Comment key={comment.id} {...comment} />
         ))}
-        {isLoading && <CircularProgress />}
+        <DataLoader isLoading={isLoading} hasData={!!comments?.length} />
       </section>
       <Card>
         <CommentForm postId={post.id} />

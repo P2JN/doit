@@ -71,8 +71,7 @@ const TrackingForm = () => {
         />
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>Submit</strong>
-          {isLoading && <CircularProgress size={20} />}
+          {isLoading ? <CircularProgress size={16} /> : "Registrar"}
         </Button>
       </div>
       {isError && <Alert severity="error">{error.message}</Alert>}

@@ -33,8 +33,8 @@ router.register(r'user', UserViewSet, "user")
 router.register(r'notification', NotificationViewSet, "notification")
 router.register(r'follow', FollowViewSet, 'follow')
 router.register(r'participate', ParticipateViewSet, 'participate')
-router.register(r'likePost', LikePostViewSet, 'likePost')
-router.register(r'likeTracking', LikeTrackingViewSet, 'likeTracking')
+router.register(r'like-post', LikePostViewSet, 'like-post')
+router.register(r'like-tracking', LikeTrackingViewSet, 'like-tracking')
 router.register(r'comment', CommentViewSet, 'comment')
 
 # Goals API
