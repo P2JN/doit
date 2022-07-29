@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 
@@ -15,10 +15,22 @@ const FeedPage = () => {
   const { activeUser } = useActiveUser();
 
   const {
-    data: postList,
+    data: postPages,
     isLoading: loadingPosts,
+    isFetchingNextPage,
     refetch,
+    fetchNextPage,
+    hasNextPage,
   } = socialService.useFeedPosts(activeUser?.id);
+
+  const posts = useMemo(
+    () =>
+      postPages?.pages?.reduce(
+        (acc, page) => acc.concat(page?.results),
+        [] as SocialTypes.Post[]
+      ),
+    [postPages]
+  );
 
   const navigate = useNavigate();
 
@@ -34,16 +46,18 @@ const FeedPage = () => {
           <Typography variant="h5">Últimos posts</Typography>
           <Button onClick={() => navigate("/feed/new-post")}>Nuevo</Button>
         </div>
-        <DataLoader
-          isLoading={loadingPosts}
-          hasData={!!postList?.results?.length}
-          retry={refetch}
-        />
         <div className="flex flex-col gap-10">
-          {postList?.results?.map((post) => (
+          {posts?.map((post) => (
             <PostTeaserProvider key={post.id} {...post} />
           ))}
         </div>
+        <DataLoader
+          isLoading={loadingPosts || isFetchingNextPage}
+          hasData={!!posts?.length}
+          retry={refetch}
+          hasNextPage={hasNextPage}
+          loadMore={fetchNextPage}
+        />
         <FeedModals />
       </div>
     </Page>

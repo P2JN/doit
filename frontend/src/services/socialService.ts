@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { useMutation, useQuery } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "react-query";
 
 import { SocialTypes } from "types";
 import { Id, PagedList } from "types/apiTypes";
@@ -29,9 +29,14 @@ const requests = {
   getActiveUser: () =>
     axiosInstance.get("/auth/user/").then((response) => response.data),
 
-  getFeedPosts: (userId?: Id) =>
+  getFeedPosts: (userId?: Id, page?: number) =>
     axiosInstance
-      .get("/post/?follows=" + (userId || "missing"))
+      .get(
+        "/post/?follows=" +
+          (userId || "missing") +
+          "&order_by=-creationDate" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
   getGoalPosts: (goalId?: Id) =>
@@ -133,9 +138,12 @@ const socialService = {
 
   // Use feed posts
   useFeedPosts: (userId?: Id) =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
       "feed-posts-" + userId,
-      () => requests.getFeedPosts(userId)
+      ({ pageParam = 0 }) => requests.getFeedPosts(userId, pageParam),
+      {
+        getNextPageParam: (lastPage) => lastPage.next?.split("page=").pop(),
+      }
     ),
   // Use goal posts
   useGoalPosts: (goalId?: Id) =>

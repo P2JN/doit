@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { Alert, Button } from "@mui/material";
+import { Alert, Button, Divider } from "@mui/material";
 
 import { Loader, ParsedError } from "components/atoms";
 
@@ -8,6 +8,8 @@ const DataLoader = (props: {
   hasData?: boolean;
   error?: AxiosError | null;
   retry?: () => void;
+  hasNextPage?: boolean;
+  loadMore?: () => void;
 }) => {
   return (
     <>
@@ -32,6 +34,19 @@ const DataLoader = (props: {
         </Alert>
       )}
       {props.error && <ParsedError {...props.error} />}
+
+      {props.hasNextPage && (
+        <>
+          <Divider className="py-4" />
+          <Button
+            color="primary"
+            size="large"
+            onClick={() => !!props.loadMore && props.loadMore()}
+          >
+            Cargar más
+          </Button>
+        </>
+      )}
     </>
   );
 };
