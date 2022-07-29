@@ -219,7 +219,7 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
 const GoalFeedTab = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
   const {
-    data: goalPosts,
+    data: goalPostList,
     isLoading,
     refetch,
     error,
@@ -249,12 +249,12 @@ const GoalFeedTab = (goal: GoalTypes.Goal) => {
       </div>
       <DataLoader
         isLoading={isLoading}
-        hasData={!!goalPosts?.length}
+        hasData={!!goalPostList?.results?.length}
         retry={refetch}
         error={error}
       />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {goalPosts?.map((post) => (
+        {goalPostList?.results?.map((post) => (
           <PostTeaser withoutComments key={post.id} {...post} />
         ))}
       </div>

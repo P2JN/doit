@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { useMutation, useQuery } from "react-query";
 
 import { GoalTypes } from "types";
-import { Id } from "types/apiTypes";
+import { Id, PagedList } from "types/apiTypes";
 
 import { axiosInstance } from "./config";
 
@@ -73,7 +73,7 @@ const requests = {
           "&goal=" +
           (goalId || "missing")
       )
-      .then((response) => response.data?.[0]),
+      .then((response) => response.data?.results?.[0]),
 
   createTracking: (tracking: GoalTypes.Tracking) =>
     axiosInstance
@@ -85,11 +85,13 @@ const goalService = {
   // GOALS
   // Use all the goals
   useGoals: () =>
-    useQuery<GoalTypes.Goal[], AxiosError>("goals", () => requests.getGoals()),
+    useQuery<PagedList<GoalTypes.Goal>, AxiosError>("goals", () =>
+      requests.getGoals()
+    ),
 
   // Use my goals
   useGoalsByParticipant: (participantId?: Id) =>
-    useQuery<GoalTypes.Goal[], AxiosError>("my-goals", () =>
+    useQuery<PagedList<GoalTypes.Goal>, AxiosError>("my-goals", () =>
       requests.getGoalsByParticipant(participantId)
     ),
 

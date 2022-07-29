@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { useMutation, useQuery } from "react-query";
 
 import { SocialTypes } from "types";
-import { Id } from "types/apiTypes";
+import { Id, PagedList } from "types/apiTypes";
 
 import { axiosInstance } from "./config";
 
@@ -71,7 +71,7 @@ const requests = {
           "&post=" +
           (post || "missing")
       )
-      .then((response) => response.data?.[0]),
+      .then((response) => response.data?.results?.[0]),
 
   followUser: (follow: SocialTypes.Follow) =>
     axiosInstance.post("/follow/", follow).then((response) => response.data),
@@ -89,14 +89,14 @@ const requests = {
           "&follower=" +
           (followerId || "missing")
       )
-      .then((response) => response.data?.[0]),
+      .then((response) => response.data?.results?.[0]),
 };
 
 const socialService = {
   // USERS
   // Use all the users
   useUsers: () =>
-    useQuery<SocialTypes.User[], AxiosError>("users", () =>
+    useQuery<PagedList<SocialTypes.User>, AxiosError>("users", () =>
       requests.getUsers()
     ),
   // Use an user specifying its id
@@ -133,22 +133,25 @@ const socialService = {
 
   // Use feed posts
   useFeedPosts: (userId?: Id) =>
-    useQuery<SocialTypes.Post[], AxiosError>("feed-posts-" + userId, () =>
-      requests.getFeedPosts(userId)
+    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+      "feed-posts-" + userId,
+      () => requests.getFeedPosts(userId)
     ),
   // Use goal posts
   useGoalPosts: (goalId?: Id) =>
-    useQuery<SocialTypes.Post[], AxiosError>("goal-posts-" + goalId, () =>
-      requests.getGoalPosts(goalId)
+    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+      "goal-posts-" + goalId,
+      () => requests.getGoalPosts(goalId)
     ),
   // use user posts
   useUserPosts: (userId?: Id) =>
-    useQuery<SocialTypes.Post[], AxiosError>("user-posts-" + userId, () =>
-      requests.getUserPosts(userId)
+    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+      "user-posts-" + userId,
+      () => requests.getUserPosts(userId)
     ),
   // use all the posts
   usePosts: () =>
-    useQuery<SocialTypes.Post[], AxiosError>("posts", () =>
+    useQuery<PagedList<SocialTypes.Post>, AxiosError>("posts", () =>
       requests.getPosts()
     ),
   // use create post
@@ -159,8 +162,9 @@ const socialService = {
     ),
   // Use post comments
   usePostComments: (postId?: Id) =>
-    useQuery<SocialTypes.Comment[], AxiosError>("post-comments-" + postId, () =>
-      requests.getPostComments(postId)
+    useQuery<PagedList<SocialTypes.Comment>, AxiosError>(
+      "post-comments-" + postId,
+      () => requests.getPostComments(postId)
     ),
   // Use create comment
   useCreateComment: () =>
