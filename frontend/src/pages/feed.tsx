@@ -15,7 +15,7 @@ const FeedPage = () => {
   const { activeUser } = useActiveUser();
 
   const {
-    data: posts,
+    data: postList,
     isLoading: loadingPosts,
     refetch,
   } = socialService.useFeedPosts(activeUser?.id);
@@ -36,11 +36,11 @@ const FeedPage = () => {
         </div>
         <DataLoader
           isLoading={loadingPosts}
-          hasData={!!posts?.length}
+          hasData={!!postList?.results?.length}
           retry={refetch}
         />
         <div className="flex flex-col gap-10">
-          {posts?.map((post) => (
+          {postList?.results?.map((post) => (
             <PostTeaserProvider key={post.id} {...post} />
           ))}
         </div>

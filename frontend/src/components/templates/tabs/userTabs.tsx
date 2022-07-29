@@ -26,7 +26,7 @@ const UserFeedTab = (user: SocialTypes.User) => {
   );
 
   const {
-    data: userPosts,
+    data: userPostList,
     isLoading,
     refetch,
     error,
@@ -50,12 +50,12 @@ const UserFeedTab = (user: SocialTypes.User) => {
       )}
       <DataLoader
         isLoading={isLoading}
-        hasData={!!userPosts?.length}
+        hasData={!!userPostList?.results?.length}
         retry={refetch}
         error={error}
       />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {userPosts?.map((post) => (
+        {userPostList?.results?.map((post) => (
           <PostTeaser withoutComments key={post.id} {...post} />
         ))}
       </div>

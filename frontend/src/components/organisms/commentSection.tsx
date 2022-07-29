@@ -11,7 +11,7 @@ import { CommentForm } from "components/templates";
 
 const CommentSection = (post: SocialTypes.Post) => {
   const {
-    data: comments,
+    data: commentList,
     isLoading,
     refetch,
   } = socialService.usePostComments(post.id);
@@ -33,7 +33,7 @@ const CommentSection = (post: SocialTypes.Post) => {
           </Typography>
           {post.id && (
             <PostCounters
-              comments={comments?.length || post.numComments}
+              comments={commentList?.results?.length || post.numComments}
               likes={post.likes}
               postId={post.id}
             />
@@ -41,10 +41,13 @@ const CommentSection = (post: SocialTypes.Post) => {
         </div>
       </Card>
       <section className="flex flex-col gap-3 overflow-auto py-2">
-        {comments?.map((comment) => (
+        {commentList?.results?.map((comment) => (
           <Comment key={comment.id} {...comment} />
         ))}
-        <DataLoader isLoading={isLoading} hasData={!!comments?.length} />
+        <DataLoader
+          isLoading={isLoading}
+          hasData={!!commentList?.results?.length}
+        />
       </section>
       <Card>
         <CommentForm postId={post.id} />
