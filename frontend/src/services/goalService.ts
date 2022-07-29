@@ -68,12 +68,12 @@ const requests = {
   getParticipation: (userId?: Id, goalId?: Id) =>
     axiosInstance
       .get(
-        "/participate/?user=" +
+        "/participate/?createdBy=" +
           (userId || "missing") +
           "&goal=" +
           (goalId || "missing")
       )
-      .then((response) => response.data),
+      .then((response) => response.data?.[0]),
 
   createTracking: (tracking: GoalTypes.Tracking) =>
     axiosInstance

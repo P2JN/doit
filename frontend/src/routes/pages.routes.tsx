@@ -27,7 +27,7 @@ const AppPages = () => {
       {activeUser ? (
         <>
           <Route path="/home/*" element={<HomePage />} />
-          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/feed/*" element={<FeedPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route
@@ -48,6 +48,7 @@ const AppPages = () => {
         element={<ErrorPage errorMessage="404!, not found!" />}
       />
       <Route path="*" element={<Navigate to="/404" />} />
+      <Route path="/" element={<Navigate to="/landing" />} />
     </Routes>
   );
 };

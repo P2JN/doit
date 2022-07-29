@@ -1,22 +1,34 @@
 import { useEffect } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { Tab, Tabs, Typography } from "@mui/material";
-import { Feed, Info, Timeline, TrackChanges } from "@mui/icons-material";
+import {
+  ImageOutlined,
+  InfoOutlined,
+  Timeline,
+  TrackChanges,
+} from "@mui/icons-material";
 
 import { SocialTypes } from "types";
 import { Page } from "layout";
 import { socialService } from "services";
 
+import { DataLoader } from "components/molecules";
+import { ModalDrawer, UserTeaserInfo } from "components/organisms";
 import {
   UserFeedTab,
   UserInfoTab,
   UserStatsTab,
   UserTrackingsTab,
+  PostForm,
 } from "components/templates";
-import { UserTeaserInfo } from "components/organisms";
-import { DataLoader } from "components/molecules";
 
-type UserTabsType = "info" | "feed" | "trackings" | "leaderboard" | "stats";
+type UserTabsType = "info" | "feed" | "trackings" | "stats";
 
 const UserDetailPage = () => {
   const { userId, activeTab } = useParams();
@@ -44,15 +56,14 @@ const UserDetailPage = () => {
 
   const labels = {
     info: "Información",
-    feed: "Feed",
-    trackings: "Mis registros",
-    leaderboard: "Leaderboard",
+    feed: "Contenido",
+    trackings: "Registros",
     stats: "Estadísticas",
   };
 
   return (
     <Page title={user ? user.firstName + " " + user.lastName : "404 No existe"}>
-      <div className="flex flex-col gap-3">
+      <div className="mt-4 flex flex-col gap-3 md:mt-0">
         {user && (
           <>
             <UserTeaserInfo {...user} />
@@ -68,8 +79,8 @@ const UserDetailPage = () => {
                 scrollButtons
                 allowScrollButtonsMobile
               >
-                <Tab value={"info"} icon={<Info />} />
-                <Tab value={"feed"} icon={<Feed />} />
+                <Tab value={"info"} icon={<InfoOutlined />} />
+                <Tab value={"feed"} icon={<ImageOutlined />} />
                 <Tab value={"trackings"} icon={<TrackChanges />} />
                 <Tab value={"stats"} icon={<Timeline />} />
               </Tabs>
@@ -84,6 +95,7 @@ const UserDetailPage = () => {
         />
         {activeTab && user && <UserTabs activeTab={activeTab} user={user} />}
       </div>
+      <UserModals />
     </Page>
   );
 };
@@ -95,9 +107,26 @@ const UserTabs = (props: { activeTab: string; user: SocialTypes.User }) => {
   return (
     <section>
       {activeTab === "info" && <UserInfoTab {...user} />}
-      {activeTab === "feed" && <UserFeedTab />}
+      {activeTab === "feed" && <UserFeedTab {...user} />}
       {activeTab === "trackings" && <UserTrackingsTab />}
       {activeTab === "stats" && <UserStatsTab />}
     </section>
+  );
+};
+
+const UserModals = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Routes>
+      <Route
+        path="/new-post"
+        element={
+          <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
+            <PostForm />
+          </ModalDrawer>
+        }
+      />
+    </Routes>
   );
 };

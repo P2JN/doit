@@ -29,6 +29,7 @@ import {
   GoalTrackingsTab,
   ObjectivesForm,
   TrackingForm,
+  PostForm,
 } from "components/templates";
 
 type GoalTabsType = "info" | "feed" | "trackings" | "leaderboard" | "stats";
@@ -58,7 +59,7 @@ const GoalDetailPage = () => {
 
   const labels = {
     info: "Información",
-    feed: "Posts",
+    feed: "Contenido",
     trackings: "Mis registros",
     leaderboard: "Líderes",
     stats: "Estadísticas",
@@ -89,14 +90,14 @@ const GoalDetailPage = () => {
         <DataLoader isLoading={loadingGoal} hasData={!!goal} retry={refetch} />
         {activeTab && goal && <GoalTabs activeTab={activeTab} goal={goal} />}
       </div>
-      <GoalModals />
+      {goal && <GoalModals {...goal} />}
     </Page>
   );
 };
 
 export default GoalDetailPage;
 
-const GoalModals = () => {
+const GoalModals = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
 
   return (
@@ -120,7 +121,14 @@ const GoalModals = () => {
           </ModalDrawer>
         }
       />
-      <Route path="/:goalId" element={<></>} />
+      <Route
+        path="/new-post"
+        element={
+          <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
+            <PostForm relatedGoal={goal} />
+          </ModalDrawer>
+        }
+      />
     </Routes>
   );
 };

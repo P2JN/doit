@@ -1,10 +1,5 @@
 import { Controller, useForm } from "react-hook-form";
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Alert, Button, CircularProgress, TextField } from "@mui/material";
 
 import { useActiveUser, useNotificationStore } from "store";
@@ -23,9 +18,6 @@ const TrackingForm = () => {
 
   const { goalId } = useParams();
   const { activeUser } = useActiveUser();
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setSearchParams] = useSearchParams();
 
   const { control, handleSubmit } = useForm({
     defaultValues: {

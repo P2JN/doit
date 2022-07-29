@@ -25,7 +25,7 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
         (post.withoutComments ? "!grid-cols-1" : "")
       }
     >
-      <div className="mb-auto flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         {goal && !isGoalDetail && !post.withoutComments && (
           <GoalTeaserReduced {...goal} />
         )}
@@ -47,7 +47,7 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
           <section className="mb-4">
             <Typography variant="body1">{post.content}</Typography>
           </section>
-          <footer className="flex justify-end">
+          <footer className="mb-auto flex justify-end">
             {post.withoutComments && post.id && (
               <PostCounters
                 comments={post.numComments}
