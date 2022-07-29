@@ -9,7 +9,7 @@ def get_obj_or_404(klass, *args, **kwargs):
 
 
 def handle_uploaded_file(f):
-    url = 'static/media/' + f.name
+    url = 'media/uploaded/' + f.name
     with open(url, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)

@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
+from django.conf.urls.static import static
+
 from rest_framework_mongoengine import routers
 
 from auth.googleOAuth2Adapter import GoogleLogin
+from doit.settings import MEDIA_ROOT, MEDIA_URL
 from doit.views import PopulateDB
 from frontend.views import app
 from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress
@@ -59,7 +62,10 @@ urlpatterns = [
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/signup/', include('dj_rest_auth.registration.urls')),
     path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
-
-    # Frontend
-    re_path('', app),
 ]
+
+# Serve media files
+urlpatterns = urlpatterns + static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+# Frontend
+urlpatterns = urlpatterns + [re_path('', app)]
