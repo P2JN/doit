@@ -4,13 +4,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Divider, Typography } from "@mui/material";
 
 import { useActiveUser, useNotificationStore } from "store";
-import { goalService } from "services";
+import { goalService, socialService } from "services";
 import { GoalTypes } from "types";
 import { texts } from "utils";
 
 import { ParsedError } from "components/atoms";
-import { ProgressBar } from "components/molecules";
+import { DataLoader, ProgressBar } from "components/molecules";
 import { GoalForm, ObjectivesForm } from "components/templates";
+import { PostTeaser } from "components/organisms";
 
 const GoalInfoTab = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
@@ -25,9 +26,14 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
     [activeUser?.id, goal.createdBy]
   );
   const isPersonal = useMemo(() => goal.type === "private", [goal.type]);
+  const hasObjectives = useMemo(
+    () => !!goal?.objectives?.length,
+    [goal.objectives]
+  );
 
-  const { data: isParticipating, refetch: refetchParticipating } =
-    goalService.useIsParticipating(goal.id, activeUser?.id);
+  const { data: participation, refetch: refetchParticipation } =
+    goalService.useParticipation(activeUser?.id, goal.id);
+  const isParticipating = useMemo(() => !!participation, [participation]);
 
   const {
     mutate: deleteGoal,
@@ -36,6 +42,7 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
   } = goalService.useDeleteGoal();
 
   const { mutate: participate } = goalService.useCreateParticipation();
+  const { mutate: stopParticipating } = goalService.useStopParticipating();
 
   const { data: progress, refetch } = goalService.useMyGoalProgress(
     goal?.id,
@@ -46,10 +53,10 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
   useEffect(() => {
     if (params.get("refresh") === goal.id) {
       refetch();
-      refetchParticipating();
+      refetchParticipation();
       setSearchParams("");
     }
-  }, [goal.id, params, refetch, setSearchParams, refetchParticipating]);
+  }, [goal.id, params, refetch, setSearchParams, refetchParticipation]);
 
   const onDelete = () => {
     if (goal?.id) {
@@ -90,10 +97,27 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
     }
   };
 
+  const onStopParticipating = () => {
+    if (participation?.id) {
+      stopParticipating(participation.id, {
+        onSuccess: () => {
+          addNotification({
+            title: "Has dejado de participar en este objetivo",
+            content: "Puedes buscar otros o crear los tuyos propios.",
+            type: "transient",
+            variant: "success",
+          });
+          setSearchParams("?refresh=" + goal.id);
+        },
+      });
+    }
+  };
+
   return (
-    <section className="mb-10 flex flex-col gap-5">
-      {isOwner && (
-        <div className="flex justify-end">
+    <section className="mb-10 flex animate-fade-in flex-col gap-5">
+      <div className="flex justify-between">
+        <Typography variant="h5">Datos</Typography>
+        {isOwner && (
           <Button
             color="primary"
             size="large"
@@ -101,8 +125,8 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
           >
             {editGoalEnabled ? "Cerrar" : "Editar"}
           </Button>
-        </div>
-      )}
+        )}
+      </div>
       <GoalForm initial={goal} disabled={!editGoalEnabled} />
       <Divider />
       <div className="flex justify-between">
@@ -121,46 +145,57 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
       </div>
       <div className="flex flex-col gap-2">
         {!editObjectivesEnabled ? (
-          <>
-            {goal.objectives?.map((obj) => (
-              <ProgressBar
-                key={obj.id}
-                title={
-                  texts.objectiveLabels[obj.frequency as GoalTypes.Frequency]
-                }
-                completed={
-                  progress?.[obj.frequency as GoalTypes.Frequency] || 0
-                }
-                expected={undefined}
-                objective={obj.quantity}
-              />
-            ))}
-            {(isOwner || isParticipating) && (
-              <div className="flex justify-center">
-                <Button
-                  color="primary"
-                  size="large"
-                  onClick={() => navigate("track")}
-                >
-                  Nuevo progreso
-                </Button>
-              </div>
-            )}
-          </>
+          hasObjectives && (
+            <>
+              {goal.objectives?.map((obj) => (
+                <ProgressBar
+                  key={obj.id}
+                  title={
+                    texts.objectiveLabels[obj.frequency as GoalTypes.Frequency]
+                  }
+                  completed={
+                    progress?.[obj.frequency as GoalTypes.Frequency] || 0
+                  }
+                  expected={undefined}
+                  objective={obj.quantity}
+                />
+              ))}
+              {(isOwner || isParticipating) && (
+                <div className="flex justify-center">
+                  <Button
+                    color="primary"
+                    size="large"
+                    onClick={() => navigate("track")}
+                  >
+                    Nuevo progreso
+                  </Button>
+                </div>
+              )}
+            </>
+          )
         ) : (
           <ObjectivesForm initial={goal.objectives} />
         )}
       </div>
-      {!isOwner && !isParticipating && (
+      {!isOwner && (
         <>
           <Divider />
           <div className="flex items-center justify-between">
             <Typography variant="h5">
               {!isPersonal
-                ? "Aún no estas participando en este objetivo"
+                ? isParticipating
+                  ? "Estás participando"
+                  : "Aún no estas participando en este objetivo"
                 : "Este objetivo es personal"}
             </Typography>
-            {!isPersonal && <Button onClick={onParticipate}>Participar</Button>}
+            {!isPersonal && !isParticipating && (
+              <Button onClick={onParticipate}>Participar</Button>
+            )}
+            {!isPersonal && isParticipating && (
+              <Button color="error" onClick={onStopParticipating}>
+                No Participar
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -181,30 +216,68 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
     </section>
   );
 };
-const GoalFeedTab = () => {
+const GoalFeedTab = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+  const {
+    data: goalPosts,
+    isLoading,
+    refetch,
+    error,
+  } = socialService.useGoalPosts(goal.id);
+
+  const [params, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (params.get("refresh") === "goal-posts") {
+      refetch();
+      setSearchParams("");
+    }
+  }, [params, refetch, setSearchParams]);
+
   return (
-    <section>
-      <p>Goal Feed Content</p>
+    <section className="animate-fade-in">
+      <div className="mb-3 flex justify-between">
+        <Typography variant="h5">Últimos Posts</Typography>
+        <div className="flex gap-2">
+          <Button
+            color="primary"
+            size="large"
+            onClick={() => navigate("new-post")}
+          >
+            Nuevo
+          </Button>
+        </div>
+      </div>
+      <DataLoader
+        isLoading={isLoading}
+        hasData={!!goalPosts?.length}
+        retry={refetch}
+        error={error}
+      />
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {goalPosts?.map((post) => (
+          <PostTeaser withoutComments key={post.id} {...post} />
+        ))}
+      </div>
     </section>
   );
 };
 const GoalTrackingsTab = () => {
   return (
-    <section>
+    <section className="animate-fade-in">
       <p>Goal Trackings Content</p>
     </section>
   );
 };
 const GoalLeaderboardTab = () => {
   return (
-    <section>
+    <section className="animate-fade-in">
       <p>Goal Leaderboard Content</p>
     </section>
   );
 };
 const GoalStatsTab = () => {
   return (
-    <section>
+    <section className="animate-fade-in">
       <p>Goal Stats Content</p>
     </section>
   );

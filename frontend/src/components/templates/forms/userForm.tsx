@@ -31,6 +31,7 @@ const UserForm = () => {
   } = useForm<SocialTypes.User>();
 
   const onSubmit = (formValues: SocialTypes.User) => {
+    localStorage.removeItem("token");
     if (formValues)
       createUser(formValues, {
         onSuccess: () => {
@@ -143,8 +144,7 @@ const UserForm = () => {
         />
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>Confirmar</strong>
-          {isLoading && <CircularProgress size={20} />}
+          {isLoading ? <CircularProgress size={16} /> : "Confirmar"}
         </Button>
       </div>
       {isLoading && <FormHelperText>Guardando...</FormHelperText>}

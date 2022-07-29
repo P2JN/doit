@@ -14,7 +14,7 @@ import { goalService } from "services";
 import { GoalTypes } from "types";
 import { formParsers, texts } from "utils";
 
-import { ParsedError } from "components/atoms";
+import { Loader, ParsedError } from "components/atoms";
 import { GoalTeaserInfo } from "components/organisms";
 
 const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
@@ -137,7 +137,7 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       {!isUpdate && (
         <>
-          {loadingGoal && <CircularProgress />}
+          {loadingGoal && <Loader />}
           {goal && <GoalTeaserInfo {...goal} />}
 
           <Divider className="!my-2" />
@@ -166,8 +166,13 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
         )}
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>{isUpdate ? "Actualizar" : "Guardar"}</strong>
-          {isLoading && <CircularProgress size={20} />}
+          {isLoading ? (
+            <CircularProgress size={16} />
+          ) : isUpdate ? (
+            "Actualizar"
+          ) : (
+            "Guardar"
+          )}
         </Button>
       </div>
       {(isLoading || loadingDelete || loadingUpdate) && (

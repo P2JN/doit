@@ -6,14 +6,16 @@ import CommentSection from "./commentSection";
 // TEASERS
 import { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced } from "./goalTeaser";
 import { PostTeaser } from "./postTeaser";
-import { UserTeaserReduced } from "./userTeaser";
+import { UserTeaser, UserTeaserReduced, UserTeaserInfo } from "./userTeaser";
 
 export {
+  UserTeaser,
+  UserTeaserInfo,
+  UserTeaserReduced,
   GoalTeaser,
   GoalTeaserInfo,
   GoalTeaserReduced,
   PostTeaser,
-  UserTeaserReduced,
   NotificationProvider,
   ModalDrawer,
   CommentSection,

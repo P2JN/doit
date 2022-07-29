@@ -13,6 +13,10 @@ export type User = {
   password2?: string;
   birthDate: string;
   startDate: string;
+
+  numFollowers?: number;
+  numFollowing?: number;
+  numPosts?: number;
 };
 
 export type Post = {
@@ -22,13 +26,22 @@ export type Post = {
   creationDate: string;
 
   createdBy: Id;
-  goal: Id;
+  goal?: Id;
+
+  likes?: number;
+  numComments?: number;
 };
 
 export type Comment = {
   id?: Id;
   content: string;
-  creationDate: string;
+  creationDate?: string;
+  createdBy: Id;
+  post: Id;
+};
+
+export type Like = {
+  id?: Id;
   createdBy: Id;
   post: Id;
 };
@@ -36,4 +49,10 @@ export type Comment = {
 export type LogIn = {
   username: string;
   password: string;
+};
+
+export type Follow = {
+  id?: Id;
+  follower: Id;
+  user: Id;
 };

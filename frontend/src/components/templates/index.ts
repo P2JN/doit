@@ -3,6 +3,7 @@ import GoalForm from "./forms/goalForm";
 import TrackingForm from "./forms/trackingForm";
 import ObjectivesForm from "./forms/objectivesForm";
 import CommentForm from "./forms/commentForm";
+import PostForm from "./forms/postForm";
 
 import LogInForm from "./forms/loginForm";
 import UserForm from "./forms/userForm";
@@ -15,6 +16,12 @@ import {
   GoalStatsTab,
   GoalTrackingsTab,
 } from "./tabs/goalTabs";
+import {
+  UserInfoTab,
+  UserFeedTab,
+  UserStatsTab,
+  UserTrackingsTab,
+} from "./tabs/userTabs";
 
 // TEASERS
 
@@ -23,6 +30,7 @@ export {
   ObjectivesForm,
   TrackingForm,
   CommentForm,
+  PostForm,
   LogInForm,
   UserForm,
   GoalInfoTab,
@@ -30,4 +38,8 @@ export {
   GoalLeaderboardTab,
   GoalStatsTab,
   GoalTrackingsTab,
+  UserInfoTab,
+  UserFeedTab,
+  UserStatsTab,
+  UserTrackingsTab,
 };

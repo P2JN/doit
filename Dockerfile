@@ -31,4 +31,5 @@ WORKDIR /app
 COPY . /app/
 
 RUN pip3 --no-cache-dir install -r requirements.txt
+RUN chmod +x ./startup.sh
 RUN cd ./frontend && npm install && npm run build

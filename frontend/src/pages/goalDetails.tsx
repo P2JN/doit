@@ -6,26 +6,20 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { Tab, Tabs, Typography } from "@mui/material";
 import {
-  Alert,
-  Button,
-  CircularProgress,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import {
-  Feed,
-  Info,
-  Leaderboard,
-  Timeline,
-  TrackChanges,
+  ImageOutlined,
+  InfoOutlined,
+  LeaderboardOutlined,
+  TimelineOutlined,
+  TrackChangesOutlined,
 } from "@mui/icons-material";
 
 import { GoalTypes } from "types";
 import { Page } from "layout";
 import { goalService } from "services";
 
+import { DataLoader } from "components/molecules";
 import { ModalDrawer } from "components/organisms";
 import {
   GoalFeedTab,
@@ -35,6 +29,7 @@ import {
   GoalTrackingsTab,
   ObjectivesForm,
   TrackingForm,
+  PostForm,
 } from "components/templates";
 
 type GoalTabsType = "info" | "feed" | "trackings" | "leaderboard" | "stats";
@@ -64,9 +59,9 @@ const GoalDetailPage = () => {
 
   const labels = {
     info: "Información",
-    feed: "Feed",
+    feed: "Contenido",
     trackings: "Mis registros",
-    leaderboard: "Leaderboard",
+    leaderboard: "Líderes",
     stats: "Estadísticas",
   };
 
@@ -85,37 +80,24 @@ const GoalDetailPage = () => {
             scrollButtons
             allowScrollButtonsMobile
           >
-            <Tab value={"info"} icon={<Info />} />
-            <Tab value={"feed"} icon={<Feed />} />
-            <Tab value={"leaderboard"} icon={<Leaderboard />} />
-            <Tab value={"trackings"} icon={<TrackChanges />} />
-            <Tab value={"stats"} icon={<Timeline />} />
+            <Tab value={"info"} icon={<InfoOutlined />} />
+            <Tab value={"feed"} icon={<ImageOutlined />} />
+            <Tab value={"leaderboard"} icon={<LeaderboardOutlined />} />
+            <Tab value={"trackings"} icon={<TrackChangesOutlined />} />
+            <Tab value={"stats"} icon={<TimelineOutlined />} />
           </Tabs>
         </div>
-        {loadingGoal && <CircularProgress />}
-        {!loadingGoal && !goal && (
-          <Alert
-            severity="info"
-            className="my-7"
-            action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
-                Reintentar
-              </Button>
-            }
-          >
-            No se ha encontrado el objetivo
-          </Alert>
-        )}
+        <DataLoader isLoading={loadingGoal} hasData={!!goal} retry={refetch} />
         {activeTab && goal && <GoalTabs activeTab={activeTab} goal={goal} />}
       </div>
-      <GoalModals />
+      {goal && <GoalModals {...goal} />}
     </Page>
   );
 };
 
 export default GoalDetailPage;
 
-const GoalModals = () => {
+const GoalModals = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
 
   return (
@@ -139,7 +121,14 @@ const GoalModals = () => {
           </ModalDrawer>
         }
       />
-      <Route path="/:goalId" element={<></>} />
+      <Route
+        path="/new-post"
+        element={
+          <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
+            <PostForm relatedGoal={goal} />
+          </ModalDrawer>
+        }
+      />
     </Routes>
   );
 };
@@ -149,7 +138,7 @@ const GoalTabs = (props: { activeTab: string; goal: GoalTypes.Goal }) => {
   return (
     <section>
       {activeTab === "info" && <GoalInfoTab {...goal} />}
-      {activeTab === "feed" && <GoalFeedTab />}
+      {activeTab === "feed" && <GoalFeedTab {...goal} />}
       {activeTab === "trackings" && <GoalTrackingsTab />}
       {activeTab === "leaderboard" && <GoalLeaderboardTab />}
       {activeTab === "stats" && <GoalStatsTab />}

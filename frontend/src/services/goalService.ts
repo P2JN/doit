@@ -60,19 +60,24 @@ const requests = {
       .post("/participate/", participation)
       .then((response) => response.data),
 
+  deleteParticipation: (participationId?: Id) =>
+    axiosInstance
+      .delete("/participate/" + (participationId || "missing") + "/")
+      .then((response) => response.data),
+
+  getParticipation: (userId?: Id, goalId?: Id) =>
+    axiosInstance
+      .get(
+        "/participate/?createdBy=" +
+          (userId || "missing") +
+          "&goal=" +
+          (goalId || "missing")
+      )
+      .then((response) => response.data?.[0]),
+
   createTracking: (tracking: GoalTypes.Tracking) =>
     axiosInstance
       .post("/tracking/", tracking)
-      .then((response) => response.data),
-
-  getIsParticipating: (goalId?: Id, participantId?: Id) =>
-    axiosInstance
-      .get(
-        "/goal/" +
-          (goalId || "missing") +
-          "/is-participating?user_id=" +
-          (participantId || "missing")
-      )
       .then((response) => response.data),
 };
 
@@ -129,17 +134,19 @@ const goalService = {
     useMutation<any, AxiosError, GoalTypes.Participation>(
       requests.createParticipation
     ),
+  // Use participation by user and goal
+  useParticipation: (userId?: Id, goalId?: Id) =>
+    useQuery<GoalTypes.Participation, AxiosError>(
+      `participation-${userId}-${goalId}`,
+      () => requests.getParticipation(userId, goalId)
+    ),
+  // Use stop participating
+  useStopParticipating: () =>
+    useMutation<any, AxiosError, Id>(requests.deleteParticipation),
 
   // Create a tracking
   useCreateTracking: () =>
     useMutation<any, AxiosError, GoalTypes.Tracking>(requests.createTracking),
-
-  // Use is participating check
-  useIsParticipating: (goalId?: Id, participantId?: Id) =>
-    useQuery<boolean, AxiosError>(
-      `goal-${goalId}-is-participating-${participantId}`,
-      () => requests.getIsParticipating(goalId, participantId)
-    ),
 };
 
 export default goalService;

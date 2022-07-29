@@ -1,15 +1,46 @@
 import { Controller, useForm } from "react-hook-form";
-import { Button, FormHelperText, TextField } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
+import {
+  Button,
+  CircularProgress,
+  FormHelperText,
+  TextField,
+} from "@mui/material";
 
-const CommentForm = () => {
+import { socialService } from "services";
+import { Id } from "types/apiTypes";
+import { useActiveUser } from "store";
+
+const CommentForm = (props: { postId?: Id }) => {
+  const { activeUser } = useActiveUser();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setSearchParams] = useSearchParams();
+
   const {
     handleSubmit,
     control,
     formState: { errors },
+    setValue,
   } = useForm<{ message: string }>();
 
+  const { mutate: createComment, isLoading } = socialService.useCreateComment();
+
   const onSubmit = (data: { message: string }) => {
-    console.log(data);
+    if (data.message && activeUser?.id && props.postId)
+      createComment(
+        {
+          content: data.message,
+          createdBy: activeUser.id,
+          post: props.postId,
+        },
+        {
+          onSuccess: () => {
+            setValue("message", "");
+            setSearchParams("?refresh=" + props.postId);
+          },
+        }
+      );
   };
 
   return (
@@ -17,7 +48,10 @@ const CommentForm = () => {
       <div className="flex items-end justify-between gap-3">
         <Controller
           name="message"
-          rules={{ required: "Obligatorio", maxLength: 100 }}
+          rules={{
+            required: "No puedes añadir un comentario vacío",
+            maxLength: 100,
+          }}
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">
@@ -35,7 +69,7 @@ const CommentForm = () => {
         />
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>Enviar</strong>
+          {isLoading ? <CircularProgress size={16} /> : "Enviar"}
         </Button>
       </div>
     </form>

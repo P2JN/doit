@@ -190,8 +190,13 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
 
         {!props.disabled && (
           <Button size="large" variant="outlined" type="submit">
-            <strong>{isUpdate ? "Actualizar" : "Crear"}</strong>
-            {isLoading && <CircularProgress size={20} />}
+            {isLoading ? (
+              <CircularProgress size={16} />
+            ) : isUpdate ? (
+              "Actualizar"
+            ) : (
+              "Crear"
+            )}
           </Button>
         )}
       </div>

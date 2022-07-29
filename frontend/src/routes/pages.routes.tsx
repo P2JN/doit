@@ -12,6 +12,7 @@ import {
   LoadingPage,
   GoalDetailPage,
 } from "pages";
+import UserDetailPage from "pages/userDetails";
 
 const AppPages = () => {
   const { activeUser } = useActiveUser();
@@ -26,12 +27,16 @@ const AppPages = () => {
       {activeUser ? (
         <>
           <Route path="/home/*" element={<HomePage />} />
-          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/feed/*" element={<FeedPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route
             path="/goals/:goalId/:activeTab/*"
             element={<GoalDetailPage />}
+          />
+          <Route
+            path="/users/:userId/:activeTab/*"
+            element={<UserDetailPage />}
           />
         </>
       ) : (
@@ -43,6 +48,7 @@ const AppPages = () => {
         element={<ErrorPage errorMessage="404!, not found!" />}
       />
       <Route path="*" element={<Navigate to="/404" />} />
+      <Route path="/" element={<Navigate to="/landing" />} />
     </Routes>
   );
 };

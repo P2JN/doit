@@ -1,5 +1,5 @@
 from rest_framework_mongoengine import serializers
-from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost
+from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost, Comment
 
 
 # Serializers define the API representation.
@@ -7,25 +7,38 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
 
 class PostSerializer(serializers.DocumentSerializer):
     likes = serializers.serializers.SerializerMethodField()
+    numComments = serializers.serializers.SerializerMethodField()
+    urlMedia = serializers.serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'content',
-                  'creationDate', 'createdBy', 'goal', 'likes']
+                  'creationDate', 'createdBy', 'goal', 'likes', 'numComments', 'media', 'urlMedia']
         read_only_fields = ['creationDate']
 
     def get_likes(self, obj):
         return LikePost.objects(post=obj).count()
 
+    def get_numComments(self, obj):
+        return Comment.objects(post=obj).count()
+
+    def get_urlMedia(self, obj):
+        if obj.media and obj.media.url:
+            return obj.media.url
+        else:
+            return None
+
 
 class UserSerializer(serializers.DocumentSerializer):
     numFollowers = serializers.serializers.SerializerMethodField()
     numFollowing = serializers.serializers.SerializerMethodField()
+    numPosts = serializers.serializers.SerializerMethodField()
+    urlMedia = serializers.serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password',
-                  'birthDate', 'firstName', 'lastName', 'numFollowers', 'numFollowing']
+                  'birthDate', 'firstName', 'lastName', 'numFollowers', 'numFollowing', 'numPosts', 'media', 'urlMedia']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -35,6 +48,15 @@ class UserSerializer(serializers.DocumentSerializer):
 
     def get_numFollowing(self, obj):
         return Follow.objects(follower=obj).count()
+
+    def get_numPosts(self, obj):
+        return Post.objects(createdBy=obj).count()
+
+    def get_urlMedia(self, obj):
+        if obj.media and obj.media.url:
+            return obj.media.url
+        else:
+            return None
 
 
 class NotificationSerializer(serializers.DocumentSerializer):
@@ -66,3 +88,10 @@ class LikePostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = LikePost
         fields = ['id', 'createdBy', 'post']
+
+
+class CommentSerializer(serializers.DocumentSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'createdBy', 'creationDate', 'post']
+        read_only_fields = ['creationDate']

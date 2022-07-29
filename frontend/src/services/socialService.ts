@@ -31,8 +31,65 @@ const requests = {
 
   getFeedPosts: (userId?: Id) =>
     axiosInstance
-      .get("/post/?follower=" + (userId || "missing"))
+      .get("/post/?follows=" + (userId || "missing"))
       .then((response) => response.data),
+
+  getGoalPosts: (goalId?: Id) =>
+    axiosInstance
+      .get("/post/?goal=" + (goalId || "missing"))
+      .then((response) => response.data),
+
+  getUserPosts: (userId?: Id) =>
+    axiosInstance
+      .get("/post/?createdBy=" + (userId || "missing"))
+      .then((response) => response.data),
+
+  getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
+
+  createPost: (post: SocialTypes.Post) =>
+    axiosInstance.post("/post/", post).then((response) => response.data),
+
+  getPostComments: (postId?: Id) =>
+    axiosInstance
+      .get("/comment/?post=" + (postId || "missing"))
+      .then((response) => response.data),
+
+  createComment: (comment: SocialTypes.Comment) =>
+    axiosInstance.post("/comment/", comment).then((response) => response.data),
+
+  createLike: (like: SocialTypes.Like) =>
+    axiosInstance.post("/like-post/", like).then((response) => response.data),
+  removeLike: (likeId: Id) =>
+    axiosInstance
+      .delete("/like-post/" + (likeId || "missing") + "/")
+      .then((response) => response.data),
+  getLike: (userId?: Id, post?: Id) =>
+    axiosInstance
+      .get(
+        "/like-post/?createdBy=" +
+          (userId || "missing") +
+          "&post=" +
+          (post || "missing")
+      )
+      .then((response) => response.data?.[0]),
+
+  followUser: (follow: SocialTypes.Follow) =>
+    axiosInstance.post("/follow/", follow).then((response) => response.data),
+
+  unfollowUser: (followId?: Id) =>
+    axiosInstance
+      .delete("/follow/" + (followId || "missing") + "/")
+      .then((response) => response.data),
+
+  getFollow: (userId?: Id, followerId?: Id) =>
+    axiosInstance
+      .get(
+        "/follow/?user=" +
+          (userId || "missing") +
+          "&follower=" +
+          (followerId || "missing")
+      )
+      .then((response) => response.data?.[0]),
 };
 
 const socialService = {
@@ -58,12 +115,74 @@ const socialService = {
       "create-user",
       requests.createUser
     ),
+  // follow an user
+  useFollow: () =>
+    useMutation<any, AxiosError, SocialTypes.Follow>(
+      "follow-user",
+      requests.followUser
+    ),
+  // unfollow an user
+  useUnfollow: () =>
+    useMutation<any, AxiosError, Id>("unfollow-user", requests.unfollowUser),
+  // is follwing an user
+  useFollowData: (userId?: Id, followerId?: Id) =>
+    useQuery<SocialTypes.Follow, AxiosError>(
+      `is-following-${userId}-${followerId}`,
+      () => requests.getFollow(userId, followerId)
+    ),
 
   // Use feed posts
   useFeedPosts: (userId?: Id) =>
-    useQuery<SocialTypes.Post[], AxiosError>("feed-posts", () =>
+    useQuery<SocialTypes.Post[], AxiosError>("feed-posts-" + userId, () =>
       requests.getFeedPosts(userId)
     ),
+  // Use goal posts
+  useGoalPosts: (goalId?: Id) =>
+    useQuery<SocialTypes.Post[], AxiosError>("goal-posts-" + goalId, () =>
+      requests.getGoalPosts(goalId)
+    ),
+  // use user posts
+  useUserPosts: (userId?: Id) =>
+    useQuery<SocialTypes.Post[], AxiosError>("user-posts-" + userId, () =>
+      requests.getUserPosts(userId)
+    ),
+  // use all the posts
+  usePosts: () =>
+    useQuery<SocialTypes.Post[], AxiosError>("posts", () =>
+      requests.getPosts()
+    ),
+  // use create post
+  useCreatePost: () =>
+    useMutation<any, AxiosError, SocialTypes.Post>(
+      "create-post",
+      requests.createPost
+    ),
+  // Use post comments
+  usePostComments: (postId?: Id) =>
+    useQuery<SocialTypes.Comment[], AxiosError>("post-comments-" + postId, () =>
+      requests.getPostComments(postId)
+    ),
+  // Use create comment
+  useCreateComment: () =>
+    useMutation<any, AxiosError, SocialTypes.Comment>(
+      "create-comment",
+      requests.createComment
+    ),
+  //use like creation
+  useCreateLike: () =>
+    useMutation<any, AxiosError, SocialTypes.Like>(
+      "create-like",
+      requests.createLike
+    ),
+  //use like deletion
+  useRemoveLike: () =>
+    useMutation<any, AxiosError, Id>("remove-like", requests.removeLike),
+  //use like data
+  useLike: (userId?: Id, post?: Id) =>
+    useQuery<SocialTypes.Like, AxiosError>(`like-${userId}-${post}`, () =>
+      requests.getLike(userId, post)
+    ),
+
   // Log in an user
   useLogin: () =>
     useMutation<any, AxiosError, SocialTypes.LogIn>(

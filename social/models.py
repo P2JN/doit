@@ -1,8 +1,10 @@
 from datetime import datetime
 
-from mongoengine import Document, fields, CASCADE
+from mongoengine import Document, fields, CASCADE, NULLIFY
 
 from goals.models import Tracking, Goal
+
+from media.models import Media
 
 
 class User(Document):
@@ -13,6 +15,7 @@ class User(Document):
     birthDate = fields.DateTimeField()
     firstName = fields.StringField(max_length=30, required=True)
     lastName = fields.StringField(max_length=60)
+    media = fields.ReferenceField('Media', reverse_delete_rule=NULLIFY)
 
     meta = {'indexes': [
         {'fields': ['$username', "$email", "$firstName", "$lastName"],
@@ -21,6 +24,7 @@ class User(Document):
          }
     ]}
 
+
 class Post(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
@@ -28,6 +32,7 @@ class Post(Document):
 
     createdBy = fields.ReferenceField('User', required=True)
     goal = fields.ReferenceField('Goal')
+    media = fields.ReferenceField('Media', reverse_delete_rule=NULLIFY)
 
     meta = {'indexes': [
         {'fields': ['$title', "$content"],
@@ -69,9 +74,9 @@ class LikePost(Document):
 
 class Follow(Document):
     user = fields.ReferenceField(
-        'User', required=True)
+        'User', required=True, reverse_delete_rule=CASCADE)
     follower = fields.ReferenceField(
-        'User', required=True)
+        'User', required=True, reverse_delete_rule=CASCADE)
 
     meta = {
         'indexes': [
@@ -90,3 +95,17 @@ class Participate(Document):
             {'fields': ['createdBy', 'goal'], 'unique': True}
         ]
     }
+
+
+class Comment(Document):
+    content = fields.StringField(max_length=1250)
+    creationDate = fields.DateTimeField(default=datetime.utcnow)
+    createdBy = fields.ReferenceField('User', required=True)
+    post = fields.ReferenceField('Post', required=True)
+
+    meta = {'indexes': [
+        {'fields': ['$content'],
+         'default_language': 'spanish',
+         'weights': {'content': 10}
+         }
+    ]}
