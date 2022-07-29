@@ -8,6 +8,7 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
 from utils.filters import FilterSet
+from utils.utils import delete_notification, create_notification, create_user_notification
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -26,6 +27,18 @@ class PostViewSet(viewsets.ModelViewSet):
             search_text=True)
 
         return post_filter.filter()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return create_notification(self, serializer, request, "Post", "¡Post creado correctamente!",
+                                   "El post " + serializer.data.get("title") + " ha sido creado correctamente.")
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return delete_notification(self, instance, request, "¡Post borrado correctamente!",
+                                   "El post " + instance.title + " ha sido borrado correctamente.")
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -83,6 +96,17 @@ class FollowViewSet(viewsets.ModelViewSet):
 
         return post_filter.filter()
 
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.user, instance.follower.username + " ha empezado a seguirte.",
+                                 instance.follower.username + " te ha seguido.")
+
+    def perform_destroy(self, instance):
+        instance.delete()
+        create_user_notification(instance.user, instance.follower.username + " ha dejado de seguirte.",
+                                 instance.follower.username + " ya no te sigue.")
+
 
 class ParticipateViewSet(viewsets.ModelViewSet):
     queryset = Participate.objects.all()
@@ -98,6 +122,18 @@ class ParticipateViewSet(viewsets.ModelViewSet):
 
         return post_filter.filter()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en este goal!",
+                                   "Empezaste a participar en el goal: " + serializer.instance.goal.title + ".")
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return delete_notification(self, instance, request, "¡Has dejado de participar en este goal!",
+                                   "Dejaste de participar en el goal: " + instance.goal.title + ".")
+
 
 class LikeTrackingViewSet(viewsets.ModelViewSet):
     queryset = LikeTracking.objects.all()
@@ -111,6 +147,13 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
+
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.tracking.createdBy, instance.createdBy + " te ha dado like a un tracking.",
+                                 instance.createdBy + " te dio un like en tu tracking del " + instance.tracking.date
+                                 + "en el que conseguiste " + instance.tracking.amount + ".")
 
 
 class LikePostViewSet(viewsets.ModelViewSet):
@@ -126,6 +169,12 @@ class LikePostViewSet(viewsets.ModelViewSet):
 
         return post_filter.filter()
 
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.post.createdBy, instance.createdBy + " te ha dado like a un post.",
+                                 instance.createdBy + " te dio un like en tu post " + instance.post.title + ".")
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
@@ -136,9 +185,15 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
-            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset,search_text=True)
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset, search_text=True)
 
         return post_filter.filter()
+
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.post.createdBy, instance.createdBy + " ha comentado en tu post.",
+                                 instance.createdBy + " ha comentado en tu post " + instance.post.title + ".")
 
 
 # Custom endpoints

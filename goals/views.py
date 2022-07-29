@@ -10,8 +10,10 @@ from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSeria
 from social.models import Participate, LikeTracking, User
 from utils.filters import FilterSet
 
-
 # ViewSet views
+from utils.utils import notify_completed_objectives
+
+
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     serializer_class = GoalSerializer
@@ -71,7 +73,6 @@ class GoalProgress(viewsets.GenericAPIView):
         goal = Goal.objects.get(id=goal_id)
         objectives = Objective.objects.filter(goal=goal_id)
 
-        trackings = []
         progress = dict()
 
         for objective in objectives:
@@ -109,5 +110,5 @@ class GoalProgress(viewsets.GenericAPIView):
                 progress[Frequency.YEARLY] += tracking.amount
             if Frequency.TOTAL in progress:
                 progress[Frequency.TOTAL] += tracking.amount
-
-        return Response(progress, status=200)
+        noti = notify_completed_objectives(progress, objectives, goal, user)
+        return Response({"notification": noti, "progress": progress}, status=200)

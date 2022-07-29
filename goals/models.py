@@ -45,6 +45,7 @@ class Goal(Document):
 class Objective(Document):
     quantity = fields.FloatField(required=True, min_value=0)
     frequency = fields.EnumField(Frequency, default=Frequency.TOTAL)
+    completed = fields.BooleanField(default=False)
 
     goal = fields.ReferenceField('Goal')
 

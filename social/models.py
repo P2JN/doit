@@ -42,6 +42,7 @@ class Notification(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
     creationDate = fields.DateTimeField(default=datetime.utcnow)
+    checked = fields.BooleanField(default=False)
 
     user = fields.ReferenceField('User', required=True)
 
