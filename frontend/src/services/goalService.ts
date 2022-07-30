@@ -10,7 +10,7 @@ import { axiosInstance } from "./config";
 const requests = {
   getGoals: (page?: number) =>
     axiosInstance
-      .get("/goal/" + (page ? "?page=" + page : ""))
+      .get("/goal/?size=9" + (page ? "&page=" + page : ""))
       .then((response) => response.data),
 
   getGoalsByParticipant: (participantId?: Id, page?: number) =>

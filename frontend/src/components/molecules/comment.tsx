@@ -4,15 +4,18 @@ import { socialService } from "services";
 import { SocialTypes } from "types";
 
 import { Card } from "components/atoms";
-import { UserTeaserReduced } from "components/organisms";
+import { UserAvatar, UserUsername } from "components/organisms";
 
 const Comment = (comment: SocialTypes.Comment) => {
   const { data: user } = socialService.useUser(comment.createdBy);
   return (
     <Card>
-      <div className="flex justify-between">
-        <Typography variant="body1">{comment.content}</Typography>
-        {user && <UserTeaserReduced {...user} />}
+      <div className="flex gap-3">
+        {user && <UserAvatar {...user} />}
+
+        <Typography variant="body1">
+          {user && <UserUsername {...user} />} : {comment.content}
+        </Typography>
       </div>
     </Card>
   );

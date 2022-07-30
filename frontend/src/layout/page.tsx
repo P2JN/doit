@@ -11,7 +11,10 @@ const Page = (props: {
       <section className="block animate-fade-in xl:w-3/4">
         <section className="flex flex-col justify-between gap-y-2 md:mb-7 md:flex-row md:items-center">
           {props.title && (
-            <Typography variant="h3" className="overflow-hidden text-ellipsis">
+            <Typography
+              variant="h3"
+              className="overflow-hidden text-ellipsis text-center md:text-left"
+            >
               {props.title}
             </Typography>
           )}

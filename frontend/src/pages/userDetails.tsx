@@ -68,7 +68,10 @@ const UserDetailPage = () => {
           <>
             <UserTeaserInfo {...user} />
             <div className="mt-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
-              <Typography variant="h5">
+              <Typography
+                variant="h5"
+                className="order-2 !text-center md:-order-1 md:text-left"
+              >
                 {labels[activeTab as UserTabsType]}
               </Typography>
 
@@ -76,7 +79,6 @@ const UserDetailPage = () => {
                 value={activeTab}
                 onChange={handleChange}
                 variant="scrollable"
-                scrollButtons
                 allowScrollButtonsMobile
               >
                 <Tab value={"info"} icon={<InfoOutlined />} />

@@ -26,14 +26,14 @@ const ExplorePage = () => {
   );
 
   const {
-    data: postList,
+    data: postPages,
     isLoading: loadingPosts,
     error: postError,
     isError: isPostError,
   } = socialService.usePosts();
   const posts = useMemo(
-    () => paginationUtils.combinePages(postList),
-    [postList]
+    () => paginationUtils.combinePages(postPages),
+    [postPages]
   );
 
   const {

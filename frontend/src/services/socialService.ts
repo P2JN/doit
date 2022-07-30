@@ -10,7 +10,7 @@ import { axiosInstance } from "./config";
 const requests = {
   getUsers: (page?: number) =>
     axiosInstance
-      .get("/user/" + (page ? "?page=" + page + "/" : ""))
+      .get("/user/?size=9" + (page ? "&page=" + page + "/" : ""))
       .then((response) => response.data),
 
   getUser: (id?: Id) =>
@@ -46,6 +46,7 @@ const requests = {
         "/post/?goal=" +
           (goalId || "missing") +
           "&order_by=-creationDate" +
+          "&size=9" +
           (page ? "&page=" + page : "")
       )
       .then((response) => response.data),
@@ -56,13 +57,16 @@ const requests = {
         "/post/?createdBy=" +
           (userId || "missing") +
           "&order_by=-creationDate" +
+          "&size=9" +
           (page ? "&page=" + page : "")
       )
       .then((response) => response.data),
 
   getPosts: (page?: number) =>
     axiosInstance
-      .get("/post/?order_by=-creationDate" + (page ? "?page=" + page : ""))
+      .get(
+        "/post/?order_by=-creationDate&size=9" + (page ? "?page=" + page : "")
+      )
       .then((response) => response.data),
 
   createPost: (post: SocialTypes.Post) =>
@@ -73,7 +77,8 @@ const requests = {
       .get(
         "/comment/?post=" +
           (postId || "missing") +
-          "&order_by=creationDate" +
+          "&order_by=-creationDate" +
+          "&size=5" +
           (page ? "&page=" + page : "")
       )
       .then((response) => response.data),

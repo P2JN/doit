@@ -10,6 +10,7 @@ const DataLoader = (props: {
   retry?: () => void;
   hasNextPage?: boolean;
   loadMore?: () => void;
+  topPositioned?: boolean;
 }) => {
   return (
     <>
@@ -37,7 +38,7 @@ const DataLoader = (props: {
 
       {props.hasNextPage && (
         <>
-          <Divider className="py-4" />
+          {!props.topPositioned && "bottom" && <Divider className="py-4" />}
           <div className="flex w-full justify-center">
             <Button
               color="primary"
@@ -47,6 +48,7 @@ const DataLoader = (props: {
               Cargar más
             </Button>
           </div>
+          {props.topPositioned && <Divider className="py-1" />}
         </>
       )}
     </>

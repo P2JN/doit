@@ -6,7 +6,8 @@
 @tailwind components;
 /* Stop purging. */
 
-.MuiButton-text {
+.MuiButton-text,
+.MuiButton-outlined {
   @apply !font-bold;
 }
 
@@ -18,10 +19,27 @@
   @apply !text-black;
 }
 
+.css-12sazjn-MuiButtonBase-root-MuiTab-root {
+  @apply !min-w-0 !px-3;
+}
+
+.MuiTabs-flexContainer {
+  @apply justify-center;
+}
+
 /* Your own custom component styles */
 
 /* Start purging... */
 @tailwind utilities;
 /* Stop purging. */
+
+*::-webkit-scrollbar {
+  @apply mx-2 my-1 w-1 rounded-xl bg-gray-100;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply mx-2 my-1 rounded-xl bg-primary opacity-60;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
 
 /* Your own custom utilities */

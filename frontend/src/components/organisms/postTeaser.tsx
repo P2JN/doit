@@ -21,7 +21,7 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
   return (
     <div
       className={
-        "grid gap-4 lg:grid-cols-2 " +
+        "grid h-full gap-4 lg:grid-cols-2" +
         (post.withoutComments ? "!grid-cols-1" : "")
       }
     >
@@ -29,7 +29,7 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
         {goal && !isGoalDetail && !post.withoutComments && (
           <GoalTeaserReduced {...goal} />
         )}
-        <Card>
+        <Card className="h-full">
           <div className="-mx-7 -mt-5 flex items-center justify-between">
             {/* TODO: use real media photo */}
             <img
@@ -47,7 +47,7 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
           <section className="mb-4">
             <Typography variant="body1">{post.content}</Typography>
           </section>
-          <footer className="mb-auto flex justify-end">
+          <footer className="mt-auto flex justify-end">
             {post.withoutComments && post.id && (
               <PostCounters
                 comments={post.numComments}
