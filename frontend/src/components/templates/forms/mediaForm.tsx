@@ -7,7 +7,10 @@ import { Id } from "types/apiTypes";
 
 import { Loader, ParsedError } from "components/atoms";
 
-const LogInForm = (props: { onUploadFinished: (mediaId?: Id) => void }) => {
+const MediaForm = (props: {
+  onUploadFinished: (mediaId?: Id) => void;
+  initial?: Id;
+}) => {
   const {
     mutate: uploadImage,
     isLoading,
@@ -15,7 +18,9 @@ const LogInForm = (props: { onUploadFinished: (mediaId?: Id) => void }) => {
     error,
   } = mediaService.useUploadMedia();
 
-  const [lastUploaded, setLastUploaded] = useState<Id | undefined>(undefined);
+  const [lastUploaded, setLastUploaded] = useState<Id | undefined>(
+    props.initial
+  );
 
   const onImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     // will send a request with a multipart form file
@@ -70,4 +75,4 @@ const LogInForm = (props: { onUploadFinished: (mediaId?: Id) => void }) => {
   );
 };
 
-export default LogInForm;
+export default MediaForm;

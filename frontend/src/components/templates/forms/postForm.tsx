@@ -78,7 +78,10 @@ const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
 
         <Controller
           name="title"
-          rules={{ required: "Obligatorio", maxLength: 100 }}
+          rules={{
+            required: "Obligatorio",
+            maxLength: { value: 30, message: "Es demasiado largo, max 30" },
+          }}
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">
@@ -91,7 +94,10 @@ const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
         />
         <Controller
           name="content"
-          rules={{ required: "Obligatorio", maxLength: 1000 }}
+          rules={{
+            required: "Obligatorio",
+            maxLength: { value: 1250, message: "Es demasiado largo, max 1250" },
+          }}
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">

@@ -29,7 +29,7 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
         {goal && !isGoalDetail && !post.withoutComments && (
           <GoalTeaserReduced {...goal} />
         )}
-        <Card className="h-full">
+        <Card className="!h-full">
           {post?.urlMedia && (
             <div className="-mx-7 -mt-5 flex items-center justify-between transition-all duration-200 ease-in-out hover:-mx-10">
               <Image src={post.urlMedia} alt={post.title} />
