@@ -5,6 +5,7 @@ import { Button, Typography } from "@mui/material";
 import { socialService } from "services";
 import { SocialTypes } from "types";
 import { useActiveUser } from "store";
+import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
 import { PostTeaser } from "components/organisms";
@@ -30,7 +31,13 @@ const UserFeedTab = (user: SocialTypes.User) => {
     isLoading,
     refetch,
     error,
+    hasNextPage,
+    fetchNextPage,
   } = socialService.useUserPosts(user.id);
+  const posts = useMemo(
+    () => paginationUtils.combinePages(userPostList),
+    [userPostList]
+  );
 
   const [params, setSearchParams] = useSearchParams();
   useEffect(() => {
@@ -48,17 +55,19 @@ const UserFeedTab = (user: SocialTypes.User) => {
           <Button onClick={() => navigate("new-post")}>Nuevo</Button>
         </div>
       )}
-      <DataLoader
-        isLoading={isLoading}
-        hasData={!!userPostList?.results?.length}
-        retry={refetch}
-        error={error}
-      />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {userPostList?.results?.map((post) => (
+        {posts?.map((post) => (
           <PostTeaser withoutComments key={post.id} {...post} />
         ))}
       </div>
+      <DataLoader
+        isLoading={isLoading}
+        hasData={!!posts?.length}
+        retry={refetch}
+        error={error}
+        hasNextPage={hasNextPage}
+        loadMore={fetchNextPage}
+      />
     </section>
   );
 };

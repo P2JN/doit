@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Typography } from "@mui/material";
 
 import { SocialTypes } from "types";
 import { socialService } from "services";
+import { paginationUtils } from "utils";
 
 import { Card } from "components/atoms";
 import { Comment, DataLoader, PostCounters } from "components/molecules";
@@ -11,10 +12,16 @@ import { CommentForm } from "components/templates";
 
 const CommentSection = (post: SocialTypes.Post) => {
   const {
-    data: commentList,
+    data: commentPages,
     isLoading,
     refetch,
+    hasNextPage,
+    fetchNextPage,
   } = socialService.usePostComments(post.id);
+  const comments = useMemo(
+    () => paginationUtils.combinePages(commentPages),
+    [commentPages]
+  );
 
   const [params, setSearchParams] = useSearchParams();
   useEffect(() => {
@@ -33,7 +40,7 @@ const CommentSection = (post: SocialTypes.Post) => {
           </Typography>
           {post.id && (
             <PostCounters
-              comments={commentList?.results?.length || post.numComments}
+              comments={comments?.length || post.numComments}
               likes={post.likes}
               postId={post.id}
             />
@@ -41,12 +48,14 @@ const CommentSection = (post: SocialTypes.Post) => {
         </div>
       </Card>
       <section className="flex flex-col gap-3 overflow-auto py-2">
-        {commentList?.results?.map((comment) => (
+        {comments?.map((comment) => (
           <Comment key={comment.id} {...comment} />
         ))}
         <DataLoader
           isLoading={isLoading}
-          hasData={!!commentList?.results?.length}
+          hasData={!!comments?.length}
+          hasNextPage={hasNextPage}
+          loadMore={fetchNextPage}
         />
       </section>
       <Card>

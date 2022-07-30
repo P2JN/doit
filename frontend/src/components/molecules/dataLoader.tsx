@@ -38,13 +38,15 @@ const DataLoader = (props: {
       {props.hasNextPage && (
         <>
           <Divider className="py-4" />
-          <Button
-            color="primary"
-            size="large"
-            onClick={() => !!props.loadMore && props.loadMore()}
-          >
-            Cargar más
-          </Button>
+          <div className="flex w-full justify-center">
+            <Button
+              color="primary"
+              size="large"
+              onClick={() => !!props.loadMore && props.loadMore()}
+            >
+              Cargar más
+            </Button>
+          </div>
         </>
       )}
     </>

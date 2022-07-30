@@ -6,6 +6,7 @@ import { Page } from "layout";
 import { socialService } from "services";
 import { useActiveUser } from "store";
 import { SocialTypes } from "types";
+import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
 import { ModalDrawer, PostTeaser } from "components/organisms";
@@ -22,13 +23,8 @@ const FeedPage = () => {
     fetchNextPage,
     hasNextPage,
   } = socialService.useFeedPosts(activeUser?.id);
-
   const posts = useMemo(
-    () =>
-      postPages?.pages?.reduce(
-        (acc, page) => acc.concat(page?.results),
-        [] as SocialTypes.Post[]
-      ),
+    () => paginationUtils.combinePages(postPages),
     [postPages]
   );
 

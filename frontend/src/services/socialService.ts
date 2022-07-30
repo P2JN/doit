@@ -3,13 +3,14 @@ import { useInfiniteQuery, useMutation, useQuery } from "react-query";
 
 import { SocialTypes } from "types";
 import { Id, PagedList } from "types/apiTypes";
+import { paginationUtils } from "utils";
 
 import { axiosInstance } from "./config";
 
 const requests = {
-  getUsers: (filters?: string[]) =>
+  getUsers: (page?: number) =>
     axiosInstance
-      .get("/user/" + (!!filters ? "?" + filters?.join("&") : ""))
+      .get("/user/" + (page ? "?page=" + page + "/" : ""))
       .then((response) => response.data),
 
   getUser: (id?: Id) =>
@@ -39,24 +40,42 @@ const requests = {
       )
       .then((response) => response.data),
 
-  getGoalPosts: (goalId?: Id) =>
+  getGoalPosts: (goalId?: Id, page?: number) =>
     axiosInstance
-      .get("/post/?goal=" + (goalId || "missing"))
+      .get(
+        "/post/?goal=" +
+          (goalId || "missing") +
+          "&order_by=-creationDate" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
-  getUserPosts: (userId?: Id) =>
+  getUserPosts: (userId?: Id, page?: number) =>
     axiosInstance
-      .get("/post/?createdBy=" + (userId || "missing"))
+      .get(
+        "/post/?createdBy=" +
+          (userId || "missing") +
+          "&order_by=-creationDate" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
-  getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
+  getPosts: (page?: number) =>
+    axiosInstance
+      .get("/post/?order_by=-creationDate" + (page ? "?page=" + page : ""))
+      .then((response) => response.data),
 
   createPost: (post: SocialTypes.Post) =>
     axiosInstance.post("/post/", post).then((response) => response.data),
 
-  getPostComments: (postId?: Id) =>
+  getPostComments: (postId?: Id, page?: number) =>
     axiosInstance
-      .get("/comment/?post=" + (postId || "missing"))
+      .get(
+        "/comment/?post=" +
+          (postId || "missing") +
+          "&order_by=creationDate" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
   createComment: (comment: SocialTypes.Comment) =>
@@ -101,8 +120,12 @@ const socialService = {
   // USERS
   // Use all the users
   useUsers: () =>
-    useQuery<PagedList<SocialTypes.User>, AxiosError>("users", () =>
-      requests.getUsers()
+    useInfiniteQuery<PagedList<SocialTypes.User>, AxiosError>(
+      "users",
+      ({ pageParam = 0 }) => requests.getUsers(pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use an user specifying its id
   useUser: (id?: Id) =>
@@ -142,26 +165,38 @@ const socialService = {
       "feed-posts-" + userId,
       ({ pageParam = 0 }) => requests.getFeedPosts(userId, pageParam),
       {
-        getNextPageParam: (lastPage) => lastPage.next?.split("page=").pop(),
+        getNextPageParam: paginationUtils.getNextPage,
       }
     ),
   // Use goal posts
   useGoalPosts: (goalId?: Id) =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
       "goal-posts-" + goalId,
-      () => requests.getGoalPosts(goalId)
+      ({ pageParam = 0 }) => requests.getGoalPosts(goalId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // use user posts
   useUserPosts: (userId?: Id) =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
       "user-posts-" + userId,
-      () => requests.getUserPosts(userId)
+      ({ pageParam = 0 }) => requests.getUserPosts(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
+
   // use all the posts
   usePosts: () =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>("posts", () =>
-      requests.getPosts()
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
+      "posts",
+      ({ pageParam = 0 }) => requests.getPosts(pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
+
   // use create post
   useCreatePost: () =>
     useMutation<any, AxiosError, SocialTypes.Post>(
@@ -170,9 +205,12 @@ const socialService = {
     ),
   // Use post comments
   usePostComments: (postId?: Id) =>
-    useQuery<PagedList<SocialTypes.Comment>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Comment>, AxiosError>(
       "post-comments-" + postId,
-      () => requests.getPostComments(postId)
+      ({ pageParam = 0 }) => requests.getPostComments(postId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use create comment
   useCreateComment: () =>
