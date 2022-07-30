@@ -96,16 +96,15 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
   };
 
   return (
-    <header className="flex w-full cursor-pointer items-center gap-5">
+    <header className="flex w-full cursor-pointer items-center gap-2 md:gap-5">
       {/* TODO: use real media photo */}
       <Avatar
         alt="userimg"
         src="https://placekitten.com/1000/1000"
-        style={{ width: "200px", height: "200px" }}
-        className="rounded-full border-2 border-gray-300"
+        className="!h-[65px] !w-[65px] rounded-full border-2 border-gray-300 md:!h-[180px] md:!w-[180px]"
       />
 
-      <div className="-ml-5 flex items-center gap-3 rounded-r-full bg-gray-100 py-3 pr-4 pl-5">
+      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4 md:-ml-5 md:rounded-l-none md:pl-5">
         <Typography className="hover:font-bold" variant="h5">
           @{user.username}
         </Typography>

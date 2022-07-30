@@ -15,21 +15,21 @@ const ExplorePage = () => {
   const { addNotification } = useNotificationStore();
 
   const {
-    data: goals,
+    data: goalList,
     isLoading: loadingGoals,
     error: goalError,
     isError: isGoalError,
   } = goalService.useGoals();
 
   const {
-    data: posts,
+    data: postList,
     isLoading: loadingPosts,
     error: postError,
     isError: isPostError,
   } = socialService.usePosts();
 
   const {
-    data: users,
+    data: userList,
     isLoading: loadingUsers,
     error: userError,
     isError: isUserError,
@@ -56,7 +56,7 @@ const ExplorePage = () => {
             loading={loadingGoals}
             error={isGoalError ? goalError : undefined}
             slides={
-              goals?.map((goal) => (
+              goalList?.results?.map((goal) => (
                 <GoalTeaserInfo key={goal.id} {...goal} />
               )) || []
             }
@@ -67,7 +67,9 @@ const ExplorePage = () => {
             loading={loadingUsers}
             error={isUserError ? userError : undefined}
             slides={
-              users?.map((user) => <UserTeaser key={user.id} {...user} />) || []
+              userList?.results?.map((user) => (
+                <UserTeaser key={user.id} {...user} />
+              )) || []
             }
           />
 
@@ -76,7 +78,7 @@ const ExplorePage = () => {
             loading={loadingPosts}
             error={isPostError ? postError : undefined}
             slides={
-              posts?.map((post) => (
+              postList?.results?.map((post) => (
                 <PostTeaser withoutComments key={post.id} {...post} />
               )) || []
             }

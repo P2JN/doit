@@ -27,7 +27,7 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
   );
   const isPersonal = useMemo(() => goal.type === "private", [goal.type]);
   const hasObjectives = useMemo(
-    () => !!goal.objectives?.length,
+    () => !!goal?.objectives?.length,
     [goal.objectives]
   );
 
@@ -217,24 +217,45 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
   );
 };
 const GoalFeedTab = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
   const {
-    data: goalPosts,
+    data: goalPostList,
     isLoading,
     refetch,
     error,
   } = socialService.useGoalPosts(goal.id);
 
+  const [params, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (params.get("refresh") === "goal-posts") {
+      refetch();
+      setSearchParams("");
+    }
+  }, [params, refetch, setSearchParams]);
+
   return (
     <section className="animate-fade-in">
+      <div className="mb-3 flex justify-between">
+        <Typography variant="h5">Últimos Posts</Typography>
+        <div className="flex gap-2">
+          <Button
+            color="primary"
+            size="large"
+            onClick={() => navigate("new-post")}
+          >
+            Nuevo
+          </Button>
+        </div>
+      </div>
       <DataLoader
         isLoading={isLoading}
-        hasData={!!goalPosts?.length}
+        hasData={!!goalPostList?.results?.length}
         retry={refetch}
         error={error}
       />
-      <div className="flex flex-col gap-10">
-        {goalPosts?.map((post) => (
-          <PostTeaser key={post.id} {...post} />
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {goalPostList?.results?.map((post) => (
+          <PostTeaser withoutComments key={post.id} {...post} />
         ))}
       </div>
     </section>

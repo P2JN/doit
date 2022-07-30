@@ -26,7 +26,7 @@ export type Post = {
   creationDate: string;
 
   createdBy: Id;
-  goal: Id;
+  goal?: Id;
 
   likes?: number;
   numComments?: number;
@@ -36,6 +36,12 @@ export type Comment = {
   id?: Id;
   content: string;
   creationDate?: string;
+  createdBy: Id;
+  post: Id;
+};
+
+export type Like = {
+  id?: Id;
   createdBy: Id;
   post: Id;
 };

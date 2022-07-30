@@ -15,7 +15,7 @@ const HomePage = () => {
   const { activeUser } = useActiveUser();
 
   const {
-    data: goals,
+    data: goalList,
     isLoading: loadingGoals,
     refetch,
   } = goalService.useGoalsByParticipant(activeUser?.id);
@@ -42,11 +42,11 @@ const HomePage = () => {
 
         <DataLoader
           isLoading={loadingGoals}
-          hasData={!!goals?.length}
+          hasData={!!goalList?.results?.length}
           retry={refetch}
         />
 
-        {goals?.map((goal) => (
+        {goalList?.results?.map((goal) => (
           <GoalTeaserProvider {...goal} />
         ))}
       </div>
@@ -95,7 +95,6 @@ const HomeModals = () => {
           </ModalDrawer>
         }
       />
-      <Route path="/:goalId" element={<></>} />
     </Routes>
   );
 };

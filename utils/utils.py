@@ -16,6 +16,14 @@ def get_obj_or_404(klass, *args, **kwargs):
         raise Http404
 
 
+def handle_uploaded_file(f):
+    url = 'media/uploaded/' + f.name
+    with open(url, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+    return url
+
+
 def create_user_notification(user, title, content):
     notification = Notification(user=user, title=title, content=content)
     notification.save()
@@ -53,9 +61,9 @@ def notify_completed_objectives(progress, objectives, goal, user):
                                              goal.creationDate))
         notifications.append(create_user_notification(user, "Objetivo " + translate_objective_frequency(
             objective.frequency) + " completado",
-                                        "Has completado el objetivo " + translate_objective_frequency(
-                                            objective.frequency) + " del goal " + goal.title + " creado el " + str(
-                                            goal.creationDate)).data)
+                                                      "Has completado el objetivo " + translate_objective_frequency(
+                                                          objective.frequency) + " del goal " + goal.title + " creado el " + str(
+                                                          goal.creationDate)).data)
     return notifications
 
 
