@@ -96,7 +96,7 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
   };
 
   return (
-    <header className="flex w-full cursor-pointer items-center gap-2 md:gap-5">
+    <header className="flex w-full cursor-pointer flex-wrap items-center gap-2 md:gap-5">
       {/* TODO: use real media photo */}
       <Avatar
         alt="userimg"
@@ -104,12 +104,12 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
         className="!h-[65px] !w-[65px] rounded-full border-2 border-gray-300 md:!h-[180px] md:!w-[180px]"
       />
 
-      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4 md:-ml-5 md:rounded-l-none md:pl-5">
+      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4 md:-ml-7 md:rounded-l-none md:pl-5">
         <Typography className="hover:font-bold" variant="h5">
           @{user.username}
         </Typography>
       </div>
-      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4 !text-lg">
+      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4">
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </div>
       {!isMyProfile && (
@@ -146,4 +146,34 @@ const UserTeaserReduced = (user: SocialTypes.User) => {
   );
 };
 
-export { UserTeaserReduced, UserTeaser, UserTeaserInfo };
+const UserUsername = (user: SocialTypes.User) => {
+  const navigate = useNavigate();
+  const onOpenUser = () => navigate("/users/" + user.id + "/info");
+  return (
+    <strong className="cursor-pointer hover:!underline" onClick={onOpenUser}>
+      @{user.username}
+    </strong>
+  );
+};
+
+const UserAvatar = (user: SocialTypes.User) => {
+  const navigate = useNavigate();
+  const onOpenUser = () => navigate("/users/" + user.id + "/info");
+
+  return (
+    <Avatar
+      onClick={onOpenUser}
+      className="-ml-3 cursor-pointer"
+      alt="userimg"
+      src="https://placekitten.com/1000/1000"
+    />
+  );
+};
+
+export {
+  UserTeaserReduced,
+  UserTeaser,
+  UserTeaserInfo,
+  UserUsername,
+  UserAvatar,
+};

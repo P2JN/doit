@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Typography } from "@mui/material";
 import Carousel from "react-material-ui-carousel";
 import { AxiosError } from "axios";
@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 import { Page } from "layout";
 import { useNotificationStore } from "store";
 import { goalService, socialService } from "services";
-import { arrayUtils } from "utils";
+import { arrayUtils, paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
 import { GoalTeaserInfo, PostTeaser, UserTeaser } from "components/organisms";
@@ -15,25 +15,37 @@ const ExplorePage = () => {
   const { addNotification } = useNotificationStore();
 
   const {
-    data: goalList,
+    data: goalPages,
     isLoading: loadingGoals,
     error: goalError,
     isError: isGoalError,
   } = goalService.useGoals();
+  const goals = useMemo(
+    () => paginationUtils.combinePages(goalPages),
+    [goalPages]
+  );
 
   const {
-    data: postList,
+    data: postPages,
     isLoading: loadingPosts,
     error: postError,
     isError: isPostError,
   } = socialService.usePosts();
+  const posts = useMemo(
+    () => paginationUtils.combinePages(postPages),
+    [postPages]
+  );
 
   const {
-    data: userList,
+    data: userPages,
     isLoading: loadingUsers,
     error: userError,
     isError: isUserError,
   } = socialService.useUsers();
+  const users = useMemo(
+    () => paginationUtils.combinePages(userPages),
+    [userPages]
+  );
 
   useEffect(() => {
     if (isGoalError) {
@@ -56,7 +68,7 @@ const ExplorePage = () => {
             loading={loadingGoals}
             error={isGoalError ? goalError : undefined}
             slides={
-              goalList?.results?.map((goal) => (
+              goals?.map((goal) => (
                 <GoalTeaserInfo key={goal.id} {...goal} />
               )) || []
             }
@@ -67,9 +79,8 @@ const ExplorePage = () => {
             loading={loadingUsers}
             error={isUserError ? userError : undefined}
             slides={
-              userList?.results?.map((user) => (
-                <UserTeaser key={user.id} {...user} />
-              )) || []
+              users?.map((user) => <UserTeaser key={user?.id} {...user} />) ||
+              []
             }
           />
 
@@ -78,7 +89,7 @@ const ExplorePage = () => {
             loading={loadingPosts}
             error={isPostError ? postError : undefined}
             slides={
-              postList?.results?.map((post) => (
+              posts?.map((post) => (
                 <PostTeaser withoutComments key={post.id} {...post} />
               )) || []
             }

@@ -6,12 +6,12 @@ import { Button, Divider, Typography } from "@mui/material";
 import { useActiveUser, useNotificationStore } from "store";
 import { goalService, socialService } from "services";
 import { GoalTypes } from "types";
-import { texts } from "utils";
+import { paginationUtils, texts } from "utils";
 
 import { ParsedError } from "components/atoms";
 import { DataLoader, ProgressBar } from "components/molecules";
-import { GoalForm, ObjectivesForm } from "components/templates";
 import { PostTeaser } from "components/organisms";
+import { GoalForm, ObjectivesForm } from "components/templates";
 
 const GoalInfoTab = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
@@ -219,11 +219,15 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
 const GoalFeedTab = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
   const {
-    data: goalPostList,
+    data: goalPages,
     isLoading,
     refetch,
     error,
   } = socialService.useGoalPosts(goal.id);
+  const goals = useMemo(
+    () => paginationUtils.combinePages(goalPages),
+    [goalPages]
+  );
 
   const [params, setSearchParams] = useSearchParams();
   useEffect(() => {
@@ -249,12 +253,12 @@ const GoalFeedTab = (goal: GoalTypes.Goal) => {
       </div>
       <DataLoader
         isLoading={isLoading}
-        hasData={!!goalPostList?.results?.length}
+        hasData={!!goals?.length}
         retry={refetch}
         error={error}
       />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {goalPostList?.results?.map((post) => (
+        {goals?.map((post) => (
           <PostTeaser withoutComments key={post.id} {...post} />
         ))}
       </div>

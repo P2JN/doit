@@ -1,17 +1,25 @@
 import { AxiosError } from "axios";
-import { useMutation, useQuery } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "react-query";
 
 import { GoalTypes } from "types";
 import { Id, PagedList } from "types/apiTypes";
+import { paginationUtils } from "utils";
 
 import { axiosInstance } from "./config";
 
 const requests = {
-  getGoals: () => axiosInstance.get("/goal/").then((response) => response.data),
-
-  getGoalsByParticipant: (participantId?: Id) =>
+  getGoals: (page?: number) =>
     axiosInstance
-      .get("/goal/?participant=" + (participantId || "missing"))
+      .get("/goal/?size=9" + (page ? "&page=" + page : ""))
+      .then((response) => response.data),
+
+  getGoalsByParticipant: (participantId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/goal/?participant=" +
+          (participantId || "missing") +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
   getGoal: (id?: Id) =>
@@ -85,14 +93,23 @@ const goalService = {
   // GOALS
   // Use all the goals
   useGoals: () =>
-    useQuery<PagedList<GoalTypes.Goal>, AxiosError>("goals", () =>
-      requests.getGoals()
+    useInfiniteQuery<PagedList<GoalTypes.Goal>, AxiosError>(
+      "goals",
+      ({ pageParam = 0 }) => requests.getGoals(pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
 
   // Use my goals
   useGoalsByParticipant: (participantId?: Id) =>
-    useQuery<PagedList<GoalTypes.Goal>, AxiosError>("my-goals", () =>
-      requests.getGoalsByParticipant(participantId)
+    useInfiniteQuery<PagedList<GoalTypes.Goal>, AxiosError>(
+      `participant-${participantId}-goals`,
+      ({ pageParam = 0 }) =>
+        requests.getGoalsByParticipant(participantId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
 
   // Use a goal specifying its id
