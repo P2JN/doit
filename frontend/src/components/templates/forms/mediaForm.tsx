@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { FormLabel, IconButton } from "@mui/material";
 import { Delete, PhotoCamera } from "@mui/icons-material";
 
@@ -22,7 +22,7 @@ const MediaForm = (props: {
     props.initial
   );
 
-  const onImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     // will send a request with a multipart form file
     const file = e.target.files?.[0];
     const fileName = file?.name;
