@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from mongoengine import Document, fields
+from mongoengine import Document, fields, CASCADE
 
 
 # Enums
@@ -61,4 +61,4 @@ class Tracking(Document):
     amount = fields.FloatField(required=True, min_value=0)
 
     createdBy = fields.ReferenceField('User')
-    goal = fields.ReferenceField('Goal')
+    goal = fields.ReferenceField('Goal', reverse_delete_rule=CASCADE)

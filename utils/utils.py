@@ -1,9 +1,12 @@
 from django.http import Http404
+from rest_framework import status
 from rest_framework.response import Response
 
 from goals.models import Frequency
 from social.models import Participate, Notification
 from social.serializers import NotificationSerializer
+
+import datetime
 
 
 def get_obj_or_404(klass, *args, **kwargs):
@@ -38,7 +41,7 @@ def notify_completed_objectives(progress, objectives, goal, user):
     objectives_to_notify = [objective for objective in objectives if
                             progress[objective.frequency] >= objective.quantity and has_been_notified(user, objective,
                                                                                                       goal)]
-
+    notifications = []
     for objective in objectives_to_notify:
         if goal.type == 'cooperative':
             participants = list(Participate.objects.filter(goal=goal, createdBy__ne=user))
@@ -48,12 +51,12 @@ def notify_completed_objectives(progress, objectives, goal, user):
                                          "Has completado el objetivo " + translate_objective_frequency(
                                              objective.frequency) + " del goal " + goal.title + " creado el " + str(
                                              goal.creationDate))
-        return create_user_notification(user, "Objetivo " + translate_objective_frequency(
+        notifications.append(create_user_notification(user, "Objetivo " + translate_objective_frequency(
             objective.frequency) + " completado",
                                         "Has completado el objetivo " + translate_objective_frequency(
                                             objective.frequency) + " del goal " + goal.title + " creado el " + str(
-                                            goal.creationDate)).data
-    return None
+                                            goal.creationDate)).data)
+    return notifications
 
 
 def has_been_notified(user, objective, goal):

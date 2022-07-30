@@ -48,7 +48,7 @@ class UserSerializer(serializers.DocumentSerializer):
 class NotificationSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'content', 'creationDate', 'user']
+        fields = ['id', 'title', 'content', 'creationDate', 'user', 'checked']
         read_only_fields = ['creationDate']
 
 
@@ -73,7 +73,7 @@ class LikeTrackingSerializer(serializers.DocumentSerializer):
 class LikePostSerializer(serializers.DocumentSerializer):
     class Meta:
         model = LikePost
-        fields = ['id', 'user', 'post']
+        fields = ['id', 'createdBy', 'post']
 
 
 class CommentSerializer(serializers.DocumentSerializer):

@@ -73,7 +73,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
 
-    filter_fields = ['title', 'content', 'creationDate', 'user']
+    filter_fields = ['title', 'content', 'creationDate', 'user', 'checked']
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
@@ -151,9 +151,9 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.tracking.createdBy, instance.createdBy + " te ha dado like a un tracking.",
-                                 instance.createdBy + " te dio un like en tu tracking del " + instance.tracking.date
-                                 + "en el que conseguiste " + instance.tracking.amount + ".")
+        create_user_notification(instance.tracking.createdBy, instance.createdBy.username + " te ha dado like a un tracking.",
+                                 instance.createdBy.username + " te dio un like en tu tracking del " + str(instance.tracking.date)
+                                 + " en el que conseguiste " + str(instance.tracking.amount) + ".")
 
 
 class LikePostViewSet(viewsets.ModelViewSet):
@@ -172,8 +172,8 @@ class LikePostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.post.createdBy, instance.createdBy + " te ha dado like a un post.",
-                                 instance.createdBy + " te dio un like en tu post " + instance.post.title + ".")
+        create_user_notification(instance.post.createdBy, instance.createdBy.username + " te ha dado like a un post.",
+                                 instance.createdBy.username + " te dio un like en tu post " + instance.post.title + ".")
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -192,8 +192,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.post.createdBy, instance.createdBy + " ha comentado en tu post.",
-                                 instance.createdBy + " ha comentado en tu post " + instance.post.title + ".")
+        create_user_notification(instance.post.createdBy, instance.createdBy.username + " ha comentado en tu post: "+instance.post.title+".",
+                                 instance.createdBy.username + " ha comentado: " + instance.content + ".")
 
 
 # Custom endpoints

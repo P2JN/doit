@@ -11,7 +11,8 @@ from social.models import Participate, LikeTracking, User
 from utils.filters import FilterSet
 
 # ViewSet views
-from utils.utils import notify_completed_objectives
+from utils.utils import notify_completed_objectives, create_notification, translate_objective_frequency, \
+    create_user_notification, delete_notification
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -34,6 +35,18 @@ class GoalViewSet(viewsets.ModelViewSet):
 
         return goal_filter.filter()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return create_notification(self, serializer, request, "Goal", "¡Goal creado correctamente!",
+                                   "El goal " + serializer.data.get("title") + " ha sido creado correctamente.")
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return delete_notification(self, instance, request, "¡Goal borrado correctamente!",
+                                   "El goal " + instance.title + " ha sido borrado correctamente.")
+
 
 class ObjectiveViewSet(viewsets.ModelViewSet):
     queryset = Objective.objects.all()
@@ -47,6 +60,23 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return objective_filter.filter()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        notification = create_user_notification(serializer.instance.goal.createdBy, "¡Objective creado correctamente!",
+                                                "El objective de tipo " + translate_objective_frequency(
+                                                    serializer.instance.frequency) + " ha sido creado correctamente.")
+
+        return Response({"notification": notification.data, "objective": serializer.data}, status=201)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        notification = create_user_notification(instance.goal.createdBy, "¡Objective borrado correctamente!",
+                                                "El objective de tipo " + translate_objective_frequency(
+                                                    instance.frequency) + " ha sido borrado correctamente.")
+        return Response({"notification": notification.data}, status=200)
 
 
 class TrackingViewSet(viewsets.ModelViewSet):
@@ -63,6 +93,20 @@ class TrackingViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return tracking_filter.filter()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return create_notification(self, serializer, request, "Tracking", "¡Tracking registrado correctamente!",
+                                   "El tracking de cantidad " + str(
+                                       serializer.instance.amount) + " " + serializer.instance.goal.unit + " ha sido creado correctamente.")
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return delete_notification(self, instance, request, "¡Tracking borrado correctamente!",
+                                   "El tracking de cantidad " + str(
+                                       instance.amount) + " " + instance.goal.unit + " ha sido borrado correctamente.")
 
 
 # Custom endpoints
