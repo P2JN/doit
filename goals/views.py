@@ -154,5 +154,5 @@ class GoalProgress(viewsets.GenericAPIView):
                 progress[Frequency.YEARLY] += tracking.amount
             if Frequency.TOTAL in progress:
                 progress[Frequency.TOTAL] += tracking.amount
-        noti = notify_completed_objectives(progress, objectives, goal, user)
-        return Response({"notification": noti, "progress": progress}, status=200)
+        notification = notify_completed_objectives(progress, objectives, goal, user)
+        return Response({"notification": notification, "progress": progress}, status=200)
