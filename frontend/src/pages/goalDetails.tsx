@@ -60,7 +60,7 @@ const GoalDetailPage = () => {
   const labels = {
     info: "Información",
     feed: "Contenido",
-    trackings: "Mis registros",
+    trackings: "Progreso",
     leaderboard: "Líderes",
     stats: "Estadísticas",
   };
@@ -83,9 +83,9 @@ const GoalDetailPage = () => {
             allowScrollButtonsMobile
           >
             <Tab value={"info"} icon={<InfoOutlined />} />
+            <Tab value={"trackings"} icon={<TrackChangesOutlined />} />
             <Tab value={"feed"} icon={<ImageOutlined />} />
             <Tab value={"leaderboard"} icon={<LeaderboardOutlined />} />
-            <Tab value={"trackings"} icon={<TrackChangesOutlined />} />
             <Tab value={"stats"} icon={<TimelineOutlined />} />
           </Tabs>
         </div>
@@ -140,8 +140,8 @@ const GoalTabs = (props: { activeTab: string; goal: GoalTypes.Goal }) => {
   return (
     <section>
       {activeTab === "info" && <GoalInfoTab {...goal} />}
+      {activeTab === "trackings" && <GoalTrackingsTab {...goal} />}
       {activeTab === "feed" && <GoalFeedTab {...goal} />}
-      {activeTab === "trackings" && <GoalTrackingsTab />}
       {activeTab === "leaderboard" && <GoalLeaderboardTab />}
       {activeTab === "stats" && <GoalStatsTab />}
     </section>

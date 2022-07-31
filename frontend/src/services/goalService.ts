@@ -87,6 +87,29 @@ const requests = {
     axiosInstance
       .post("/tracking/", tracking)
       .then((response) => response.data),
+
+  removeTracking: (trackingId?: Id) =>
+    axiosInstance
+      .delete("/tracking/" + (trackingId || "missing") + "/")
+      .then((response) => response.data),
+
+  getUserTrackings: (userId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/tracking/?order_by=-date&size=12&createdBy=" +
+          (userId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
+
+  getGoalTrackings: (goalId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/tracking/?order_by=-date&size=12&goal=" +
+          (goalId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
 };
 
 const goalService = {
@@ -166,6 +189,29 @@ const goalService = {
   // Create a tracking
   useCreateTracking: () =>
     useMutation<any, AxiosError, GoalTypes.Tracking>(requests.createTracking),
+
+  // Remove a tracking
+  useRemoveTracking: () =>
+    useMutation<any, AxiosError, Id>(requests.removeTracking),
+
+  // Use user trackings
+  useUserTrackings: (userId?: Id) =>
+    useInfiniteQuery<PagedList<GoalTypes.Tracking>, AxiosError>(
+      "user-trackings-" + userId,
+      ({ pageParam = 0 }) => requests.getUserTrackings(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
+    ),
+  // Use goal posts
+  useGoalTrackings: (goalId?: Id) =>
+    useInfiniteQuery<PagedList<GoalTypes.Tracking>, AxiosError>(
+      "goal-trackings-" + goalId,
+      ({ pageParam = 0 }) => requests.getGoalTrackings(goalId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
+    ),
 };
 
 export default goalService;

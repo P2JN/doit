@@ -10,7 +10,7 @@ import { paginationUtils, texts } from "utils";
 
 import { ParsedError } from "components/atoms";
 import { DataLoader, ProgressBar } from "components/molecules";
-import { PostTeaser } from "components/organisms";
+import { PostTeaser, TrackingTeaser } from "components/organisms";
 import { GoalForm, ObjectivesForm } from "components/templates";
 
 const GoalInfoTab = (goal: GoalTypes.Goal) => {
@@ -223,6 +223,8 @@ const GoalFeedTab = (goal: GoalTypes.Goal) => {
     isLoading,
     refetch,
     error,
+    hasNextPage,
+    fetchNextPage,
   } = socialService.useGoalPosts(goal.id);
   const goals = useMemo(
     () => paginationUtils.combinePages(goalPages),
@@ -251,24 +253,73 @@ const GoalFeedTab = (goal: GoalTypes.Goal) => {
           </Button>
         </div>
       </div>
-      <DataLoader
-        isLoading={isLoading}
-        hasData={!!goals?.length}
-        retry={refetch}
-        error={error}
-      />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {goals?.map((post) => (
           <PostTeaser withoutComments key={post.id} {...post} />
         ))}
       </div>
+      <DataLoader
+        isLoading={isLoading}
+        hasData={!!goals?.length}
+        retry={refetch}
+        error={error}
+        hasNextPage={hasNextPage}
+        loadMore={fetchNextPage}
+      />
     </section>
   );
 };
-const GoalTrackingsTab = () => {
+const GoalTrackingsTab = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+
+  const {
+    data: trackingPages,
+    isLoading,
+    error,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+  } = goalService.useGoalTrackings(goal.id);
+  const trackings = useMemo(
+    () => paginationUtils.combinePages(trackingPages),
+    [trackingPages]
+  );
+
+  const [params, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (params.get("refresh") === goal.id) {
+      refetch();
+      setSearchParams("");
+    }
+  }, [goal.id, params, refetch, setSearchParams]);
+
   return (
     <section className="animate-fade-in">
-      <p>Goal Trackings Content</p>
+      <div className="mb-3 flex justify-between">
+        <Typography variant="h5">Últimos Progresos</Typography>
+        <div className="flex gap-2">
+          <Button
+            color="primary"
+            size="large"
+            onClick={() => navigate("track")}
+          >
+            Nuevo
+          </Button>
+        </div>
+      </div>
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {trackings?.map((tracking) => (
+          <TrackingTeaser key={tracking.id} {...tracking} />
+        ))}
+      </div>
+      <DataLoader
+        isLoading={isLoading}
+        hasData={!!trackings?.length}
+        retry={refetch}
+        error={error}
+        hasNextPage={hasNextPage}
+        loadMore={fetchNextPage}
+      />
     </section>
   );
 };

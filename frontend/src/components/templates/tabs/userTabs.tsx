@@ -2,13 +2,13 @@ import { useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 
-import { socialService } from "services";
+import { goalService, socialService } from "services";
 import { SocialTypes } from "types";
 import { useActiveUser } from "store";
 import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
-import { PostTeaser } from "components/organisms";
+import { PostTeaser, TrackingTeaser } from "components/organisms";
 
 const UserInfoTab = (user: SocialTypes.User) => {
   return (
@@ -71,10 +71,38 @@ const UserFeedTab = (user: SocialTypes.User) => {
     </section>
   );
 };
-const UserTrackingsTab = () => {
+const UserTrackingsTab = (user: SocialTypes.User) => {
+  const {
+    data: trackingPages,
+    isLoading,
+    error,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+  } = goalService.useUserTrackings(user.id);
+  const trackings = useMemo(
+    () => paginationUtils.combinePages(trackingPages),
+    [trackingPages]
+  );
+
   return (
-    <section>
-      <p>User Trackings Content</p>
+    <section className="animate-fade-in">
+      <div className="mb-3 flex justify-between">
+        <Typography variant="h5">Últimos Progresos</Typography>
+      </div>
+      <div className="grid gap-x-5 gap-y-7 md:grid-cols-2 xl:grid-cols-3">
+        {trackings?.map((tracking) => (
+          <TrackingTeaser key={tracking.id} {...tracking} />
+        ))}
+      </div>
+      <DataLoader
+        isLoading={isLoading}
+        hasData={!!trackings?.length}
+        retry={refetch}
+        error={error}
+        hasNextPage={hasNextPage}
+        loadMore={fetchNextPage}
+      />
     </section>
   );
 };

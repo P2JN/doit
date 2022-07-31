@@ -13,6 +13,7 @@ import {
   UserAvatar,
   UserUsername,
 } from "./userTeaser";
+import { TrackingTeaser } from "./trackingTeaser";
 
 export {
   UserTeaser,
@@ -24,6 +25,7 @@ export {
   GoalTeaserInfo,
   GoalTeaserReduced,
   PostTeaser,
+  TrackingTeaser,
   NotificationProvider,
   ModalDrawer,
   CommentSection,
