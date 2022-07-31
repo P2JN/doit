@@ -11,7 +11,7 @@ from social.models import Participate, LikeTracking, User
 from utils.filters import FilterSet
 
 # ViewSet views
-from utils.utils import notify_completed_objectives, create_notification, translate_objective_frequency, \
+from utils.notifications import notify_completed_objectives, create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification
 
 
@@ -39,13 +39,13 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return create_notification(self, serializer, request, "Goal", "¡Goal creado correctamente!",
-                                   "El goal " + serializer.data.get("title") + " ha sido creado correctamente.")
+        return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
+                                   "La meta " + serializer.data.get("title") + " ha sido creada.")
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        return delete_notification(self, instance, request, "¡Goal borrado correctamente!",
-                                   "El goal " + instance.title + " ha sido borrado correctamente.")
+        return delete_notification(self, instance, request, "¡Meta eliminada!",
+                                   "La meta " + instance.title + " ha sido eliminada.")
 
 
 class ObjectiveViewSet(viewsets.ModelViewSet):
@@ -65,17 +65,18 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        notification = create_user_notification(serializer.instance.goal.createdBy, "¡Objective creado correctamente!",
-                                                "El objective de tipo " + translate_objective_frequency(
-                                                    serializer.instance.frequency) + " ha sido creado correctamente.")
+        notification = create_user_notification(serializer.instance.goal.createdBy, "¡Nuevo objectivo creado!",
+                                                "Has añadido un objetivo " + translate_objective_frequency(
+                                                    serializer.instance.frequency) + " a la meta +"
+                                                + serializer.instance.goal.title + ".")
 
         return Response({"notification": notification.data, "objective": serializer.data}, status=201)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        notification = create_user_notification(instance.goal.createdBy, "¡Objective borrado correctamente!",
-                                                "El objective de tipo " + translate_objective_frequency(
-                                                    instance.frequency) + " ha sido borrado correctamente.")
+        notification = create_user_notification(instance.goal.createdBy, "¡Objectivo eliminado!",
+                                                "Has borrado un objetivo " + translate_objective_frequency(
+                                                    instance.frequency) + " a la meta " + instance.goal.title + ".")
         return Response({"notification": notification.data}, status=200)
 
 
@@ -98,15 +99,16 @@ class TrackingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return create_notification(self, serializer, request, "Tracking", "¡Tracking registrado correctamente!",
-                                   "El tracking de cantidad " + str(
-                                       serializer.instance.amount) + " " + serializer.instance.goal.unit + " ha sido creado correctamente.")
+        return create_notification(self, serializer, request, "Tracking", "¡Nuevo progreso registrado!",
+                                   "Has registrado " + str(
+                                       serializer.instance.amount) + " " + serializer.instance.goal.unit +
+                                   " a la meta "+serializer.instance.goal.title+"+.")
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        return delete_notification(self, instance, request, "¡Tracking borrado correctamente!",
-                                   "El tracking de cantidad " + str(
-                                       instance.amount) + " " + instance.goal.unit + " ha sido borrado correctamente.")
+        return delete_notification(self, instance, request, "¡Progreso eliminado!",
+                                   "Has eliminado " + str(instance.amount) + " " + instance.goal.unit +
+                                   " a la meta "+instance.goal.title+"+.")
 
 
 # Custom endpoints
@@ -122,7 +124,7 @@ class GoalProgress(viewsets.GenericAPIView):
         for objective in objectives:
             progress[objective.frequency] = 0.0
 
-        today = datetime.datetime.now().date()
+        today = datetime.datetime.now()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
         trackings = Tracking.objects
@@ -132,16 +134,16 @@ class GoalProgress(viewsets.GenericAPIView):
         if Frequency.TOTAL in progress:
             trackings = trackings.filter(goal=goal)
         elif Frequency.YEARLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=today.replace(month=12, day=31),
-                                         date__gte=today.replace(month=1, day=1))
+            trackings = trackings.filter(goal=goal, date__lte=today.replace(month=12, day=31, hour=23, minute=59, second=59),
+                                         date__gte=today.replace(month=1, day=1, hour=0, minute=0, second=0))
         elif Frequency.MONTHLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=today.replace(day=31),
-                                         date__gte=today.replace(day=1))
+            trackings = trackings.filter(goal=goal, date__lte=today.replace(day=31, hour=23, minute=59, second=59),
+                                         date__gte=today.replace(day=1, hour=0, minute=0, second=0))
         elif Frequency.WEEKLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=end_week,
-                                         date__gte=start_week)
+            trackings = trackings.filter(goal=goal, date__lte=end_week.replace(hour=23, minute=59, second=59),
+                                         date__gte=start_week.replace(hour=0, minute=0, second=0))
         elif Frequency.DAILY in progress:
-            trackings = trackings.filter(goal=goal, date__gte=today)
+            trackings = trackings.filter(goal=goal, date__gte=today.replace(hour=0, minute=0, second=0))
 
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:

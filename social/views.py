@@ -8,7 +8,7 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
 from utils.filters import FilterSet
-from utils.utils import delete_notification, create_notification, create_user_notification
+from utils.notifications import delete_notification, create_notification, create_user_notification
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -32,13 +32,20 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return create_notification(self, serializer, request, "Post", "¡Post creado correctamente!",
-                                   "El post " + serializer.data.get("title") + " ha sido creado correctamente.")
+        content = "La publicacion " + serializer.data.get("title") + " ha sido añadida"
+        if serializer.instance.goal:
+            content = "La publicacion " + serializer.data.get("title") + " ha sido añadida a la meta " + \
+                      serializer.instance.goal.title + "."
+        return create_notification(self, serializer, request, "Post", "¡Has creado una nueva publicacion!", content)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        return delete_notification(self, instance, request, "¡Post borrado correctamente!",
-                                   "El post " + instance.title + " ha sido borrado correctamente.")
+        content = "La publicacion " + instance.title + " ha sido eliminada"
+        if instance.goal:
+            content = "La publicacion " + instance.title + " ha sido eliminada de la meta " + \
+                      instance.goal.title + "."
+        return delete_notification(self, instance, request, "¡Post eliminado!",
+                                   content)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -126,13 +133,13 @@ class ParticipateViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en este goal!",
-                                   "Empezaste a participar en el goal: " + serializer.instance.goal.title + ".")
+        return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en esta meta!",
+                                   "Empezaste a participar en la meta: " + serializer.instance.goal.title + ".")
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        return delete_notification(self, instance, request, "¡Has dejado de participar en este goal!",
-                                   "Dejaste de participar en el goal: " + instance.goal.title + ".")
+        return delete_notification(self, instance, request, "¡Has dejado de participar en esta meta!",
+                                   "Dejaste de participar en la meta: " + instance.goal.title + ".")
 
 
 class LikeTrackingViewSet(viewsets.ModelViewSet):
@@ -151,9 +158,12 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.tracking.createdBy, instance.createdBy.username + " te ha dado like a un tracking.",
-                                 instance.createdBy.username + " te dio un like en tu tracking del " + str(instance.tracking.date)
-                                 + " en el que conseguiste " + str(instance.tracking.amount) + ".")
+        create_user_notification(instance.tracking.createdBy,
+                                 instance.createdBy.username + " te ha dado like a un tracking.",
+                                 instance.createdBy.username + " te dio un like en tu tracking del " + str(
+                                     instance.tracking.date)
+                                 + " en el que conseguiste " + str(instance.tracking.amount)
+                                 + " " + instance.tracking.goal.unit + ".")
 
 
 class LikePostViewSet(viewsets.ModelViewSet):
@@ -173,7 +183,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy, instance.createdBy.username + " te ha dado like a un post.",
-                                 instance.createdBy.username + " te dio un like en tu post " + instance.post.title + ".")
+                                 "Al usuario "+instance.createdBy.username + " le ha gustado tu publicacion " + instance.post.title + ".")
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -192,7 +202,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.post.createdBy, instance.createdBy.username + " ha comentado en tu post: "+instance.post.title+".",
+        create_user_notification(instance.post.createdBy,
+                                 instance.createdBy.username + " ha comentado en tu post " + instance.post.title + ".",
                                  instance.createdBy.username + " ha comentado: " + instance.content + ".")
 
 
