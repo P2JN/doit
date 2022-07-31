@@ -40,7 +40,8 @@ class UserSerializer(serializers.DocumentSerializer):
         fields = ['id', 'username', 'email', 'password',
                   'birthDate', 'firstName', 'lastName', 'numFollowers', 'numFollowing', 'numPosts', 'media', 'urlMedia']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
+            'media': {'allow_null': True}
         }
 
     def get_numFollowers(self, obj):
