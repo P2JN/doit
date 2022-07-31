@@ -22,6 +22,7 @@ import {
   UserFeedTab,
   UserStatsTab,
   UserTrackingsTab,
+  UserFollowersTab,
 } from "./tabs/userTabs";
 
 // TEASERS
@@ -44,4 +45,5 @@ export {
   UserFeedTab,
   UserStatsTab,
   UserTrackingsTab,
+  UserFollowersTab,
 };

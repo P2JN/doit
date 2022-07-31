@@ -3,6 +3,9 @@ import NotificationProvider from "./notificationProvider";
 import ModalDrawer from "./modalDrawer";
 import CommentSection from "./commentSection";
 
+// Tables
+import FollowTable from "./followTable";
+
 // TEASERS
 import { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced } from "./goalTeaser";
 import { PostTeaser } from "./postTeaser";
@@ -29,4 +32,5 @@ export {
   NotificationProvider,
   ModalDrawer,
   CommentSection,
+  FollowTable,
 };
