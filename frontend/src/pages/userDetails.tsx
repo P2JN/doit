@@ -86,8 +86,8 @@ const UserDetailPage = () => {
                 allowScrollButtonsMobile
               >
                 <Tab value={"info"} icon={<InfoOutlined />} />
-                <Tab value={"feed"} icon={<ImageOutlined />} />
                 <Tab value={"trackings"} icon={<TrackChanges />} />
+                <Tab value={"feed"} icon={<ImageOutlined />} />
                 <Tab value={"stats"} icon={<Timeline />} />
               </Tabs>
             </div>
@@ -113,8 +113,8 @@ const UserTabs = (props: { activeTab: string; user: SocialTypes.User }) => {
   return (
     <section>
       {activeTab === "info" && <UserInfoTab {...user} />}
+      {activeTab === "trackings" && <UserTrackingsTab {...user} />}
       {activeTab === "feed" && <UserFeedTab {...user} />}
-      {activeTab === "trackings" && <UserTrackingsTab />}
       {activeTab === "stats" && <UserStatsTab />}
     </section>
   );

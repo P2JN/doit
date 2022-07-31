@@ -63,7 +63,7 @@ const CommentSection = (post: SocialTypes.Post) => {
       </Card>
       <section
         ref={commentListRef}
-        className="grid max-h-[420px] gap-3 overflow-auto py-2"
+        className="grid max-h-[420px] gap-3 overflow-auto p-2"
       >
         <DataLoader
           isLoading={isLoading}
