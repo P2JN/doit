@@ -21,6 +21,13 @@ const requests = {
   createUser: (user: SocialTypes.User) =>
     axiosInstance.post("/auth/signup/", user).then((response) => response.data),
 
+  updateUserPhoto: (props: { userId?: Id; mediaId?: Id }) =>
+    axiosInstance
+      .patch("/user/" + (props.userId || "missing") + "/", {
+        media: props?.mediaId || null,
+      })
+      .then((response) => response.data),
+
   logInUser: (login: SocialTypes.LogIn) =>
     axiosInstance.post("/auth/login/", login).then((response) => response.data),
 
@@ -148,6 +155,13 @@ const socialService = {
       "create-user",
       requests.createUser
     ),
+
+  useUpdateUserPhoto: () =>
+    useMutation<any, AxiosError, { userId?: Id; mediaId?: Id }>(
+      "update-user-photo",
+      requests.updateUserPhoto
+    ),
+
   // follow an user
   useFollow: () =>
     useMutation<any, AxiosError, SocialTypes.Follow>(

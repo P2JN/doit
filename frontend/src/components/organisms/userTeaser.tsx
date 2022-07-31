@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Avatar, Button, Typography } from "@mui/material";
+import { Avatar, Button, IconButton, Typography } from "@mui/material";
+import { Edit } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
 import { socialService } from "services";
 import { useNotificationStore, useActiveUser } from "store";
+import { mediaUtils } from "utils";
 
 import { Card } from "components/atoms";
 import { UserCounters } from "components/molecules";
@@ -14,14 +16,15 @@ const UserTeaser = (user: SocialTypes.User) => {
   const onOpenUser = () => navigate("/users/" + user.id + "/info");
   return (
     <Card className="cursor-pointer" onClick={onOpenUser}>
-      <div className="-mx-7 -mt-5 flex items-center justify-between">
-        {/* TODO: use real media photo */}
-        <img
-          src="https://placekitten.com/1000/1000"
-          alt="userimg"
-          className="w-full text-center"
-        />
-      </div>
+      {user.urlMedia && (
+        <div className="-mx-7 -mt-5 flex items-center justify-between">
+          <img
+            src={user.urlMedia}
+            alt="userimg"
+            className="w-full text-center"
+          />
+        </div>
+      )}
       <header className="flex cursor-pointer items-center justify-between">
         <Typography variant="h5">
           <strong onClick={onOpenUser}>{user.firstName}</strong>
@@ -36,10 +39,11 @@ const UserTeaser = (user: SocialTypes.User) => {
 };
 
 const UserTeaserInfo = (user: SocialTypes.User) => {
-  const { addNotification } = useNotificationStore();
-
+  const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setSearchParams] = useSearchParams();
+
+  const { addNotification } = useNotificationStore();
 
   const { activeUser } = useActiveUser();
   const isMyProfile = useMemo(
@@ -96,16 +100,20 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
   };
 
   return (
-    <header className="flex w-full cursor-pointer flex-wrap items-center gap-2 md:gap-5">
-      {/* TODO: use real media photo */}
+    <header className="flex w-full flex-wrap items-center gap-2 md:gap-5">
       <Avatar
         alt="userimg"
-        src="https://placekitten.com/1000/1000"
+        src={mediaUtils.sanitizeMediaUrl(user?.urlMedia)}
         className="!h-[65px] !w-[65px] rounded-full border-2 border-gray-300 md:!h-[180px] md:!w-[180px]"
       />
 
-      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4 md:-ml-7 md:rounded-l-none md:pl-5">
-        <Typography className="hover:font-bold" variant="h5">
+      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4 md:-ml-9 md:rounded-l-none md:pl-5">
+        {isMyProfile && (
+          <IconButton onClick={() => navigate("update-photo")}>
+            <Edit />
+          </IconButton>
+        )}
+        <Typography className="cursor-pointer hover:font-bold" variant="h5">
           @{user.username}
         </Typography>
       </div>
@@ -140,8 +148,7 @@ const UserTeaserReduced = (user: SocialTypes.User) => {
           @{user.username}
         </Typography>
       </div>
-      {/* TODO: use real media photo */}
-      <Avatar alt="userimg" src="https://placekitten.com/1000/1000" />
+      <Avatar alt="userimg" src={mediaUtils.sanitizeMediaUrl(user?.urlMedia)} />
     </header>
   );
 };
@@ -165,7 +172,7 @@ const UserAvatar = (user: SocialTypes.User) => {
       onClick={onOpenUser}
       className="-ml-3 cursor-pointer"
       alt="userimg"
-      src="https://placekitten.com/1000/1000"
+      src={mediaUtils.sanitizeMediaUrl(user?.urlMedia)}
     />
   );
 };

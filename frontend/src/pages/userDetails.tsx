@@ -6,7 +6,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import { Tab, Tabs, Typography } from "@mui/material";
+import { Avatar, Divider, Tab, Tabs, Typography } from "@mui/material";
 import {
   ImageOutlined,
   InfoOutlined,
@@ -15,9 +15,12 @@ import {
 } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
+import { Id } from "types/apiTypes";
 import { Page } from "layout";
 import { socialService } from "services";
+import { mediaUtils } from "utils";
 
+import { Loader } from "components/atoms";
 import { DataLoader } from "components/molecules";
 import { ModalDrawer, UserTeaserInfo } from "components/organisms";
 import {
@@ -26,6 +29,7 @@ import {
   UserStatsTab,
   UserTrackingsTab,
   PostForm,
+  MediaForm,
 } from "components/templates";
 
 type UserTabsType = "info" | "feed" | "trackings" | "stats";
@@ -97,7 +101,7 @@ const UserDetailPage = () => {
         />
         {activeTab && user && <UserTabs activeTab={activeTab} user={user} />}
       </div>
-      <UserModals />
+      {user && <UserModals {...user} />}
     </Page>
   );
 };
@@ -116,8 +120,25 @@ const UserTabs = (props: { activeTab: string; user: SocialTypes.User }) => {
   );
 };
 
-const UserModals = () => {
+const UserModals = (user: SocialTypes.User) => {
   const navigate = useNavigate();
+
+  const {
+    mutate: updatePhoto,
+    isLoading: loadingPhoto,
+    error: errorPhoto,
+  } = socialService.useUpdateUserPhoto();
+
+  const onUpdatePhoto = (mediaId?: Id) => {
+    updatePhoto(
+      { userId: user.id, mediaId },
+      {
+        onSuccess: () => {
+          navigate(`/users/${user.id}/info?refresh=user`);
+        },
+      }
+    );
+  };
 
   return (
     <Routes>
@@ -126,6 +147,24 @@ const UserModals = () => {
         element={
           <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
             <PostForm />
+          </ModalDrawer>
+        }
+      />
+      <Route
+        path="/update-photo"
+        element={
+          <ModalDrawer title="Cambia tu foto" onClose={() => navigate(-1)}>
+            <div className="mb-10 flex justify-center">
+              <Avatar
+                alt="userimg"
+                src={mediaUtils.sanitizeMediaUrl(user?.urlMedia)}
+                className="!h-[65px] !w-[65px] rounded-full border-2 border-gray-300 md:!h-[180px] md:!w-[180px]"
+              />
+            </div>
+            <Divider />
+            <MediaForm initial={user.media} onUploadFinished={onUpdatePhoto} />
+            {loadingPhoto && <Loader />}
+            {errorPhoto && <div>Error</div>}
           </ModalDrawer>
         }
       />
