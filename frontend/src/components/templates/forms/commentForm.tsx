@@ -50,7 +50,10 @@ const CommentForm = (props: { postId?: Id }) => {
           name="message"
           rules={{
             required: "No puedes añadir un comentario vacío",
-            maxLength: 100,
+            maxLength: {
+              value: 1250,
+              message: "Es demasiado largo, max 1250",
+            },
           }}
           control={control}
           render={({ field }) => (

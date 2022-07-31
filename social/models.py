@@ -15,7 +15,8 @@ class User(Document):
     birthDate = fields.DateTimeField()
     firstName = fields.StringField(max_length=30, required=True)
     lastName = fields.StringField(max_length=60)
-    media = fields.ReferenceField('Media', reverse_delete_rule=NULLIFY)
+    media = fields.ReferenceField(
+        'Media', reverse_delete_rule=NULLIFY, required=False)
 
     meta = {'indexes': [
         {'fields': ['$username', "$email", "$firstName", "$lastName"],

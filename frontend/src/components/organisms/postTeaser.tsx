@@ -4,7 +4,7 @@ import { useMatch } from "react-router-dom";
 import { SocialTypes } from "types";
 import { goalService, socialService } from "services";
 
-import { Card } from "components/atoms";
+import { Card, Image } from "components/atoms";
 import { PostCounters } from "components/molecules";
 import {
   UserTeaserReduced,
@@ -29,15 +29,12 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
         {goal && !isGoalDetail && !post.withoutComments && (
           <GoalTeaserReduced {...goal} />
         )}
-        <Card className="h-full">
-          <div className="-mx-7 -mt-5 flex items-center justify-between">
-            {/* TODO: use real media photo */}
-            <img
-              src="https://picsum.photos/1000"
-              alt="post"
-              className="w-full text-center"
-            />
-          </div>
+        <Card className="!h-full">
+          {post?.urlMedia && (
+            <div className="-mx-7 -mt-5 flex items-center justify-between transition-all duration-200 ease-in-out hover:-mx-10">
+              <Image src={post.urlMedia} alt={post.title} />
+            </div>
+          )}
           <header className="flex items-center justify-between">
             <Typography variant="h5">
               <strong>{post.title}</strong>
