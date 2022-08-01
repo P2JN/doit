@@ -12,7 +12,7 @@ from social.serializers import UserSerializer
 from utils.filters import FilterSet
 
 # ViewSet views
-from utils.utils import get_trackings
+from utils.utils import get_trackings, set_amount
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -110,14 +110,12 @@ class LeaderBoard(viewsets.GenericAPIView):
         end_week = start_week + datetime.timedelta(days=6)
         trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)
 
-        users = {}
+        users = {user.username: set_amount(user) for user in
+                 Participate.objects.filter(goal=goal_id).values_list('createdBy')}
+
         for tracking in trackings:
-            if tracking.createdBy.username in users:
+            if 'amount' in users[tracking.createdBy.username]:
                 users[tracking.createdBy.username]['amount'] += tracking.amount
-            else:
-                user = UserSerializer(tracking.createdBy).data
-                user['amount'] = tracking.amount
-                users[tracking.createdBy.username] = user
         users = dict(sorted(users.items(), key=lambda x: x[1]['amount'], reverse=True))
 
         return Response(users.values(), status=200)

@@ -1,6 +1,7 @@
 from django.http import Http404
 
 from goals.models import Tracking, Frequency
+from social.serializers import UserSerializer
 
 
 def get_obj_or_404(klass, *args, **kwargs):
@@ -38,3 +39,9 @@ def get_trackings(progress, goal, user, today, start_week, end_week):
         return trackings.filter(goal=goal, date__gte=today)
     else:
         return []
+
+
+def set_amount(user):
+    user = UserSerializer(user).data
+    user['amount'] = 0.0
+    return user
