@@ -109,13 +109,8 @@ class LeaderBoard(viewsets.GenericAPIView):
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
         trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)
-
-        users = {user.username: set_amount(user) for user in
-                 Participate.objects.filter(goal=goal_id).values_list('createdBy')}
-
-        for tracking in trackings:
-            if 'amount' in users[tracking.createdBy.username]:
-                users[tracking.createdBy.username]['amount'] += tracking.amount
-        users = dict(sorted(users.items(), key=lambda x: x[1]['amount'], reverse=True))
-
-        return Response(users.values(), status=200)
+        query = sorted(Participate.objects.filter(goal=goal_id).values_list('createdBy'),
+                       key=lambda x: trackings.filter(createdBy=x).sum('amount'), reverse=True)
+        query = self.paginate_queryset(query)
+        res = [set_amount(user, trackings.filter(createdBy=user).sum('amount')) for user in query]
+        return self.get_paginated_response(res)

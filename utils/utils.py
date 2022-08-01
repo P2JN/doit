@@ -41,7 +41,10 @@ def get_trackings(progress, goal, user, today, start_week, end_week):
         return []
 
 
-def set_amount(user):
+def set_amount(user, amount):
     user = UserSerializer(user).data
-    user['amount'] = 0.0
+    if amount:
+        user['amount'] = amount
+    else:
+        user['amount'] = 0.0
     return user
