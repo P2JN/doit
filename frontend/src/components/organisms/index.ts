@@ -5,6 +5,7 @@ import CommentSection from "./commentSection";
 
 // Tables
 import FollowTable from "./followTable";
+import LeaderboardTable from "./leaderboardTable";
 
 // TEASERS
 import { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced } from "./goalTeaser";
@@ -33,4 +34,5 @@ export {
   ModalDrawer,
   CommentSection,
   FollowTable,
+  LeaderboardTable,
 };

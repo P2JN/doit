@@ -81,7 +81,10 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
   const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
 
   return (
-    <Card className="cursor-pointer" onClick={onOpenGoal}>
+    <Card
+      className="min-h-[calc(32px+40px)] cursor-pointer"
+      onClick={onOpenGoal}
+    >
       <header className="flex items-center justify-between">
         <Typography variant="h5">
           <strong>{goal.title}</strong>

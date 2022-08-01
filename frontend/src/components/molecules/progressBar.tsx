@@ -1,14 +1,14 @@
 import { LinearProgress } from "@mui/material";
 
 const ProgressBar = (props: {
-  title: string;
+  title?: string;
   completed: number;
   objective: number;
   expected?: number;
 }) => {
   return (
     <div className="flex flex-wrap items-center justify-between gap-1 text-base text-gray-700">
-      <span>{props.title}</span>
+      {props.title && <span>{props.title}</span>}
       <span>
         {props.completed} / {props.objective}
       </span>

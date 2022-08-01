@@ -4,11 +4,11 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 
 import { useActiveUser } from "store";
 import { SocialTypes } from "types";
 
+import { Card } from "components/atoms";
 import { FollowButton } from "components/molecules";
 import { UserAvatar, UserUsername } from "components/organisms";
 
@@ -16,7 +16,7 @@ const FollowTable = (props: { users: SocialTypes.User[] }) => {
   const { activeUser } = useActiveUser();
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Card}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>

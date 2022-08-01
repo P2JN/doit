@@ -35,11 +35,15 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
               <Image src={post.urlMedia} alt={post.title} />
             </div>
           )}
-          <header className="flex items-center justify-between">
+          <header className="flex flex-wrap-reverse items-center justify-between gap-3">
             <Typography variant="h5">
               <strong>{post.title}</strong>
             </Typography>
-            {user && <UserTeaserReduced {...user} />}
+            {user && (
+              <div className="ml-auto">
+                <UserTeaserReduced {...user} />
+              </div>
+            )}
           </header>
           <section className="mb-4">
             <Typography variant="body1">{post.content}</Typography>
