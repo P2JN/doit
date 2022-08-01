@@ -117,8 +117,8 @@ const ExploreSection = (props: {
         hasData={!!props.slides.length}
       />
       <Carousel
-        duration={1000}
-        interval={5000}
+        duration={1500}
+        interval={7500}
         animation="slide"
         className="hidden lg:block"
       >
@@ -129,8 +129,8 @@ const ExploreSection = (props: {
         ))}
       </Carousel>
       <Carousel
-        duration={1000}
-        interval={5000}
+        duration={1500}
+        interval={7500}
         animation="slide"
         className="lg:hidden"
       >

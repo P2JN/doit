@@ -142,7 +142,7 @@ const GoalTabs = (props: { activeTab: string; goal: GoalTypes.Goal }) => {
       {activeTab === "info" && <GoalInfoTab {...goal} />}
       {activeTab === "trackings" && <GoalTrackingsTab {...goal} />}
       {activeTab === "feed" && <GoalFeedTab {...goal} />}
-      {activeTab === "leaderboard" && <GoalLeaderboardTab />}
+      {activeTab === "leaderboard" && <GoalLeaderboardTab {...goal} />}
       {activeTab === "stats" && <GoalStatsTab />}
     </section>
   );

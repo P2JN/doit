@@ -36,7 +36,7 @@ const HomePage = () => {
   }, [params, refetch, setSearchParams]);
 
   return (
-    <Page title="Home">
+    <Page title="Inicio">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Typography variant="h5">Mis objetivos</Typography>

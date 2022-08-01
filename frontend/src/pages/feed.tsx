@@ -36,7 +36,7 @@ const FeedPage = () => {
   }, [params, refetch]);
 
   return (
-    <Page title="Feed">
+    <Page title="Contenido">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Typography variant="h5">Últimos posts</Typography>

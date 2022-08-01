@@ -24,11 +24,13 @@ const UserTeaser = (user: SocialTypes.User) => {
           />
         </div>
       )}
-      <header className="flex cursor-pointer items-center justify-between">
+      <header className="flex cursor-pointer flex-wrap-reverse items-center justify-between gap-3">
         <Typography variant="h5">
           <strong onClick={onOpenUser}>{user.firstName}</strong>
         </Typography>
-        <UserTeaserReduced {...user} />
+        <div className="ml-auto">
+          <UserTeaserReduced {...user} />
+        </div>
       </header>
       <footer className="flex justify-end" onClick={onOpenUser}>
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
