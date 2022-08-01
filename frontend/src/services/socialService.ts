@@ -18,6 +18,24 @@ const requests = {
       .get("/user/" + (id || "missing") + "/")
       .then((response) => response.data),
 
+  getFollowers: (userId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/user/?followers=" +
+          (userId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
+
+  getFollowing: (userId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/user/?following=" +
+          (userId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
+
   createUser: (user: SocialTypes.User) =>
     axiosInstance.post("/auth/signup/", user).then((response) => response.data),
 
@@ -143,6 +161,24 @@ const socialService = {
   useUser: (id?: Id) =>
     useQuery<SocialTypes.User, AxiosError>(`user-${id}`, () =>
       requests.getUser(id)
+    ),
+  // Use the followers of an user
+  useFollowers: (userId?: Id) =>
+    useInfiniteQuery<PagedList<SocialTypes.User>, AxiosError>(
+      "followers",
+      ({ pageParam = 0 }) => requests.getFollowers(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
+    ),
+  // Use the following of an user
+  useFollowing: (userId?: Id) =>
+    useInfiniteQuery<PagedList<SocialTypes.User>, AxiosError>(
+      "following",
+      ({ pageParam = 0 }) => requests.getFollowing(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use active user
   useActiveUser: () =>

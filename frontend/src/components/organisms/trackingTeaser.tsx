@@ -19,7 +19,7 @@ const TrackingTeaser = (tracking: GoalTypes.Tracking) => {
   const isOwner = activeUser?.id === tracking.createdBy;
 
   const { data: goal } = goalService.useGoal(tracking.goal);
-  const isInGoalPage = useMatch("/goals/:id/trackings");
+  const isInGoalPage = useMatch("/goals/:id/trackings/*");
 
   const { mutate: removeTracking } = goalService.useRemoveTracking();
 

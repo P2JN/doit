@@ -34,7 +34,7 @@
 /* Stop purging. */
 
 *::-webkit-scrollbar {
-  @apply mx-2 my-1 w-1 rounded-xl bg-gray-100;
+  @apply mx-2 my-1 h-1 w-1 rounded-xl bg-gray-100;
 }
 
 *::-webkit-scrollbar-thumb {
