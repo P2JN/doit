@@ -8,6 +8,7 @@ from auth.permissions import IsOwnerOrReadOnly, IsParticipating
 from goals.models import Goal, Objective, Tracking, Frequency
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Participate, LikeTracking, User
+from social.serializers import UserSerializer
 from utils.filters import FilterSet
 
 # ViewSet views
@@ -111,10 +112,12 @@ class LeaderBoard(viewsets.GenericAPIView):
 
         users = {}
         for tracking in trackings:
-            if tracking.createdBy.id in users:
-                users[tracking.createdBy.username] += tracking.amount
+            if tracking.createdBy.username in users:
+                users[tracking.createdBy.username]['amount'] += tracking.amount
             else:
-                users[tracking.createdBy.username] = tracking.amount
-        users = dict(sorted(users.items(), key=lambda x: x[1], reverse=True))
+                user = UserSerializer(tracking.createdBy).data
+                user['amount'] = tracking.amount
+                users[tracking.createdBy.username] = user
+        users = dict(sorted(users.items(), key=lambda x: x[1]['amount'], reverse=True))
 
-        return Response(users, status=200)
+        return Response(users.values(), status=200)
