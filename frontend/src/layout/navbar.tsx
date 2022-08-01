@@ -27,7 +27,7 @@ const NavLink = (props: {
     className={
       "flex items-center justify-start gap-5 hover:text-primary" +
       " " +
-      (useMatch(props.to) ? "font-bold text-primary" : "")
+      (useMatch(props.to + "/*") ? "font-bold text-primary" : "")
     }
     onClick={props.onClick}
   >
