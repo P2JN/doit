@@ -10,8 +10,10 @@ from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSeria
 from social.models import Participate, LikeTracking, User
 from utils.filters import FilterSet
 
-
 # ViewSet views
+from utils.utils import get_trackings
+
+
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     serializer_class = GoalSerializer
@@ -80,23 +82,10 @@ class GoalProgress(viewsets.GenericAPIView):
         today = datetime.datetime.now().date()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        trackings = Tracking.objects
         if goal.type != 'cooperative':
-            trackings = trackings.filter(createdBy=user)
-
-        if Frequency.TOTAL in progress:
-            trackings = trackings.filter(goal=goal)
-        elif Frequency.YEARLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=today.replace(month=12, day=31),
-                                         date__gte=today.replace(month=1, day=1))
-        elif Frequency.MONTHLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=today.replace(day=31),
-                                         date__gte=today.replace(day=1))
-        elif Frequency.WEEKLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=end_week,
-                                         date__gte=start_week)
-        elif Frequency.DAILY in progress:
-            trackings = trackings.filter(goal=goal, date__gte=today)
+            trackings = get_trackings(progress.keys(), goal, user, today, start_week, end_week)
+        else:
+            trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week)
 
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
@@ -111,3 +100,21 @@ class GoalProgress(viewsets.GenericAPIView):
                 progress[Frequency.TOTAL] += tracking.amount
 
         return Response(progress, status=200)
+
+
+class LeaderBoard(viewsets.GenericAPIView):
+    def get(self, request, goal_id, *args, **kwargs):
+        today = datetime.datetime.now().date()
+        start_week = today - datetime.timedelta(days=today.weekday())
+        end_week = start_week + datetime.timedelta(days=6)
+        trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)
+
+        users = {}
+        for tracking in trackings:
+            if tracking.createdBy.id in users:
+                users[tracking.createdBy.username] += tracking.amount
+            else:
+                users[tracking.createdBy.username] = tracking.amount
+        users = dict(sorted(users.items(), key=lambda x: x[1], reverse=True))
+
+        return Response(users, status=200)
