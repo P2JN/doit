@@ -1,13 +1,16 @@
+from django.db.models import Count, F
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_mongoengine import viewsets
 from rest_framework.response import Response
 
 from auth.permissions import IsOwnerOrReadOnly, IsPrivateGoal
 from goals.models import Goal
+from goals.serializers import GoalSerializer
 from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost, Comment
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
 from utils.filters import FilterSet
+from utils.recomendations import get_users_affinity
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -136,7 +139,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
-            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset,search_text=True)
+            self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset, search_text=True)
 
         return post_filter.filter()
 
@@ -149,3 +152,50 @@ class UserIsParticipating(viewsets.GenericAPIView):
         if len(Participate.objects.filter(createdBy=user, goal=goal)) > 0:
             return Response(True)
         return Response(False)
+
+
+class UserRecommendations(viewsets.GenericAPIView):
+    def get(self, request, user_id, *args, **kwargs):
+        logged_user_goals = [GoalSerializer(goal) for goal in
+                             Participate.objects.filter(createdBy=user_id).values_list('goal')]
+
+        users = [UserSerializer(user).data for user in User.objects.filter(
+            id__nin=Follow.objects(user=user_id).values_list('follower').values_list('id'), id__ne=user_id)]
+        sort_by_followers = sorted(users, key=lambda x: x.get("numFollowers"), reverse=True)
+        max_followers = sort_by_followers[0].get("numFollowers")
+        sort_by_posts = sorted(users, key=lambda x: x.get("numPosts"), reverse=True)
+        max_posts = sort_by_posts[0].get("numPosts")
+        sort_by_trackings = sorted(users, key=lambda x: x.get("numTrackings"), reverse=True)
+        max_trackings = sort_by_trackings[0].get("numTrackings")
+        sort_by_activity = sorted(users, key=lambda x: (x.get("numTrackings") / max_trackings) + (
+                x.get("numPosts") / max_posts) * 0.5, reverse=True)
+        sort_by_affinity = sorted(users,
+                                  key=lambda user: get_users_affinity(logged_user_goals, user, max_followers, max_posts,
+                                                                      max_trackings), reverse=True)
+        res = {"followers": sort_by_followers[0:10], "posts": sort_by_posts[0:10], "trackings": sort_by_trackings[0:10],
+               "activity": sort_by_activity[0:10], "affinity": sort_by_affinity[0:10]}
+
+        return Response(res)
+
+
+class PostRecommendations(viewsets.GenericAPIView):
+
+    def get(self, request, user_id, *args, **kwargs):
+        followers = Follow.objects(user=user_id).values_list('follower').values_list('id')
+        posts = [PostSerializer(post).data for post in Post.objects.filter(
+            id__nin=LikePost.objects(createdBy=user_id).values_list('post').values_list('id'), createdBy__ne=user_id,
+            createdBy__nin=followers)]
+        sort_by_likes = sorted(posts, key=lambda x: x.get("numLikes"), reverse=True)
+        max_likes = sort_by_likes[0].get("numLikes")
+        sort_by_comments = sorted(posts, key=lambda x: x.get("numComments") * 0.5 + Comment.objects.filter(post=x)
+                                  .values_list("createdBy").distinct().count(), reverse=True)
+        max_comments = max(posts, key=lambda x: x.get("numComments")).get("numComments")
+        sort_by_activity = sorted(posts, key=lambda x: (x.get("numLikes") / max_likes) + (
+                x.get("numComments") / max_comments) * 0.5, reverse=True)
+        post_by_followers = Post.objects.filter(createdBy__in=Follow.objects(user__in=followers)
+                                                .order('?')[0:10].values_list('follower').values_list('id'))[0:10]
+
+        res = {"likes": sort_by_likes[0:10], "comments": sort_by_comments[0:10],
+               "activity": sort_by_activity[0:10], "followers": post_by_followers}
+
+        return Response(res)

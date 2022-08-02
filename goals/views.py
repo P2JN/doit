@@ -7,11 +7,14 @@ from rest_framework_mongoengine import viewsets
 from auth.permissions import IsOwnerOrReadOnly, IsParticipating
 from goals.models import Goal, Objective, Tracking, Frequency
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
-from social.models import Participate, LikeTracking, User
+from social.models import Participate, LikeTracking, User, Follow
 from utils.filters import FilterSet
 
 
 # ViewSet views
+from utils.recomendations import get_tracking_score_by_goal, get_goals_affinity
+
+
 class GoalViewSet(viewsets.ModelViewSet):
     queryset = Goal.objects.all()
     serializer_class = GoalSerializer
@@ -111,3 +114,22 @@ class GoalProgress(viewsets.GenericAPIView):
                 progress[Frequency.TOTAL] += tracking.amount
 
         return Response(progress, status=200)
+
+
+class GoalsRecommendations(viewsets.GenericAPIView):
+    def get(self, request, user_id, *args, **kwargs):
+        user_goals = Participate.objects.filter(createdBy=user_id).values_list('goal')
+        goals = [GoalSerializer(goal) for goal in Goal.objects.filter(createdBy__ne=user_id, goal__nin=user_goals)]
+        sorted_by_participants = sorted(goals, key=lambda x: x.get("numParticipants"), reverse=True)
+        goals_by_followers = GoalSerializer(Participate.objects.filter(
+            createdBy__in=Follow.objects(user=user_id).values_list('follower').values_list('id')
+            , goal__nin=user_goals).order_by('?')[0:10].values_list('goal'), many=True)
+        goals_by_affinity = sorted(goals, key=lambda x: get_goals_affinity(user_goals, x), reverse=True)
+        goals_by_tracking = sorted(goals, key=lambda x: get_tracking_score_by_goal(x), reverse=True)
+        res = {
+            "participants": sorted_by_participants,
+            "followers": goals_by_followers,
+            "affinity": goals_by_affinity,
+            "tracking": goals_by_tracking
+        }
+        return Response(res, status=200)
