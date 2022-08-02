@@ -48,3 +48,11 @@ def set_amount(user, amount):
     else:
         user['amount'] = 0.0
     return user
+
+
+frequency_order = {Frequency.DAILY: 0, Frequency.WEEKLY: 1, Frequency.MONTHLY: 2, Frequency.YEARLY: 3,
+                   Frequency.TOTAL: 4}
+
+
+def get_frequency_order(frequency):
+    return frequency_order[frequency]
