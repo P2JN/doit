@@ -1,15 +1,16 @@
 import { AxiosError } from "axios";
-import { useMutation, useQuery } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "react-query";
 
 import { SocialTypes } from "types";
 import { Id, PagedList } from "types/apiTypes";
+import { paginationUtils } from "utils";
 
 import { axiosInstance } from "./config";
 
 const requests = {
-  getUsers: (filters?: string[]) =>
+  getUsers: (page?: number) =>
     axiosInstance
-      .get("/user/" + (!!filters ? "?" + filters?.join("&") : ""))
+      .get("/user/?size=9" + (page ? "&page=" + page + "/" : ""))
       .then((response) => response.data),
 
   getUser: (id?: Id) =>
@@ -17,8 +18,33 @@ const requests = {
       .get("/user/" + (id || "missing") + "/")
       .then((response) => response.data),
 
+  getFollowers: (userId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/user/?followers=" +
+          (userId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
+
+  getFollowing: (userId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/user/?following=" +
+          (userId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
+
   createUser: (user: SocialTypes.User) =>
     axiosInstance.post("/auth/signup/", user).then((response) => response.data),
+
+  updateUserPhoto: (props: { userId?: Id; mediaId?: Id }) =>
+    axiosInstance
+      .patch("/user/" + (props.userId || "missing") + "/", {
+        media: props?.mediaId || null,
+      })
+      .then((response) => response.data),
 
   logInUser: (login: SocialTypes.LogIn) =>
     axiosInstance.post("/auth/login/", login).then((response) => response.data),
@@ -29,29 +55,57 @@ const requests = {
   getActiveUser: () =>
     axiosInstance.get("/auth/user/").then((response) => response.data),
 
-  getFeedPosts: (userId?: Id) =>
+  getFeedPosts: (userId?: Id, page?: number) =>
     axiosInstance
-      .get("/post/?follows=" + (userId || "missing"))
+      .get(
+        "/post/?follows=" +
+          (userId || "missing") +
+          "&order_by=-creationDate" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
-  getGoalPosts: (goalId?: Id) =>
+  getGoalPosts: (goalId?: Id, page?: number) =>
     axiosInstance
-      .get("/post/?goal=" + (goalId || "missing"))
+      .get(
+        "/post/?goal=" +
+          (goalId || "missing") +
+          "&order_by=-creationDate" +
+          "&size=9" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
-  getUserPosts: (userId?: Id) =>
+  getUserPosts: (userId?: Id, page?: number) =>
     axiosInstance
-      .get("/post/?createdBy=" + (userId || "missing"))
+      .get(
+        "/post/?createdBy=" +
+          (userId || "missing") +
+          "&order_by=-creationDate" +
+          "&size=9" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
-  getPosts: () => axiosInstance.get("/post/").then((response) => response.data),
+  getPosts: (page?: number) =>
+    axiosInstance
+      .get(
+        "/post/?order_by=-creationDate&size=9" + (page ? "?page=" + page : "")
+      )
+      .then((response) => response.data),
 
   createPost: (post: SocialTypes.Post) =>
     axiosInstance.post("/post/", post).then((response) => response.data),
 
-  getPostComments: (postId?: Id) =>
+  getPostComments: (postId?: Id, page?: number) =>
     axiosInstance
-      .get("/comment/?post=" + (postId || "missing"))
+      .get(
+        "/comment/?post=" +
+          (postId || "missing") +
+          "&order_by=-creationDate" +
+          "&size=5" +
+          (page ? "&page=" + page : "")
+      )
       .then((response) => response.data),
 
   createComment: (comment: SocialTypes.Comment) =>
@@ -96,13 +150,35 @@ const socialService = {
   // USERS
   // Use all the users
   useUsers: () =>
-    useQuery<PagedList<SocialTypes.User>, AxiosError>("users", () =>
-      requests.getUsers()
+    useInfiniteQuery<PagedList<SocialTypes.User>, AxiosError>(
+      "users",
+      ({ pageParam = 0 }) => requests.getUsers(pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use an user specifying its id
   useUser: (id?: Id) =>
     useQuery<SocialTypes.User, AxiosError>(`user-${id}`, () =>
       requests.getUser(id)
+    ),
+  // Use the followers of an user
+  useFollowers: (userId?: Id) =>
+    useInfiniteQuery<PagedList<SocialTypes.User>, AxiosError>(
+      "followers",
+      ({ pageParam = 0 }) => requests.getFollowers(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
+    ),
+  // Use the following of an user
+  useFollowing: (userId?: Id) =>
+    useInfiniteQuery<PagedList<SocialTypes.User>, AxiosError>(
+      "following",
+      ({ pageParam = 0 }) => requests.getFollowing(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use active user
   useActiveUser: () =>
@@ -115,6 +191,13 @@ const socialService = {
       "create-user",
       requests.createUser
     ),
+
+  useUpdateUserPhoto: () =>
+    useMutation<any, AxiosError, { userId?: Id; mediaId?: Id }>(
+      "update-user-photo",
+      requests.updateUserPhoto
+    ),
+
   // follow an user
   useFollow: () =>
     useMutation<any, AxiosError, SocialTypes.Follow>(
@@ -133,27 +216,42 @@ const socialService = {
 
   // Use feed posts
   useFeedPosts: (userId?: Id) =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
       "feed-posts-" + userId,
-      () => requests.getFeedPosts(userId)
+      ({ pageParam = 0 }) => requests.getFeedPosts(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use goal posts
   useGoalPosts: (goalId?: Id) =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
       "goal-posts-" + goalId,
-      () => requests.getGoalPosts(goalId)
+      ({ pageParam = 0 }) => requests.getGoalPosts(goalId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // use user posts
   useUserPosts: (userId?: Id) =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
       "user-posts-" + userId,
-      () => requests.getUserPosts(userId)
+      ({ pageParam = 0 }) => requests.getUserPosts(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
+
   // use all the posts
   usePosts: () =>
-    useQuery<PagedList<SocialTypes.Post>, AxiosError>("posts", () =>
-      requests.getPosts()
+    useInfiniteQuery<PagedList<SocialTypes.Post>, AxiosError>(
+      "posts",
+      ({ pageParam = 0 }) => requests.getPosts(pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
+
   // use create post
   useCreatePost: () =>
     useMutation<any, AxiosError, SocialTypes.Post>(
@@ -162,9 +260,12 @@ const socialService = {
     ),
   // Use post comments
   usePostComments: (postId?: Id) =>
-    useQuery<PagedList<SocialTypes.Comment>, AxiosError>(
+    useInfiniteQuery<PagedList<SocialTypes.Comment>, AxiosError>(
       "post-comments-" + postId,
-      () => requests.getPostComments(postId)
+      ({ pageParam = 0 }) => requests.getPostComments(postId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use create comment
   useCreateComment: () =>

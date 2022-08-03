@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { Alert, Button } from "@mui/material";
+import { Alert, Button, Divider } from "@mui/material";
 
 import { Loader, ParsedError } from "components/atoms";
 
@@ -8,6 +8,9 @@ const DataLoader = (props: {
   hasData?: boolean;
   error?: AxiosError | null;
   retry?: () => void;
+  hasNextPage?: boolean;
+  loadMore?: () => void;
+  topPositioned?: boolean;
 }) => {
   return (
     <>
@@ -32,6 +35,22 @@ const DataLoader = (props: {
         </Alert>
       )}
       {props.error && <ParsedError {...props.error} />}
+
+      {props.hasNextPage && (
+        <>
+          {!props.topPositioned && "bottom" && <Divider className="py-4" />}
+          <div className="flex w-full justify-center">
+            <Button
+              color="primary"
+              size="large"
+              onClick={() => !!props.loadMore && props.loadMore()}
+            >
+              Cargar más
+            </Button>
+          </div>
+          {props.topPositioned && <Divider className="py-1" />}
+        </>
+      )}
     </>
   );
 };

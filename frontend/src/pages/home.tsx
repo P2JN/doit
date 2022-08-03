@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Skeleton, Typography } from "@mui/material";
 
@@ -6,6 +6,7 @@ import { Page } from "layout";
 import { goalService } from "services";
 import { GoalTypes } from "types";
 import { useActiveUser } from "store";
+import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
 import { GoalTeaser, ModalDrawer } from "components/organisms";
@@ -15,10 +16,14 @@ const HomePage = () => {
   const { activeUser } = useActiveUser();
 
   const {
-    data: goalList,
+    data: goalPages,
     isLoading: loadingGoals,
     refetch,
   } = goalService.useGoalsByParticipant(activeUser?.id);
+  const goals = useMemo(
+    () => paginationUtils.combinePages(goalPages),
+    [goalPages]
+  );
 
   const navigate = useNavigate();
 
@@ -31,7 +36,7 @@ const HomePage = () => {
   }, [params, refetch, setSearchParams]);
 
   return (
-    <Page title="Home">
+    <Page title="Inicio">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Typography variant="h5">Mis objetivos</Typography>
@@ -42,11 +47,11 @@ const HomePage = () => {
 
         <DataLoader
           isLoading={loadingGoals}
-          hasData={!!goalList?.results?.length}
+          hasData={!!goals?.length}
           retry={refetch}
         />
 
-        {goalList?.results?.map((goal) => (
+        {goals?.map((goal) => (
           <GoalTeaserProvider {...goal} />
         ))}
       </div>

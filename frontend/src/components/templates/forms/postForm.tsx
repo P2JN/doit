@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,13 +11,17 @@ import {
 import { useActiveUser, useNotificationStore } from "store";
 import { socialService } from "services";
 import { GoalTypes, SocialTypes } from "types";
+import { Id } from "types/apiTypes";
 
 import { ParsedError } from "components/atoms";
 import { GoalTeaserReduced } from "components/organisms";
+import { MediaForm } from "components/templates";
 
 const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
   const navigate = useNavigate();
   const { addNotification } = useNotificationStore();
+
+  const [mediaId, setMediaId] = useState<Id | undefined>(undefined);
 
   const hasRelatedGoal = !!props.relatedGoal;
 
@@ -60,7 +65,7 @@ const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
 
   const onSubmit = (formValues: SocialTypes.Post) => {
     if (formValues) {
-      onCreatePost(formValues);
+      onCreatePost({ ...formValues, media: mediaId });
     }
   };
 
@@ -69,9 +74,14 @@ const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
       <div className="mb-2 flex flex-col gap-3">
         {props.relatedGoal && <GoalTeaserReduced {...props.relatedGoal} />}
 
+        <MediaForm onUploadFinished={(mediaId?: Id) => setMediaId(mediaId)} />
+
         <Controller
           name="title"
-          rules={{ required: "Obligatorio", maxLength: 100 }}
+          rules={{
+            required: "Obligatorio",
+            maxLength: { value: 30, message: "Es demasiado largo, max 30" },
+          }}
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">
@@ -84,7 +94,10 @@ const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
         />
         <Controller
           name="content"
-          rules={{ required: "Obligatorio", maxLength: 1000 }}
+          rules={{
+            required: "Obligatorio",
+            maxLength: { value: 1250, message: "Es demasiado largo, max 1250" },
+          }}
           control={control}
           render={({ field }) => (
             <div className="flex w-full flex-col">

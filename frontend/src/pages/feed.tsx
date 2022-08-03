@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 
@@ -6,6 +6,7 @@ import { Page } from "layout";
 import { socialService } from "services";
 import { useActiveUser } from "store";
 import { SocialTypes } from "types";
+import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
 import { ModalDrawer, PostTeaser } from "components/organisms";
@@ -15,10 +16,17 @@ const FeedPage = () => {
   const { activeUser } = useActiveUser();
 
   const {
-    data: postList,
+    data: postPages,
     isLoading: loadingPosts,
+    isFetchingNextPage,
     refetch,
+    fetchNextPage,
+    hasNextPage,
   } = socialService.useFeedPosts(activeUser?.id);
+  const posts = useMemo(
+    () => paginationUtils.combinePages(postPages),
+    [postPages]
+  );
 
   const navigate = useNavigate();
 
@@ -28,22 +36,24 @@ const FeedPage = () => {
   }, [params, refetch]);
 
   return (
-    <Page title="Feed">
+    <Page title="Contenido">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Typography variant="h5">Últimos posts</Typography>
           <Button onClick={() => navigate("/feed/new-post")}>Nuevo</Button>
         </div>
-        <DataLoader
-          isLoading={loadingPosts}
-          hasData={!!postList?.results?.length}
-          retry={refetch}
-        />
         <div className="flex flex-col gap-10">
-          {postList?.results?.map((post) => (
+          {posts?.map((post) => (
             <PostTeaserProvider key={post.id} {...post} />
           ))}
         </div>
+        <DataLoader
+          isLoading={loadingPosts || isFetchingNextPage}
+          hasData={!!posts?.length}
+          retry={refetch}
+          hasNextPage={hasNextPage}
+          loadMore={fetchNextPage}
+        />
         <FeedModals />
       </div>
     </Page>

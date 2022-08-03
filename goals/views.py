@@ -8,11 +8,16 @@ from auth.permissions import IsOwnerOrReadOnly, IsParticipating
 from goals.models import Goal, Objective, Tracking, Frequency
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Participate, LikeTracking, User
+from social.serializers import UserSerializer
 from utils.filters import FilterSet
+
 
 # ViewSet views
 from utils.notifications import notify_completed_objectives, create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification
+
+
+from utils.utils import get_trackings, set_amount
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -127,23 +132,10 @@ class GoalProgress(viewsets.GenericAPIView):
         today = datetime.datetime.now()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        trackings = Tracking.objects
         if goal.type != 'cooperative':
-            trackings = trackings.filter(createdBy=user)
-
-        if Frequency.TOTAL in progress:
-            trackings = trackings.filter(goal=goal)
-        elif Frequency.YEARLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=today.replace(month=12, day=31, hour=23, minute=59, second=59),
-                                         date__gte=today.replace(month=1, day=1, hour=0, minute=0, second=0))
-        elif Frequency.MONTHLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=today.replace(day=31, hour=23, minute=59, second=59),
-                                         date__gte=today.replace(day=1, hour=0, minute=0, second=0))
-        elif Frequency.WEEKLY in progress:
-            trackings = trackings.filter(goal=goal, date__lte=end_week.replace(hour=23, minute=59, second=59),
-                                         date__gte=start_week.replace(hour=0, minute=0, second=0))
-        elif Frequency.DAILY in progress:
-            trackings = trackings.filter(goal=goal, date__gte=today.replace(hour=0, minute=0, second=0))
+            trackings = get_trackings(progress.keys(), goal, user, today, start_week, end_week)
+        else:
+            trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week)
 
         for tracking in trackings:
             if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
@@ -158,3 +150,18 @@ class GoalProgress(viewsets.GenericAPIView):
                 progress[Frequency.TOTAL] += tracking.amount
         notification = notify_completed_objectives(progress, objectives, goal, user)
         return Response({"notification": notification, "progress": progress}, status=200)
+
+
+class LeaderBoard(viewsets.GenericAPIView):
+    def get(self, request, goal_id, *args, **kwargs):
+        today = datetime.datetime.now()
+        start_week = today - datetime.timedelta(days=today.weekday())
+        end_week = start_week + datetime.timedelta(days=6)
+        trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)
+        participants = Participate.objects.filter(goal=goal_id).values_list('createdBy')
+        amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
+                  participants}
+        query = sorted(participants, key=lambda x: amount[x.username], reverse=True)
+        query = self.paginate_queryset(query)
+        res = [set_amount(user, amount[user.username]) for user in query]
+        return self.get_paginated_response(res)

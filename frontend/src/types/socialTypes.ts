@@ -4,15 +4,19 @@ export type User = {
   id?: Id;
   username: string;
   firstName?: string;
-  first_name?: string;
   lastName?: string;
-  last_name?: string;
   email: string;
   password?: string;
-  password1?: string;
-  password2?: string;
   birthDate: string;
   startDate: string;
+
+  first_name?: string;
+  last_name?: string;
+  password1?: string;
+  password2?: string;
+
+  media?: Id;
+  urlMedia?: string;
 
   numFollowers?: number;
   numFollowing?: number;
@@ -24,6 +28,9 @@ export type Post = {
   title: string;
   content: string;
   creationDate: string;
+
+  media?: Id;
+  urlMedia?: string;
 
   createdBy: Id;
   goal?: Id;

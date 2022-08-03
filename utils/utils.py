@@ -1,5 +1,8 @@
 from django.http import Http404
 
+from goals.models import Tracking, Frequency
+from social.serializers import UserSerializer
+
 
 def get_obj_or_404(klass, *args, **kwargs):
     try:
@@ -14,3 +17,42 @@ def handle_uploaded_file(f):
         for chunk in f.chunks():
             destination.write(chunk)
     return url
+
+
+def get_trackings(progress, goal, user, today, start_week, end_week):
+    trackings = Tracking.objects
+    if user:
+        trackings = trackings.filter(createdBy=user)
+
+    if Frequency.TOTAL in progress:
+        return trackings.filter(goal=goal)
+    elif Frequency.YEARLY in progress:
+        return trackings.filter(goal=goal, date__lte=today.replace(month=12, day=31, hour=23, minute=59, second=59),
+                                date__gte=today.replace(month=1, day=1, hour=0, minute=0, second=0))
+    elif Frequency.MONTHLY in progress:
+        return trackings.filter(goal=goal, date__lte=today.replace(day=31, hour=23, minute=59, second=59),
+                                date__gte=today.replace(day=1, hour=0, minute=0, second=0))
+    elif Frequency.WEEKLY in progress:
+        return trackings.filter(goal=goal, date__lte=end_week.replace(hour=23, minute=59, second=59),
+                                date__gte=start_week.replace(hour=0, minute=0, second=0))
+    elif Frequency.DAILY in progress:
+        return trackings.filter(goal=goal, date__gte=today.replace(hour=0, minute=0, second=0))
+    else:
+        return []
+
+
+def set_amount(user, amount):
+    user = UserSerializer(user).data
+    if amount:
+        user['amount'] = amount
+    else:
+        user['amount'] = 0.0
+    return user
+
+
+frequency_order = {Frequency.DAILY: 0, Frequency.WEEKLY: 1, Frequency.MONTHLY: 2, Frequency.YEARLY: 3,
+                   Frequency.TOTAL: 4}
+
+
+def get_frequency_order(frequency):
+    return frequency_order[frequency]
