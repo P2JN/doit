@@ -9,14 +9,20 @@ export const useNotificationStore = () => {
 
   const addNotification = (notification: StateNotification) => {
     if (!notification.id) {
-      notification.id = Math.random();
+      notification.id = Math.random() * 100000;
       notification.type = "transient";
     } else {
       notification.type = "persistent";
       notification.variant = "info";
     }
 
-    dispatch({ type: "ADD_NOTIFICATION", payload: notification });
+    if (!notifications.find((n) => n.id === notification.id)) {
+      if (!notification.creationDate) {
+        notification.creationDate = new Date().toISOString();
+      }
+
+      dispatch({ type: "ADD_NOTIFICATION", payload: notification });
+    }
   };
 
   const cleanNotifications = () => {

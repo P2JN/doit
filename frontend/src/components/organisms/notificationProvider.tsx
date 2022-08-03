@@ -1,10 +1,40 @@
+import { ReactNode, useEffect, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
 
 import { useNotificationStore } from "store";
+import { axiosInstance } from "services/config";
 
-const NotificationProvider = () => {
-  const { notifications, dismissNotification, hideNotificationSnack } =
-    useNotificationStore();
+const NotificationProvider = (props: { children: ReactNode }) => {
+  const {
+    notifications,
+    addNotification,
+    dismissNotification,
+    hideNotificationSnack,
+  } = useNotificationStore();
+
+  const [interceptorAdded, setInterceptorAdded] = useState(false);
+
+  useEffect(() => {
+    // Notification interceptor
+    if (!interceptorAdded)
+      axiosInstance.interceptors.response.use(
+        (response) => {
+          if (response.data.notification) {
+            const { notification, ...rest } = response.data;
+            addNotification(notification);
+
+            const values = Object.values(rest)[0] as any;
+            return { ...response, data: { ...values } };
+          }
+          return response;
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+
+    setInterceptorAdded(true);
+  }, [interceptorAdded]);
 
   return (
     <>
@@ -28,6 +58,7 @@ const NotificationProvider = () => {
             </Snackbar>
           )
       )}
+      {props.children}
     </>
   );
 };

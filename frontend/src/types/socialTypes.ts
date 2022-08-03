@@ -63,3 +63,12 @@ export type Follow = {
   follower: Id;
   user: Id;
 };
+
+export type Notification = {
+  id?: Id;
+  title?: string;
+  content: string;
+  creationDate?: string;
+
+  checked?: boolean;
+};

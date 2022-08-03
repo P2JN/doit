@@ -18,15 +18,16 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
         <ThemeProvider theme={responsiveFontSizes(createTheme(theme))}>
-          <NotificationProvider />
-          <Router>
-            <AuthProvider>
-              <div className="container mx-auto flex h-full w-full justify-center">
-                <AppNavbar />
-                <AppPages />
-              </div>
-            </AuthProvider>
-          </Router>
+          <NotificationProvider>
+            <Router>
+              <AuthProvider>
+                <div className="container mx-auto flex h-full w-full justify-center">
+                  <AppNavbar />
+                  <AppPages />
+                </div>
+              </AuthProvider>
+            </Router>
+          </NotificationProvider>
         </ThemeProvider>
       </StoreProvider>
     </QueryClientProvider>

@@ -144,6 +144,15 @@ const requests = {
           (followerId || "missing")
       )
       .then((response) => response.data?.results?.[0]),
+
+  getNotifications: (userId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/notification/?user=" +
+          (userId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
 };
 
 const socialService = {
@@ -286,6 +295,13 @@ const socialService = {
   useLike: (userId?: Id, post?: Id) =>
     useQuery<SocialTypes.Like, AxiosError>(`like-${userId}-${post}`, () =>
       requests.getLike(userId, post)
+    ),
+
+  // Use notifications
+  useNotifications: (userId?: Id) =>
+    useInfiniteQuery<PagedList<SocialTypes.Notification>, AxiosError>(
+      "notifications-" + userId,
+      () => requests.getNotifications(userId)
     ),
 
   // Log in an user
