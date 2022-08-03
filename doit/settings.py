@@ -97,17 +97,17 @@ TEMPLATES = [
 
 # Django rest framework config
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#         'auth.permissions.IsOwnerOrReadOnly',
-#     ],
-#     'DEFAULT_PAGINATION_CLASS': 'doit.pagination.CustomPageNumberPagination',
-#     'PAGE_SIZE': 10
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        'auth.permissions.IsOwnerOrReadOnly',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'doit.pagination.CustomPageNumberPagination',
+    'PAGE_SIZE': 10
+}
 
 
 # AllAuth config

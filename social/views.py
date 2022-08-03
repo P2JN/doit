@@ -10,7 +10,7 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
 from utils.filters import FilterSet
-from utils.recomendations import get_users_affinity
+from utils.recomendations import get_users_affinity, get_post_recomendations
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -156,7 +156,7 @@ class UserIsParticipating(viewsets.GenericAPIView):
 
 class UserRecommendations(viewsets.GenericAPIView):
     def get(self, request, user_id, *args, **kwargs):
-        logged_user_goals = [GoalSerializer(goal) for goal in
+        logged_user_goals = [GoalSerializer(goal).data for goal in
                              Participate.objects.filter(createdBy=user_id).values_list('goal')]
 
         users = [UserSerializer(user).data for user in User.objects.filter(
@@ -167,7 +167,7 @@ class UserRecommendations(viewsets.GenericAPIView):
         max_posts = sort_by_posts[0].get("numPosts")
         sort_by_trackings = sorted(users, key=lambda x: x.get("numTrackings"), reverse=True)
         max_trackings = sort_by_trackings[0].get("numTrackings")
-        sort_by_activity = sorted(users, key=lambda x: (x.get("numTrackings") / max_trackings) + (
+        sort_by_activity = sorted(users, key=lambda x: ((x.get("numTrackings") + 1) / (max_trackings + 1)) + (
                 x.get("numPosts") / max_posts) * 0.5, reverse=True)
         sort_by_affinity = sorted(users,
                                   key=lambda user: get_users_affinity(logged_user_goals, user, max_followers, max_posts,
@@ -181,21 +181,24 @@ class UserRecommendations(viewsets.GenericAPIView):
 class PostRecommendations(viewsets.GenericAPIView):
 
     def get(self, request, user_id, *args, **kwargs):
-        followers = Follow.objects(user=user_id).values_list('follower').values_list('id')
+        follows = Follow.objects(follower=user_id).values_list('follower')
         posts = [PostSerializer(post).data for post in Post.objects.filter(
             id__nin=LikePost.objects(createdBy=user_id).values_list('post').values_list('id'), createdBy__ne=user_id,
-            createdBy__nin=followers)]
-        sort_by_likes = sorted(posts, key=lambda x: x.get("numLikes"), reverse=True)
-        max_likes = sort_by_likes[0].get("numLikes")
-        sort_by_comments = sorted(posts, key=lambda x: x.get("numComments") * 0.5 + Comment.objects.filter(post=x)
-                                  .values_list("createdBy").distinct().count(), reverse=True)
+            createdBy__nin=follows)]
+        sort_by_likes = sorted(posts, key=lambda x: x.get("likes"), reverse=True)
+        max_likes = sort_by_likes[0].get("likes")
+        sort_by_comments = sorted(posts, key=lambda x: x.get("numComments") * 0.5 + len(
+            Comment.objects.filter(post=x.get("id"))
+            .distinct("createdBy")), reverse=True)
         max_comments = max(posts, key=lambda x: x.get("numComments")).get("numComments")
-        sort_by_activity = sorted(posts, key=lambda x: (x.get("numLikes") / max_likes) + (
-                x.get("numComments") / max_comments) * 0.5, reverse=True)
-        post_by_followers = Post.objects.filter(createdBy__in=Follow.objects(user__in=followers)
-                                                .order('?')[0:10].values_list('follower').values_list('id'))[0:10]
-
+        sort_by_activity = sorted(posts, key=lambda x: ((x.get("likes") + 1) / (max_likes + 1)) + (
+                (x.get("numComments") + 1) / (max_comments + 1)) * 0.5, reverse=True)
+        post_by_followers = PostSerializer(Post.objects.filter(createdBy__in=Follow.objects(follower__in=follows)
+                                                               .order_by('?')[0:10].values_list('user'))[0:10],
+                                           many=True).data
+        post_recomendations = get_post_recomendations(posts, user_id)
         res = {"likes": sort_by_likes[0:10], "comments": sort_by_comments[0:10],
-               "activity": sort_by_activity[0:10], "followers": post_by_followers}
+               "activity": sort_by_activity[0:10], "followers": post_by_followers,
+               "recomendations": post_recomendations}
 
         return Response(res)
