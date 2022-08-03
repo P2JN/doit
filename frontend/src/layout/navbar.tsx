@@ -27,7 +27,7 @@ const NavLink = (props: {
     className={
       "flex items-center justify-start gap-5 hover:text-primary" +
       " " +
-      (useMatch(props.to) ? "font-bold text-primary" : "")
+      (useMatch(props.to + "/*") ? "font-bold text-primary" : "")
     }
     onClick={props.onClick}
   >
@@ -58,8 +58,8 @@ const AppNavbar = () => {
         <Divider className="hidden md:block" />
 
         <section className="flex gap-5 sm:gap-8 md:block">
-          <NavLink to="/home" icon={<HomeOutlined />} title="Home" />
-          <NavLink to="/feed" icon={<ImageOutlined />} title="Feed" />
+          <NavLink to="/home" icon={<HomeOutlined />} title="Inicio" />
+          <NavLink to="/feed" icon={<ImageOutlined />} title="Contenido" />
           <NavLink to="/explore" icon={<ExploreOutlined />} title="Explora" />
           <NavLink
             to="/notifications"

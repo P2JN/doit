@@ -11,8 +11,7 @@ const Comment = (comment: SocialTypes.Comment) => {
   return (
     <Card>
       <div className="flex gap-3">
-        {user && <UserAvatar {...user} />}
-
+        <div className="-ml-2">{user && <UserAvatar {...user} />}</div>
         <Typography variant="body1">
           {user && <UserUsername {...user} />} : {comment.content}
         </Typography>

@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Typography } from "@mui/material";
+import { Button, Tab, Tabs, Typography } from "@mui/material";
 
 import { goalService, socialService } from "services";
 import { SocialTypes } from "types";
@@ -8,7 +8,7 @@ import { useActiveUser } from "store";
 import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
-import { PostTeaser, TrackingTeaser } from "components/organisms";
+import { FollowTable, PostTeaser, TrackingTeaser } from "components/organisms";
 
 const UserInfoTab = (user: SocialTypes.User) => {
   return (
@@ -114,4 +114,89 @@ const UserStatsTab = () => {
   );
 };
 
-export { UserInfoTab, UserFeedTab, UserTrackingsTab, UserStatsTab };
+type FollowersTabType = "followers" | "following";
+const UserFollowersTab = (user: SocialTypes.User) => {
+  const [subTab, setSubTab] = useState<FollowersTabType>("followers");
+
+  const {
+    data: followerPages,
+    isLoading,
+    refetch,
+    error,
+    hasNextPage,
+    fetchNextPage,
+  } = socialService.useFollowers(user.id);
+  const followers = useMemo(
+    () => paginationUtils.combinePages(followerPages),
+    [followerPages]
+  );
+
+  const {
+    data: followingPages,
+    isLoading: isLoadingFollowing,
+    error: errorFollowing,
+    refetch: refetchFollowing,
+    hasNextPage: hasNextPageFollowing,
+    fetchNextPage: fetchNextPageFollowing,
+  } = socialService.useFollowing(user.id);
+  const following = useMemo(
+    () => paginationUtils.combinePages(followingPages),
+    [followingPages]
+  );
+
+  const [params, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (params.get("refresh") === "user") {
+      refetch();
+      refetchFollowing();
+      setSearchParams("");
+    }
+  }, [params, refetch, refetchFollowing, setSearchParams]);
+
+  return (
+    <section className="animate-fade-in">
+      <Tabs
+        value={subTab}
+        onChange={(_: any, tab: string) => setSubTab(tab as FollowersTabType)}
+        variant="scrollable"
+      >
+        <Tab value={"followers"} label="Seguidores" />
+        <Tab value={"following"} label="Siguiendo" />
+      </Tabs>
+      {subTab === "followers" && (
+        <>
+          {followers && <FollowTable users={followers} />}
+          <DataLoader
+            isLoading={isLoading}
+            hasData={!!followers?.length}
+            retry={refetch}
+            error={error}
+            hasNextPage={hasNextPage}
+            loadMore={fetchNextPage}
+          />
+        </>
+      )}
+      {subTab === "following" && (
+        <>
+          {following && <FollowTable users={following} />}
+          <DataLoader
+            isLoading={isLoadingFollowing}
+            hasData={!!following?.length}
+            retry={refetchFollowing}
+            error={errorFollowing}
+            hasNextPage={hasNextPageFollowing}
+            loadMore={fetchNextPageFollowing}
+          />
+        </>
+      )}
+    </section>
+  );
+};
+
+export {
+  UserInfoTab,
+  UserFeedTab,
+  UserTrackingsTab,
+  UserStatsTab,
+  UserFollowersTab,
+};

@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Divider, Typography } from "@mui/material";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Alert, Button, Divider, Tab, Tabs, Typography } from "@mui/material";
 
 import { useActiveUser, useNotificationStore } from "store";
 import { goalService, socialService } from "services";
@@ -10,7 +10,11 @@ import { paginationUtils, texts } from "utils";
 
 import { ParsedError } from "components/atoms";
 import { DataLoader, ProgressBar } from "components/molecules";
-import { PostTeaser, TrackingTeaser } from "components/organisms";
+import {
+  LeaderboardTable,
+  PostTeaser,
+  TrackingTeaser,
+} from "components/organisms";
 import { GoalForm, ObjectivesForm } from "components/templates";
 
 const GoalInfoTab = (goal: GoalTypes.Goal) => {
@@ -323,13 +327,88 @@ const GoalTrackingsTab = (goal: GoalTypes.Goal) => {
     </section>
   );
 };
-const GoalLeaderboardTab = () => {
+const GoalLeaderboardTab = (goal: GoalTypes.Goal) => {
+  const [objective, setObjective] = useState<GoalTypes.Objective | undefined>(
+    goal?.objectives?.[0]
+  );
+
+  const {
+    data: leaderboardPages,
+    isLoading,
+    error,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+  } = goalService.useGoalLeaderboard(
+    goal.id,
+    objective?.frequency as GoalTypes.Frequency
+  );
+  const leaderboard = useMemo(
+    () => paginationUtils.combinePages(leaderboardPages),
+    [leaderboardPages]
+  );
+
+  const [params, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (params.get("refresh") === "goal-leaderboard") {
+      refetch();
+      setSearchParams("");
+    }
+  }, [params, refetch, setSearchParams]);
+
   return (
     <section className="animate-fade-in">
-      <p>Goal Leaderboard Content</p>
+      {!!goal?.objectives?.length ? (
+        <>
+          <Tabs
+            value={objective?.frequency}
+            onChange={(_: any, tab: GoalTypes.Frequency) =>
+              setObjective(goal.objectives?.find((o) => o.frequency === tab))
+            }
+            variant="scrollable"
+          >
+            {goal?.objectives?.map((objective) => (
+              <Tab
+                key={objective.id}
+                value={objective.frequency}
+                label={
+                  texts.objectiveLabels[
+                    objective.frequency as GoalTypes.Frequency
+                  ]
+                }
+              />
+            ))}
+          </Tabs>
+          {leaderboard && (
+            <LeaderboardTable
+              users={leaderboard}
+              objective={objective?.quantity}
+            />
+          )}
+          <DataLoader
+            isLoading={isLoading}
+            hasData={!!leaderboard?.length}
+            retry={refetch}
+            error={error}
+            hasNextPage={hasNextPage}
+            loadMore={fetchNextPage}
+          />
+        </>
+      ) : (
+        <Alert severity="info">
+          No hay objetivos para esta meta, configuralos en la{" "}
+          <Link
+            className="underline hover:font-bold"
+            to={`/goals/${goal.id}/info`}
+          >
+            tab de información
+          </Link>
+        </Alert>
+      )}
     </section>
   );
 };
+
 const GoalStatsTab = () => {
   return (
     <section className="animate-fade-in">

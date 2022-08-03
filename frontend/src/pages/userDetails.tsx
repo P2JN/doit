@@ -10,6 +10,7 @@ import { Avatar, Divider, Tab, Tabs, Typography } from "@mui/material";
 import {
   ImageOutlined,
   InfoOutlined,
+  PersonOutlineOutlined,
   Timeline,
   TrackChanges,
 } from "@mui/icons-material";
@@ -28,11 +29,12 @@ import {
   UserInfoTab,
   UserStatsTab,
   UserTrackingsTab,
+  UserFollowersTab,
   PostForm,
   MediaForm,
 } from "components/templates";
 
-type UserTabsType = "info" | "feed" | "trackings" | "stats";
+type UserTabsType = "info" | "feed" | "trackings" | "stats" | "related";
 
 const UserDetailPage = () => {
   const { userId, activeTab } = useParams();
@@ -62,6 +64,7 @@ const UserDetailPage = () => {
     info: "Información",
     feed: "Contenido",
     trackings: "Registros",
+    related: "Usuarios relacionados",
     stats: "Estadísticas",
   };
 
@@ -88,6 +91,7 @@ const UserDetailPage = () => {
                 <Tab value={"info"} icon={<InfoOutlined />} />
                 <Tab value={"trackings"} icon={<TrackChanges />} />
                 <Tab value={"feed"} icon={<ImageOutlined />} />
+                <Tab value={"related"} icon={<PersonOutlineOutlined />} />
                 <Tab value={"stats"} icon={<Timeline />} />
               </Tabs>
             </div>
@@ -115,6 +119,7 @@ const UserTabs = (props: { activeTab: string; user: SocialTypes.User }) => {
       {activeTab === "info" && <UserInfoTab {...user} />}
       {activeTab === "trackings" && <UserTrackingsTab {...user} />}
       {activeTab === "feed" && <UserFeedTab {...user} />}
+      {activeTab === "related" && <UserFollowersTab {...user} />}
       {activeTab === "stats" && <UserStatsTab />}
     </section>
   );

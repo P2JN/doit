@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { useInfiniteQuery, useMutation, useQuery } from "react-query";
 
-import { GoalTypes } from "types";
+import { GoalTypes, SocialTypes } from "types";
 import { Id, PagedList } from "types/apiTypes";
 import { paginationUtils } from "utils";
 
@@ -34,6 +34,21 @@ const requests = {
           (id || "missing") +
           "/my-progress?user_id=" +
           (participantId || "missing")
+      )
+      .then((response) => response.data),
+
+  getGoalLeaderboard: (
+    id?: Id,
+    frequency?: GoalTypes.Frequency,
+    page?: number
+  ) =>
+    axiosInstance
+      .get(
+        "/goal/" +
+          (id || "missing") +
+          "/leaderboard?frequency=" +
+          (frequency || "missing") +
+          (page ? "&page=" + page : "")
       )
       .then((response) => response.data),
 
@@ -149,6 +164,20 @@ const goalService = {
   useMyGoalProgress: (id?: Id, participantId?: Id) =>
     useQuery<GoalTypes.Progress, AxiosError>(`goal-${id}-my-progress`, () =>
       requests.getGoalProgressByParticipant(id, participantId)
+    ),
+
+  // Use goal leaderboard specifying its id
+  useGoalLeaderboard: (id?: Id, frequency?: GoalTypes.Frequency) =>
+    useInfiniteQuery<
+      PagedList<SocialTypes.User & { amount: number }>,
+      AxiosError
+    >(
+      `goal-${id}-leaderboard`,
+      ({ pageParam = 0 }) =>
+        requests.getGoalLeaderboard(id, frequency, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
 
   // Create a goal

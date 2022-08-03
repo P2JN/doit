@@ -23,7 +23,7 @@ from auth.googleOAuth2Adapter import GoogleLogin
 from doit.settings import MEDIA_ROOT, MEDIA_URL
 from doit.views import PopulateDB
 from frontend.views import app
-from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress, GoalsRecommendations
+from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress, LeaderBoard, GoalsRecommendations
 from media.views import MediaUploadApi, MediaApi
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
     LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating, UserRecommendations, PostRecommendations
@@ -48,6 +48,7 @@ router.register(r'tracking', TrackingViewSet, "tracking")
 urlpatterns = [
     # Customs endpoints
     path('api/goal/<str:goal_id>/my-progress', GoalProgress.as_view()),
+    path('api/goal/<str:goal_id>/leaderboard', LeaderBoard.as_view()),
     path('api/goal/<goal_id>/is-participating', UserIsParticipating.as_view()),
     path('api/user/<str:user_id>/user-recommendations', UserRecommendations.as_view()),
     path('api/user/<str:user_id>/goal-recommendations', GoalsRecommendations.as_view()),

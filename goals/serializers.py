@@ -2,6 +2,7 @@ from rest_framework_mongoengine import serializers
 
 from goals.models import Goal, Objective, Tracking
 from social.models import LikeTracking, Participate, Post
+from utils.utils import get_frequency_order
 
 
 class GoalSerializer(serializers.DocumentSerializer):
@@ -17,6 +18,7 @@ class GoalSerializer(serializers.DocumentSerializer):
 
     def get_objectives(self, obj):
         objectives = Objective.objects.filter(goal=obj)
+        objectives = sorted(objectives, key=lambda x: get_frequency_order(x.frequency))
         return ObjectiveSerializer(objectives, many=True).data
 
     def get_numParticipants(self, obj):

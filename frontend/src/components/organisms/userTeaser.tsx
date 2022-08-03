@@ -1,15 +1,14 @@
 import { useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Avatar, Button, IconButton, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Avatar, IconButton, Typography } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
-import { socialService } from "services";
-import { useNotificationStore, useActiveUser } from "store";
+import { useActiveUser } from "store";
 import { mediaUtils } from "utils";
 
 import { Card } from "components/atoms";
-import { UserCounters } from "components/molecules";
+import { FollowButton, UserCounters } from "components/molecules";
 
 const UserTeaser = (user: SocialTypes.User) => {
   const navigate = useNavigate();
@@ -25,11 +24,13 @@ const UserTeaser = (user: SocialTypes.User) => {
           />
         </div>
       )}
-      <header className="flex cursor-pointer items-center justify-between">
+      <header className="flex cursor-pointer flex-wrap-reverse items-center justify-between gap-3">
         <Typography variant="h5">
           <strong onClick={onOpenUser}>{user.firstName}</strong>
         </Typography>
-        <UserTeaserReduced {...user} />
+        <div className="ml-auto">
+          <UserTeaserReduced {...user} />
+        </div>
       </header>
       <footer className="flex justify-end" onClick={onOpenUser}>
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
@@ -40,64 +41,12 @@ const UserTeaser = (user: SocialTypes.User) => {
 
 const UserTeaserInfo = (user: SocialTypes.User) => {
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setSearchParams] = useSearchParams();
-
-  const { addNotification } = useNotificationStore();
 
   const { activeUser } = useActiveUser();
   const isMyProfile = useMemo(
     () => activeUser?.id === user.id,
     [activeUser?.id, user.id]
   );
-
-  const { data: followData, refetch: refetchFollowData } =
-    socialService.useFollowData(user.id, activeUser?.id);
-
-  const isFollowing = useMemo(() => !!followData, [followData]);
-
-  const { mutate: follow } = socialService.useFollow();
-
-  const { mutate: unfollow } = socialService.useUnfollow();
-
-  const onFollowClick = () => {
-    if (user.id) {
-      if (isFollowing && followData?.id) {
-        unfollow(followData.id, {
-          onSuccess: () => {
-            refetchFollowData();
-            setSearchParams("?refresh=user");
-            addNotification({
-              title: "Has dejado de seguir a este usuario.",
-              content: "Ya no verás sus posts en el feed.",
-              type: "transient",
-              variant: "success",
-            });
-          },
-        });
-      } else {
-        if (activeUser?.id)
-          follow(
-            {
-              follower: activeUser?.id,
-              user: user.id,
-            },
-            {
-              onSuccess: () => {
-                refetchFollowData();
-                setSearchParams("?refresh=user");
-                addNotification({
-                  title: "Has comenzado a seguir a este usuario.",
-                  content: "Verás sus posts en el feed.",
-                  type: "transient",
-                  variant: "success",
-                });
-              },
-            }
-          );
-      }
-    }
-  };
 
   return (
     <header className="flex w-full flex-wrap items-center gap-2 md:gap-5">
@@ -120,16 +69,7 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
       <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4">
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </div>
-      {!isMyProfile && (
-        <Button
-          size="large"
-          className="ml-auto rounded-full"
-          color={isFollowing ? "error" : "success"}
-          onClick={onFollowClick}
-        >
-          {isFollowing ? "No seguir" : "Seguir"}
-        </Button>
-      )}
+      {!isMyProfile && <FollowButton {...user} />}
     </header>
   );
 };
@@ -170,7 +110,7 @@ const UserAvatar = (user: SocialTypes.User) => {
   return (
     <Avatar
       onClick={onOpenUser}
-      className="-ml-3 cursor-pointer"
+      className="cursor-pointer"
       alt="userimg"
       src={mediaUtils.sanitizeMediaUrl(user?.urlMedia)}
     />
