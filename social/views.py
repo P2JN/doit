@@ -20,8 +20,8 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_fields = ['title', 'content', 'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [('likes', lambda value: [post.id for post in LikePost.objects.filter(
         post=value).values_list('post')]), ('follows', lambda value: [post.id for post in Post.objects.filter(
-        createdBy__in=Follow.objects.filter(
-            follower=value).values_list('user'))])]
+            createdBy__in=Follow.objects.filter(
+                follower=value).values_list('user'))])]
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
@@ -161,14 +161,17 @@ class UserRecommendations(viewsets.GenericAPIView):
 
         users = [UserSerializer(user).data for user in User.objects.filter(
             id__nin=Follow.objects(user=user_id).values_list('follower').values_list('id'), id__ne=user_id)]
-        sort_by_followers = sorted(users, key=lambda x: x.get("numFollowers"), reverse=True)
+        sort_by_followers = sorted(
+            users, key=lambda x: x.get("numFollowers"), reverse=True)
         max_followers = sort_by_followers[0].get("numFollowers")
-        sort_by_posts = sorted(users, key=lambda x: x.get("numPosts"), reverse=True)
+        sort_by_posts = sorted(
+            users, key=lambda x: x.get("numPosts"), reverse=True)
         max_posts = sort_by_posts[0].get("numPosts")
-        sort_by_trackings = sorted(users, key=lambda x: x.get("numTrackings"), reverse=True)
+        sort_by_trackings = sorted(
+            users, key=lambda x: x.get("numTrackings"), reverse=True)
         max_trackings = sort_by_trackings[0].get("numTrackings")
         sort_by_activity = sorted(users, key=lambda x: ((x.get("numTrackings") + 1) / (max_trackings + 1)) + (
-                x.get("numPosts") / max_posts) * 0.5, reverse=True)
+            x.get("numPosts") / max_posts) * 0.5, reverse=True)
         sort_by_affinity = sorted(users,
                                   key=lambda user: get_users_affinity(logged_user_goals, user, max_followers, max_posts,
                                                                       max_trackings), reverse=True)
@@ -185,18 +188,21 @@ class PostRecommendations(viewsets.GenericAPIView):
         posts = [PostSerializer(post).data for post in Post.objects.filter(
             id__nin=LikePost.objects(createdBy=user_id).values_list('post').values_list('id'), createdBy__ne=user_id,
             createdBy__nin=follows)]
-        sort_by_likes = sorted(posts, key=lambda x: x.get("likes"), reverse=True)
+        sort_by_likes = sorted(
+            posts, key=lambda x: x.get("likes"), reverse=True)
         max_likes = sort_by_likes[0].get("likes")
         sort_by_comments = sorted(posts, key=lambda x: x.get("numComments") * 0.5 + len(
             Comment.objects.filter(post=x.get("id"))
             .distinct("createdBy")), reverse=True)
-        max_comments = max(posts, key=lambda x: x.get("numComments")).get("numComments")
+        max_comments = max(posts, key=lambda x: x.get(
+            "numComments")).get("numComments")
         sort_by_activity = sorted(posts, key=lambda x: ((x.get("likes") + 1) / (max_likes + 1)) + (
-                (x.get("numComments") + 1) / (max_comments + 1)) * 0.5, reverse=True)
+            (x.get("numComments") + 1) / (max_comments + 1)) * 0.5, reverse=True)
         post_by_followers = PostSerializer(Post.objects.filter(createdBy__in=Follow.objects(follower__in=follows)
                                                                .order_by('?')[0:10].values_list('user'))[0:10],
                                            many=True).data
-        post_recomendations = get_post_recomendations(posts, user_id, max_likes, max_comments)
+        post_recomendations = get_post_recomendations(
+            posts, user_id, max_likes, max_comments)
         res = {"likes": sort_by_likes[0:10], "comments": sort_by_comments[0:10],
                "activity": sort_by_activity[0:10], "followers": post_by_followers,
                "recomendations": post_recomendations}
