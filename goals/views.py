@@ -119,13 +119,18 @@ class LeaderBoard(viewsets.GenericAPIView):
 
 class GoalsRecommendations(viewsets.GenericAPIView):
     def get(self, request, user_id, *args, **kwargs):
-        user_goals = Participate.objects.filter(createdBy=user_id).values_list('goal')
-        goals = [GoalSerializer(goal) for goal in Goal.objects.filter(createdBy__ne=user_id, goal__nin=user_goals)]
+        user_goals = [GoalSerializer(goal).data for goal in
+                      Participate.objects.filter(createdBy=user_id).values_list('goal')]
+        user_goals_ids = [user_goal.get("id") for user_goal in user_goals]
+        goals = [GoalSerializer(goal).data for goal in
+                 Goal.objects.filter(createdBy__ne=user_id, id__nin=user_goals_ids)]
         sorted_by_participants = sorted(goals, key=lambda x: x.get("numParticipants"), reverse=True)
+        max_participants = sorted_by_participants[0].get("numParticipants")
         goals_by_followers = GoalSerializer(Participate.objects.filter(
-            createdBy__in=Follow.objects(user=user_id).values_list('follower').values_list('id')
-            , goal__nin=user_goals).order_by('?')[0:10].values_list('goal'), many=True)
-        goals_by_affinity = sorted(goals, key=lambda x: get_goals_affinity(user_goals, x), reverse=True)
+            createdBy__in=Follow.objects(user=user_id).values_list('follower')
+            , goal__nin=user_goals_ids).order_by('?')[0:10].values_list('goal'), many=True).data
+        goals_by_affinity = sorted(goals, key=lambda x: get_goals_affinity(user_goals, x, max_participants),
+                                   reverse=True)
         goals_by_tracking = sorted(goals, key=lambda x: get_tracking_score_by_goal(x), reverse=True)
         res = {
             "participants": sorted_by_participants,

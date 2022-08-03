@@ -196,7 +196,7 @@ class PostRecommendations(viewsets.GenericAPIView):
         post_by_followers = PostSerializer(Post.objects.filter(createdBy__in=Follow.objects(follower__in=follows)
                                                                .order_by('?')[0:10].values_list('user'))[0:10],
                                            many=True).data
-        post_recomendations = get_post_recomendations(posts, user_id)
+        post_recomendations = get_post_recomendations(posts, user_id, max_likes, max_comments)
         res = {"likes": sort_by_likes[0:10], "comments": sort_by_comments[0:10],
                "activity": sort_by_activity[0:10], "followers": post_by_followers,
                "recomendations": post_recomendations}
