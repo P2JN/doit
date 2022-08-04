@@ -138,7 +138,7 @@ class GoalProgress(viewsets.GenericAPIView):
             trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week)
 
         for tracking in trackings:
-            if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
+            if Frequency.DAILY in progress and (tracking.date - today).days == 0:
                 progress[Frequency.DAILY] += tracking.amount
             if Frequency.WEEKLY in progress and start_week <= today <= end_week:
                 progress[Frequency.WEEKLY] += tracking.amount
