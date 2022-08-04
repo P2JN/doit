@@ -45,12 +45,12 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
-                                   "La meta " + serializer.data.get("title") + " ha sido creada.")
+                                   "La meta '" + serializer.data.get("title") + "' ha sido creada.")
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         return delete_notification(self, instance, request, "¡Meta eliminada!",
-                                   "La meta " + instance.title + " ha sido eliminada.")
+                                   "La meta '" + instance.title + "' ha sido eliminada.")
 
 
 class ObjectiveViewSet(viewsets.ModelViewSet):
@@ -72,8 +72,8 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         notification = create_user_notification(serializer.instance.goal.createdBy, "¡Nuevo objectivo creado!",
                                                 "Has añadido un objetivo " + translate_objective_frequency(
-                                                    serializer.instance.frequency) + " a la meta +"
-                                                + serializer.instance.goal.title + ".")
+                                                    serializer.instance.frequency) + " a la meta '"
+                                                + serializer.instance.goal.title + "'.")
 
         return Response({"notification": notification.data, "objective": serializer.data}, status=201)
 
@@ -81,7 +81,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         notification = create_user_notification(instance.goal.createdBy, "¡Objectivo eliminado!",
                                                 "Has borrado un objetivo " + translate_objective_frequency(
-                                                    instance.frequency) + " a la meta " + instance.goal.title + ".")
+                                                    instance.frequency) + " a la meta '" + instance.goal.title + "'.")
         return Response({"notification": notification.data}, status=200)
 
 
@@ -107,13 +107,13 @@ class TrackingViewSet(viewsets.ModelViewSet):
         return create_notification(self, serializer, request, "Tracking", "¡Nuevo progreso registrado!",
                                    "Has registrado " + str(
                                        serializer.instance.amount) + " " + serializer.instance.goal.unit +
-                                   " a la meta "+serializer.instance.goal.title+"+.")
+                                   " a la meta '"+serializer.instance.goal.title+"'.")
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         return delete_notification(self, instance, request, "¡Progreso eliminado!",
                                    "Has eliminado " + str(instance.amount) + " " + instance.goal.unit +
-                                   " a la meta "+instance.goal.title+"+.")
+                                   " a la meta '"+instance.goal.title+"'.")
 
 
 # Custom endpoints
@@ -138,7 +138,7 @@ class GoalProgress(viewsets.GenericAPIView):
             trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week)
 
         for tracking in trackings:
-            if Frequency.DAILY in progress and (tracking.date - today).days == 0:
+            if Frequency.DAILY in progress and (today - tracking.date).days == 0:
                 progress[Frequency.DAILY] += tracking.amount
             if Frequency.WEEKLY in progress and start_week <= today <= end_week:
                 progress[Frequency.WEEKLY] += tracking.amount
