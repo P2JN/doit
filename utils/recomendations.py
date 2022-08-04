@@ -14,19 +14,20 @@ def get_users_affinity(logged_user_goals, user, max_followers, max_posts, max_tr
     last_goals = [GoalSerializer(goal).data for goal in
                   Participate.objects.filter(createdBy=user.get("id")).order_by('-creationDate')[0:10].values_list(
                       'goal')]
+    max_participants = max(logged_user_goals + last_goals, key=lambda goal: goal.get("numParticipants")).get("numParticipants") if logged_user_goals + last_goals else 0
     affinity = 0.0
     for goal in last_goals:
         for logged_goal in logged_user_goals:
-            affinity += goal_affinity(logged_goal, goal)
+            affinity += goal_affinity(logged_goal, goal, max_participants)
     return user_score * 0.25 + affinity * 0.75
 
 
 def goal_affinity(logged_goal, goal, max_participants):
-    return SequenceMatcher(None, logged_goal.get("title"), goal.get("title")).ratio() * 0.3 + \
-           SequenceMatcher(None, logged_goal.get("description"), goal.get("description")).ratio() * 0.3 + \
-           (logged_goal.get("type") == goal.get("type")) * 0.2 + \
+    return SequenceMatcher(None, logged_goal.get("title"), goal.get("title")).ratio() * 0.4 + \
+           SequenceMatcher(None, logged_goal.get("description"), goal.get("description")).ratio() * 0.4 + \
+           (logged_goal.get("type") == goal.get("type")) * 0.15 + \
            ((logged_goal.get("numParticipants") + 1) / (max_participants + 1) -
-            (goal.get("numParticipants") + 1) / (max_participants + 1)) * 0.1
+            (goal.get("numParticipants") + 1) / (max_participants + 1)) * 0.05
 
 
 def get_tracking_score_by_goal(goal):

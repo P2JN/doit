@@ -125,17 +125,17 @@ class GoalsRecommendations(viewsets.GenericAPIView):
         goals = [GoalSerializer(goal).data for goal in
                  Goal.objects.filter(createdBy__ne=user_id, id__nin=user_goals_ids)]
         sorted_by_participants = sorted(goals, key=lambda x: x.get("numParticipants"), reverse=True)
-        max_participants = sorted_by_participants[0].get("numParticipants")
+        max_participants = sorted_by_participants[0].get("numParticipants") if sorted_by_participants else 0
         goals_by_followers = GoalSerializer(Participate.objects.filter(
-            createdBy__in=Follow.objects(user=user_id).values_list('follower')
-            , goal__nin=user_goals_ids).order_by('?')[0:10].values_list('goal'), many=True).data
+            createdBy__in=Follow.objects(follower=user_id).values_list('user')
+            , goal__nin=user_goals_ids).order_by('?')[0:9].values_list('goal'), many=True).data
         goals_by_affinity = sorted(goals, key=lambda x: get_goals_affinity(user_goals, x, max_participants),
                                    reverse=True)
         goals_by_tracking = sorted(goals, key=lambda x: get_tracking_score_by_goal(x), reverse=True)
         res = {
-            "participants": sorted_by_participants,
+            "participants": sorted_by_participants[0:9],
             "followers": goals_by_followers,
-            "affinity": goals_by_affinity,
-            "tracking": goals_by_tracking
+            "affinity": goals_by_affinity[0:9],
+            "tracking": goals_by_tracking[0:9]
         }
         return Response(res, status=200)
