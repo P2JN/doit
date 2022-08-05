@@ -32,17 +32,17 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        content = "La publicacion '" + serializer.data.get("title") + "' ha sido añadida"
+        content = "La publicación '" + serializer.data.get("title") + "' ha sido añadida"
         if serializer.instance.goal:
-            content = "La publicacion '" + serializer.data.get("title") + "' ha sido añadida a la meta '" + \
+            content = "La publicación '" + serializer.data.get("title") + "' ha sido añadida a la meta '" + \
                       serializer.instance.goal.title + "'."
-        return create_notification(self, serializer, request, "Post", "¡Has creado una nueva publicacion!", content)
+        return create_notification(self, serializer, request, "Post", "¡Has creado una nueva publicación!", content)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        content = "La publicacion '" + instance.title + "' ha sido eliminada"
+        content = "La publicación '" + instance.title + "' ha sido eliminada"
         if instance.goal:
-            content = "La publicacion '" + instance.title + "' ha sido eliminada de la meta '" + \
+            content = "La publicación '" + instance.title + "' ha sido eliminada de la meta '" + \
                       instance.goal.title + "'."
         return delete_notification(self, instance, request, "¡Post eliminado!",
                                    content)
@@ -133,12 +133,12 @@ class ParticipateViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en esta meta!",
+        return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en una meta!",
                                    "Empezaste a participar en la meta '" + serializer.instance.goal.title + "'.")
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        return delete_notification(self, instance, request, "¡Has dejado de participar en esta meta!",
+        return delete_notification(self, instance, request, "¡Has dejado de participar en una meta!",
                                    "Dejaste de participar en la meta '" + instance.goal.title + "'.")
 
 
@@ -183,7 +183,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy, instance.createdBy.username + " te ha dado like a un post.",
-                                 "Al usuario "+instance.createdBy.username + " le ha gustado tu publicacion '" + instance.post.title + "'.")
+                                 "Al usuario "+instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.")
 
 
 class CommentViewSet(viewsets.ModelViewSet):

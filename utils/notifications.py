@@ -41,10 +41,10 @@ def notify_completed_objectives(progress, objectives, goal, user):
                 create_user_notification(participant.createdBy, "Objetivo " + translate_objective_frequency(
                     objective.frequency) + " completado",
                                          "Has completado el objetivo " + translate_objective_frequency(
-                                             objective.frequency) + " de la meta " + goal.title, str(goal.id))
+                                             objective.frequency) + " de la meta '" + goal.title+"'", str(goal.id))
         notifications.append(create_user_notification(user, "Objetivo " + translate_objective_frequency(
             objective.frequency) + " completado", "Has completado el objetivo " + translate_objective_frequency(
-            objective.frequency) + " de la meta " + goal.title, str(goal.id)).data)
+            objective.frequency) + " de la meta '" + goal.title+"'", str(goal.id)).data)
     return notifications
 
 
@@ -54,7 +54,7 @@ def has_been_notified(user, objective, goal):
     end_week = start_week + datetime.timedelta(days=6)
     title = "Objetivo " + translate_objective_frequency(objective.frequency) + " completado"
     content = "Has completado el objetivo " + translate_objective_frequency(
-        objective.frequency) + " de la meta " + goal.title
+        objective.frequency) + " de la meta '" + goal.title+"'"
     id_goal = str(goal.id)
     match objective.frequency:
         case Frequency.TOTAL:
@@ -90,12 +90,12 @@ def has_been_notified(user, objective, goal):
 def translate_objective_frequency(frequency):
     match frequency:
         case Frequency.TOTAL:
-            return "Total"
+            return "total"
         case Frequency.YEARLY:
-            return "Anual"
+            return "anual"
         case Frequency.MONTHLY:
-            return "Mensual"
+            return "mensual"
         case Frequency.WEEKLY:
-            return "Semanal"
+            return "semanal"
         case Frequency.DAILY:
-            return "Diario"
+            return "diario"

@@ -70,7 +70,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        notification = create_user_notification(serializer.instance.goal.createdBy, "¡Nuevo objectivo creado!",
+        notification = create_user_notification(serializer.instance.goal.createdBy, "¡Nuevo objetivo creado!",
                                                 "Has añadido un objetivo " + translate_objective_frequency(
                                                     serializer.instance.frequency) + " a la meta '"
                                                 + serializer.instance.goal.title + "'.")
@@ -79,7 +79,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        notification = create_user_notification(instance.goal.createdBy, "¡Objectivo eliminado!",
+        notification = create_user_notification(instance.goal.createdBy, "¡Objetivo eliminado!",
                                                 "Has borrado un objetivo " + translate_objective_frequency(
                                                     instance.frequency) + " a la meta '" + instance.goal.title + "'.")
         return Response({"notification": notification.data}, status=200)
@@ -105,9 +105,9 @@ class TrackingViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return create_notification(self, serializer, request, "Tracking", "¡Nuevo progreso registrado!",
-                                   "Has registrado " + str(
+                                   "Has registrado '" + str(
                                        serializer.instance.amount) + " " + serializer.instance.goal.unit +
-                                   " a la meta '"+serializer.instance.goal.title+"'.")
+                                   "' a la meta '"+serializer.instance.goal.title+"'.")
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
