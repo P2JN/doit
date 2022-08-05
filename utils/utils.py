@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import Http404
 
 from goals.models import Tracking, Frequency
@@ -56,3 +58,31 @@ frequency_order = {Frequency.DAILY: 0, Frequency.WEEKLY: 1, Frequency.MONTHLY: 2
 
 def get_frequency_order(frequency):
     return frequency_order[frequency]
+
+
+def get_progress(goal, objectives, user):
+    progress = dict()
+
+    for objective in objectives:
+        progress[objective.frequency] = 0.0
+
+    today = datetime.datetime.now()
+    start_week = today - datetime.timedelta(days=today.weekday())
+    end_week = start_week + datetime.timedelta(days=6)
+    if goal.type != 'cooperative':
+        trackings = get_trackings(progress.keys(), goal, user, today, start_week, end_week)
+    else:
+        trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week)
+
+    for tracking in trackings:
+        if Frequency.DAILY in progress and (today - tracking.date).days == 0:
+            progress[Frequency.DAILY] += tracking.amount
+        if Frequency.WEEKLY in progress and start_week <= today <= end_week:
+            progress[Frequency.WEEKLY] += tracking.amount
+        if Frequency.MONTHLY in progress and today.month == tracking.date.month and today.year == tracking.date.year:
+            progress[Frequency.MONTHLY] += tracking.amount
+        if Frequency.YEARLY in progress and today.year == tracking.date.year:
+            progress[Frequency.YEARLY] += tracking.amount
+        if Frequency.TOTAL in progress:
+            progress[Frequency.TOTAL] += tracking.amount
+    return progress
