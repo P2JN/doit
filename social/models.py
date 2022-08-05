@@ -1,10 +1,21 @@
 from datetime import datetime
+from enum import Enum
 
 from mongoengine import Document, fields, CASCADE, NULLIFY
 
 from goals.models import Tracking, Goal
 
 from media.models import Media
+
+
+class NotificationIconType(str, Enum):
+    FOLLOW = 'follow'
+    LIKE = 'like'
+    POST = 'post'
+    INFO = 'info'
+    COMMENT = 'comment'
+    COMPLETED = 'completed'
+    GOAL = 'goal'
 
 
 class User(Document):
@@ -50,6 +61,9 @@ class Notification(Document):
     checked = fields.BooleanField(default=False)
     goal = fields.StringField(max_length=25)
     user = fields.ReferenceField('User', required=True)
+
+    iconType = fields.EnumField(
+        NotificationIconType, default=NotificationIconType.INFO)
 
 
 class LikeTracking(Document):
