@@ -313,7 +313,10 @@ const socialService = {
   useNotifications: (userId?: Id) =>
     useInfiniteQuery<PagedList<SocialTypes.Notification>, AxiosError>(
       "notifications-" + userId,
-      () => requests.getNotifications(userId)
+      ({ pageParam = 0 }) => requests.getNotifications(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
     ),
   // Use check notification
   useCheckNotification: () =>
