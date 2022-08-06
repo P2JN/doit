@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, IconButton, Typography } from "@mui/material";
-import { Edit } from "@mui/icons-material";
+import { CameraAlt } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
 import { useActiveUser } from "store";
@@ -49,17 +49,24 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
   );
 
   return (
-    <header className="flex w-full flex-wrap items-center gap-2 md:gap-5">
-      <Avatar
-        alt="userimg"
-        src={mediaUtils.sanitizeMediaUrl(user?.urlMedia)}
-        className="!h-[65px] !w-[65px] rounded-full border-2 border-gray-300 md:!h-[180px] md:!w-[180px]"
-      />
+    <header className="flex w-full flex-wrap items-center justify-between gap-2 md:justify-start md:gap-5">
+      <div className="flex w-full justify-center md:w-auto">
+        <Avatar
+          alt="userimg"
+          src={mediaUtils.sanitizeMediaUrl(user?.urlMedia)}
+          className="!h-[85px] !w-[85px] rounded-full border-2 border-gray-300 md:!h-[180px] md:!w-[180px]"
+        />
+      </div>
 
-      <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4 md:-ml-9 md:rounded-l-none md:pl-5">
+      <div
+        className={
+          "flex items-center gap-3 rounded-full bg-gray-100 px-4 md:-ml-9 md:rounded-l-none md:pl-5 " +
+          (isMyProfile ? "py-2" : "py-3")
+        }
+      >
         {isMyProfile && (
           <IconButton onClick={() => navigate("update-photo")}>
-            <Edit />
+            <CameraAlt />
           </IconButton>
         )}
         <Typography className="cursor-pointer hover:font-bold" variant="h5">

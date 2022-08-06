@@ -18,6 +18,11 @@ const requests = {
       .get("/user/" + (id || "missing") + "/")
       .then((response) => response.data),
 
+  updateUser: (user: SocialTypes.User) =>
+    axiosInstance
+      .patch("/user/" + user.id + "/", user)
+      .then((response) => response.data),
+
   getFollowers: (userId?: Id, page?: number) =>
     axiosInstance
       .get(
@@ -183,6 +188,14 @@ const socialService = {
     useQuery<SocialTypes.User, AxiosError>(`user-${id}`, () =>
       requests.getUser(id)
     ),
+
+  // use update user
+  useUpdateUser: () =>
+    useMutation<any, AxiosError, SocialTypes.User>(
+      "update-user",
+      requests.updateUser
+    ),
+
   // Use the followers of an user
   useFollowers: (userId?: Id) =>
     useInfiniteQuery<PagedList<SocialTypes.User>, AxiosError>(

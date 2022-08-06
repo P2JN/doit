@@ -81,11 +81,11 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
     updateGoal(goal, {
       onSuccess: () => {
         addNotification({
-          title: "Objetivo actualizado",
-          content: "Los datos del objetivo se han actualizado correctamente",
+          title: "Meta actualizada",
+          content: "Los datos de tu meta se han actualizado correctamente",
           type: "transient",
         });
-        navigate("/goals/" + goal.id + "/info?refresh=");
+        navigate("/goals/" + goal.id + "/info?refresh=goal");
       },
     });
   };
