@@ -121,12 +121,6 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
       }
     });
 
-    addNotification({
-      title: "Listo!",
-      content: "Ya puedes empezar a generar progreso!",
-      type: "transient",
-    });
-
     setTimeout(() => {
       if (isUpdate) navigate("/goals/" + goalId + "/info?refresh=goal");
       else navigate("/home?refresh=goals");

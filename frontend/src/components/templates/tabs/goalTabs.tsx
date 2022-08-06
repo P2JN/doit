@@ -79,12 +79,6 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
         },
         {
           onSuccess: () => {
-            addNotification({
-              title: "Te has unido a este objetivo",
-              content: "Felicidades, comienza a registrar tu progreso!",
-              type: "transient",
-              variant: "success",
-            });
             setSearchParams("?refresh=" + goal.id);
           },
           onError: (error: AxiosError) => {

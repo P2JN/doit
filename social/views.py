@@ -1,4 +1,3 @@
-from django.db.models import Count, F
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_mongoengine import viewsets
 from rest_framework.response import Response
@@ -6,11 +5,13 @@ from rest_framework.response import Response
 from auth.permissions import IsOwnerOrReadOnly, IsPrivateGoal
 from goals.models import Goal
 from goals.serializers import GoalSerializer
-from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost, Comment
+from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost, Comment, \
+    NotificationIconType
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
 from utils.filters import FilterSet
 from utils.recomendations import get_users_affinity, get_post_recomendations
+from utils.notifications import delete_notification, create_notification, create_user_notification
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -20,8 +21,8 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_fields = ['title', 'content', 'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [('likes', lambda value: [post.id for post in LikePost.objects.filter(
         post=value).values_list('post')]), ('follows', lambda value: [post.id for post in Post.objects.filter(
-        createdBy__in=Follow.objects.filter(
-            follower=value).values_list('user'))])]
+            createdBy__in=Follow.objects.filter(
+                follower=value).values_list('user'))])]
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
@@ -29,6 +30,27 @@ class PostViewSet(viewsets.ModelViewSet):
             search_text=True)
 
         return post_filter.filter()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        content = "La publicación '" + \
+            serializer.data.get("title") + "' ha sido añadida."
+        if serializer.instance.goal:
+            content = "La publicación '" + serializer.data.get("title") + "' ha sido añadida a la meta '" + \
+                      serializer.instance.goal.title + "'."
+        return create_notification(self, serializer, request, "Post", "¡Has creado una nueva publicación!", content,
+                                   NotificationIconType.POST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        content = "La publicación '" + instance.title + "' ha sido eliminada"
+        if instance.goal:
+            content = "La publicación '" + instance.title + "' ha sido eliminada de la meta '" + \
+                      instance.goal.title + "'."
+        return delete_notification(self, instance, request, "¡Post eliminado!",
+                                   content, NotificationIconType.POST)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -63,7 +85,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
 
-    filter_fields = ['title', 'content', 'creationDate', 'user']
+    filter_fields = ['title', 'content', 'creationDate', 'user', 'checked']
     custom_filter_fields = []
 
     def filter_queryset(self, queryset):
@@ -86,6 +108,17 @@ class FollowViewSet(viewsets.ModelViewSet):
 
         return post_filter.filter()
 
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.user, instance.follower.username + " ha empezado a seguirte.",
+                                 instance.follower.username + " te ha seguido.", NotificationIconType.FOLLOW)
+
+    def perform_destroy(self, instance):
+        instance.delete()
+        create_user_notification(instance.user, instance.follower.username + " ha dejado de seguirte.",
+                                 instance.follower.username + " ya no te sigue.", NotificationIconType.FOLLOW)
+
 
 class ParticipateViewSet(viewsets.ModelViewSet):
     queryset = Participate.objects.all()
@@ -101,6 +134,21 @@ class ParticipateViewSet(viewsets.ModelViewSet):
 
         return post_filter.filter()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en una meta!",
+                                   "Has empezado a participar en la meta '" +
+                                   serializer.instance.goal.title + "'.",
+                                   NotificationIconType.GOAL)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return delete_notification(self, instance, request, "¡Has dejado de participar en una meta!",
+                                   "Dejaste de participar en la meta '" + instance.goal.title + "'.",
+                                   NotificationIconType.INFO)
+
 
 class LikeTrackingViewSet(viewsets.ModelViewSet):
     queryset = LikeTracking.objects.all()
@@ -114,6 +162,17 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return post_filter.filter()
+
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.tracking.createdBy,
+                                 instance.createdBy.username + " te ha dado like a un tracking.",
+                                 instance.createdBy.username + " te dio un like en tu tracking del " + str(
+                                     instance.tracking.date)
+                                 + " en el que conseguiste " +
+                                 str(instance.tracking.amount)
+                                 + " " + instance.tracking.goal.unit + ".", NotificationIconType.LIKE)
 
 
 class LikePostViewSet(viewsets.ModelViewSet):
@@ -129,6 +188,12 @@ class LikePostViewSet(viewsets.ModelViewSet):
 
         return post_filter.filter()
 
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.post.createdBy, "A '" + instance.createdBy.username + "' le ha gustado tu publicación.",
+                                 "Al usuario " + instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.", NotificationIconType.LIKE)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
@@ -142,6 +207,15 @@ class CommentViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset, search_text=True)
 
         return post_filter.filter()
+
+    def perform_create(self, serializer):
+        serializer.save()
+        instance = serializer.instance
+        create_user_notification(instance.post.createdBy,
+                                 instance.createdBy.username + " ha comentado en tu post '" +
+                                 instance.post.title + "'.",
+                                 instance.createdBy.username + " ha comentado '" + instance.content + "'.",
+                                 NotificationIconType.COMMENT)
 
 
 # Custom endpoints
@@ -212,3 +286,9 @@ class PostRecommendations(viewsets.GenericAPIView):
                "recomendations": post_recomendations}
 
         return Response(res)
+
+
+class UncheckedNotifications(viewsets.GenericAPIView):
+    def get(self, request, user_id, *args, **kwargs):
+        user = User.objects.get(id=user_id)
+        return Response(Notification.objects.filter(user=user, checked=False).count())

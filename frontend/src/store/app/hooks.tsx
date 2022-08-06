@@ -24,3 +24,14 @@ export const useActiveUser = () => {
 
   return { activeUser, setActiveUser };
 };
+
+export const useAlertCount = () => {
+  const { state, dispatch } = useContext(Store);
+  const { alertCount } = state.app;
+
+  const setAlertCount = (alertCount: number) => {
+    dispatch({ type: "SET_ALERT_COUNT", payload: alertCount });
+  };
+
+  return { alertCount, setAlertCount };
+};

@@ -26,7 +26,8 @@ from frontend.views import app
 from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress, LeaderBoard, GoalsRecommendations
 from media.views import MediaUploadApi, MediaApi
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
-    LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating, UserRecommendations, PostRecommendations
+    LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating, UserRecommendations, PostRecommendations,\
+    UncheckedNotifications
 
 router = routers.DefaultRouter()
 
@@ -53,6 +54,8 @@ urlpatterns = [
     path('api/user/<str:user_id>/user-recommendations', UserRecommendations.as_view()),
     path('api/user/<str:user_id>/goal-recommendations', GoalsRecommendations.as_view()),
     path('api/user/<str:user_id>/post-recommendations', PostRecommendations.as_view()),
+    path('api/user/<str:user_id>/unchecked-notifications',
+         UncheckedNotifications.as_view()),
     path('api/media/', MediaUploadApi.as_view()),
     path('api/media/<media_id>', MediaApi.as_view()),
 

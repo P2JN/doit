@@ -144,6 +144,27 @@ const requests = {
           (followerId || "missing")
       )
       .then((response) => response.data?.results?.[0]),
+
+  getNotifications: (userId?: Id, page?: number) =>
+    axiosInstance
+      .get(
+        "/notification/?order_by=-creationDate&user=" +
+          (userId || "missing") +
+          (page ? "&page=" + page : "")
+      )
+      .then((response) => response.data),
+
+  getUncheckedNotificationsCount: (userId?: Id) =>
+    axiosInstance
+      .get("/user/" + (userId || "missing") + "/unchecked-notifications")
+      .then((response) => response.data),
+
+  checkNotification: (notificationId?: Id) =>
+    axiosInstance
+      .patch("/notification/" + (notificationId || "missing") + "/", {
+        checked: true,
+      })
+      .then((response) => response.data),
 };
 
 const socialService = {
@@ -286,6 +307,28 @@ const socialService = {
   useLike: (userId?: Id, post?: Id) =>
     useQuery<SocialTypes.Like, AxiosError>(`like-${userId}-${post}`, () =>
       requests.getLike(userId, post)
+    ),
+
+  // Use notifications
+  useNotifications: (userId?: Id) =>
+    useInfiniteQuery<PagedList<SocialTypes.Notification>, AxiosError>(
+      "notifications-" + userId,
+      ({ pageParam = 0 }) => requests.getNotifications(userId, pageParam),
+      {
+        getNextPageParam: paginationUtils.getNextPage,
+      }
+    ),
+  // Use check notification
+  useCheckNotification: () =>
+    useMutation<any, AxiosError, Id>(
+      "check-notification",
+      requests.checkNotification
+    ),
+  // Use unchecked notifications count
+  useUncheckedNotificationsCount: (userId?: Id) =>
+    useQuery<number, AxiosError>(
+      "unchecked-notifications-count-" + userId,
+      () => requests.getUncheckedNotificationsCount(userId)
     ),
 
   // Log in an user

@@ -8,9 +8,14 @@ from auth.permissions import IsOwnerOrReadOnly, IsParticipating
 from goals.models import Goal, Objective, Tracking, Frequency
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Participate, LikeTracking, User, Follow
+from social.models import Participate, LikeTracking, User, NotificationIconType
+from social.serializers import UserSerializer
 from utils.filters import FilterSet
 from utils.recomendations import get_tracking_score_by_goal, get_goals_affinity
-from utils.utils import get_trackings, set_amount
+from utils.notifications import notify_completed_objectives, create_notification, translate_objective_frequency, \
+    create_user_notification, delete_notification, create_notification_tracking
+
+from utils.utils import get_trackings, set_amount, get_progress
 
 
 # ViewSet views
@@ -34,6 +39,19 @@ class GoalViewSet(viewsets.ModelViewSet):
 
         return goal_filter.filter()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
+                                   "La meta '" + serializer.data.get("title") + "' ha sido creada.",
+                                   NotificationIconType.GOAL)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return delete_notification(self, instance, request, "¡Meta eliminada!",
+                                   "La meta '" + instance.title + "' ha sido eliminada.",NotificationIconType.GOAL)
+
 
 class ObjectiveViewSet(viewsets.ModelViewSet):
     queryset = Objective.objects.all()
@@ -47,6 +65,25 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
             self.filter_fields, self.custom_filter_fields, self.request.query_params, queryset)
 
         return objective_filter.filter()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        notification = create_user_notification(serializer.instance.goal.createdBy, "¡Nuevo objetivo creado!",
+                                                "Has añadido un objetivo " + translate_objective_frequency(
+                                                    serializer.instance.frequency) + " a la meta '"
+                                                + serializer.instance.goal.title + "'.", NotificationIconType.INFO)
+
+        return Response({"notification": notification.data, "objective": serializer.data}, status=201)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        notification = create_user_notification(instance.goal.createdBy, "¡Objetivo eliminado!",
+                                                "Has borrado un objetivo " + translate_objective_frequency(
+                                                    instance.frequency) + " a la meta '" + instance.goal.title + "'.",
+                                                NotificationIconType.INFO)
+        return Response({"notification": notification.data}, status=200)
 
 
 class TrackingViewSet(viewsets.ModelViewSet):
@@ -64,6 +101,20 @@ class TrackingViewSet(viewsets.ModelViewSet):
 
         return tracking_filter.filter()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return create_notification_tracking(self, serializer, request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        return delete_notification(self, instance, request, "¡Progreso eliminado!",
+                                   "Has eliminado " + str(instance.amount).replace(".",
+                                                                                   ",") + " " + instance.goal.unit +
+                                   " a la meta '" + instance.goal.title + "'.", NotificationIconType.INFO)
+
 
 # Custom endpoints
 class GoalProgress(viewsets.GenericAPIView):
@@ -73,38 +124,13 @@ class GoalProgress(viewsets.GenericAPIView):
         goal = Goal.objects.get(id=goal_id)
         objectives = Objective.objects.filter(goal=goal_id)
 
-        trackings = []
-        progress = dict()
-
-        for objective in objectives:
-            progress[objective.frequency] = 0.0
-
-        today = datetime.datetime.now().date()
-        start_week = today - datetime.timedelta(days=today.weekday())
-        end_week = start_week + datetime.timedelta(days=6)
-        if goal.type != 'cooperative':
-            trackings = get_trackings(progress.keys(), goal, user, today, start_week, end_week)
-        else:
-            trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week)
-
-        for tracking in trackings:
-            if Frequency.DAILY in progress and (tracking.date.date() - today).days == 0:
-                progress[Frequency.DAILY] += tracking.amount
-            if Frequency.WEEKLY in progress and start_week <= today <= end_week:
-                progress[Frequency.WEEKLY] += tracking.amount
-            if Frequency.MONTHLY in progress and today.month == tracking.date.month and today.year == tracking.date.year:
-                progress[Frequency.MONTHLY] += tracking.amount
-            if Frequency.YEARLY in progress and today.year == tracking.date.year:
-                progress[Frequency.YEARLY] += tracking.amount
-            if Frequency.TOTAL in progress:
-                progress[Frequency.TOTAL] += tracking.amount
-
+        progress = get_progress(goal, objectives, user)
         return Response(progress, status=200)
 
 
 class LeaderBoard(viewsets.GenericAPIView):
     def get(self, request, goal_id, *args, **kwargs):
-        today = datetime.datetime.now().date()
+        today = datetime.datetime.now()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
         trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)

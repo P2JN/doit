@@ -15,10 +15,12 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
   return (
     <Card>
       <header className="flex items-center justify-between">
-        <Typography variant="h5">
-          <strong className="cursor-pointer" onClick={onOpenGoal}>
-            {goal.title}
-          </strong>
+        <Typography
+          variant="h5"
+          className="cursor-pointer !font-bold"
+          onClick={onOpenGoal}
+        >
+          {goal.title}
         </Typography>
         <IconButton
           color="primary"
