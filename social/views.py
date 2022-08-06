@@ -254,8 +254,9 @@ class UserRecommendations(viewsets.GenericAPIView):
         sort_by_affinity = sorted(users,
                                   key=lambda user: get_users_affinity(logged_user_goals, user, max_followers, max_posts,
                                                                       max_trackings), reverse=True)
-        res = {"followers": sort_by_followers[0:9], "posts": sort_by_posts[0:9], "trackings": sort_by_trackings[0:9],
-               "activity": sort_by_activity[0:9], "affinity": sort_by_affinity[0:9]}
+        res = {"affinity": sort_by_affinity[0:9], "followers": sort_by_followers[0:9],
+               "activity": sort_by_activity[0:9], "trackings": sort_by_trackings[0:9],
+               "posts": sort_by_posts[0:9]}
 
         return Response(res)
 
@@ -288,9 +289,8 @@ class PostRecommendations(viewsets.GenericAPIView):
                                            many=True).data
         post_recomendations = get_post_recomendations(
             posts, user_id, max_likes, max_comments)
-        res = {"likes": sort_by_likes[0:9], "comments": sort_by_comments[0:9],
-               "activity": sort_by_activity[0:9], "followers": post_by_followers,
-               "recomendations": post_recomendations}
+        res = {"recomendations": post_recomendations, "likes": sort_by_likes[0:9], "activity": sort_by_activity[0:9],
+               "followers": post_by_followers, "comments": sort_by_comments[0:9]}
 
         return Response(res)
 

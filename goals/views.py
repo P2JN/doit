@@ -162,9 +162,9 @@ class GoalsRecommendations(viewsets.GenericAPIView):
                                    reverse=True)
         goals_by_tracking = sorted(goals, key=lambda x: get_tracking_score_by_goal(x), reverse=True)
         res = {
-            "participants": sorted_by_participants[0:9],
-            "followers": goals_by_followers,
             "affinity": goals_by_affinity[0:9],
-            "tracking": goals_by_tracking[0:9]
+            "participants": sorted_by_participants[0:9],
+            "tracking": goals_by_tracking[0:9],
+            "followers": goals_by_followers
         }
         return Response(res, status=200)
