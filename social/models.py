@@ -44,7 +44,7 @@ class Post(Document):
     creationDate = fields.DateTimeField(default=datetime.utcnow)
 
     createdBy = fields.ReferenceField('User', required=True)
-    goal = fields.ReferenceField('Goal')
+    goal = fields.ReferenceField('Goal', reverse_delete_rule=CASCADE, required=False)
     media = fields.ReferenceField('Media', reverse_delete_rule=NULLIFY)
 
     meta = {'indexes': [
@@ -106,6 +106,7 @@ class Participate(Document):
         'User', required=True, reverse_delete_rule=CASCADE)
     goal = fields.ReferenceField(
         'Goal', required=True, reverse_delete_rule=CASCADE)
+    creationDate = fields.DateTimeField(default=datetime.utcnow)
     meta = {
         'indexes': [
             {'fields': ['createdBy', 'goal'], 'unique': True}
@@ -117,7 +118,7 @@ class Comment(Document):
     content = fields.StringField(max_length=1250)
     creationDate = fields.DateTimeField(default=datetime.utcnow)
     createdBy = fields.ReferenceField('User', required=True)
-    post = fields.ReferenceField('Post', required=True)
+    post = fields.ReferenceField('Post', required=True, reverse_delete_rule=CASCADE)
 
     meta = {'indexes': [
         {'fields': ['$content'],

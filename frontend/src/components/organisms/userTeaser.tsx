@@ -76,7 +76,12 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
       <div className="flex items-center gap-3 rounded-full bg-gray-100 py-3 px-4">
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </div>
-      {!isMyProfile && <FollowButton {...user} />}
+
+      {!isMyProfile && (
+        <div className="md:order-auto order-first flex w-full justify-center md:w-auto">
+          <FollowButton {...user} />
+        </div>
+      )}
     </header>
   );
 };

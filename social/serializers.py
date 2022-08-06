@@ -1,4 +1,6 @@
 from rest_framework_mongoengine import serializers
+
+from goals.models import Tracking
 from social.models import Post, User, Notification, Follow, Participate, LikeTracking, LikePost, Comment
 
 
@@ -34,11 +36,12 @@ class UserSerializer(serializers.DocumentSerializer):
     numFollowing = serializers.serializers.SerializerMethodField()
     numPosts = serializers.serializers.SerializerMethodField()
     urlMedia = serializers.serializers.SerializerMethodField()
+    numTrackings = serializers.serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password',
-                  'firstName', 'lastName', 'numFollowers', 'numFollowing', 'numPosts', 'media', 'urlMedia']
+        fields = ['id', 'username', 'email', 'password', 'firstName', 'lastName', 'numFollowers',
+                  'numFollowing', 'numPosts', 'media', 'urlMedia', 'numTrackings']
         extra_kwargs = {
             'password': {'write_only': True},
             'media': {'allow_null': True}
@@ -58,6 +61,9 @@ class UserSerializer(serializers.DocumentSerializer):
             return obj.media.url
         else:
             return None
+
+    def get_numTrackings(self, obj):
+        return Tracking.objects(createdBy=obj).count()
 
 
 class NotificationSerializer(serializers.DocumentSerializer):

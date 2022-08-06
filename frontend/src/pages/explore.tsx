@@ -1,51 +1,51 @@
-import { useEffect, useMemo } from "react";
-import { Typography } from "@mui/material";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Tab, Tabs, Typography } from "@mui/material";
+import {
+  CrisisAlert,
+  ImageOutlined,
+  PersonOutlineOutlined,
+} from "@mui/icons-material";
 import Carousel from "react-material-ui-carousel";
 import { AxiosError } from "axios";
 
 import { Page } from "layout";
-import { useNotificationStore } from "store";
-import { goalService, socialService } from "services";
-import { arrayUtils, paginationUtils } from "utils";
+import { useActiveUser, useNotificationStore } from "store";
+import { arrayUtils, texts } from "utils";
+import { recommendationService } from "services";
 
 import { DataLoader } from "components/molecules";
 import { GoalTeaserInfo, PostTeaser, UserTeaser } from "components/organisms";
 
+type ExploreTabsType = "posts" | "users" | "goals";
+
 const ExplorePage = () => {
+  const { activeTab } = useParams();
+
+  const navigate = useNavigate();
   const { addNotification } = useNotificationStore();
+  const { activeUser } = useActiveUser();
 
   const {
-    data: goalPages,
+    data: goalRecommendations,
     isLoading: loadingGoals,
     error: goalError,
     isError: isGoalError,
-  } = goalService.useGoals();
-  const goals = useMemo(
-    () => paginationUtils.combinePages(goalPages),
-    [goalPages]
-  );
+  } = recommendationService.useGoalRecommendations(activeUser?.id);
 
   const {
-    data: postPages,
+    data: postRecommendations,
     isLoading: loadingPosts,
     error: postError,
     isError: isPostError,
-  } = socialService.usePosts();
-  const posts = useMemo(
-    () => paginationUtils.combinePages(postPages),
-    [postPages]
-  );
+  } = recommendationService.usePostRecommendations(activeUser?.id);
 
   const {
-    data: userPages,
+    data: userRecommendations,
     isLoading: loadingUsers,
     error: userError,
     isError: isUserError,
-  } = socialService.useUsers();
-  const users = useMemo(
-    () => paginationUtils.combinePages(userPages),
-    [userPages]
-  );
+  } = recommendationService.useUserRecommendations(activeUser?.id);
 
   useEffect(() => {
     if (isGoalError) {
@@ -58,42 +58,95 @@ const ExplorePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGoalError, goalError]);
 
+  const labels = {
+    posts: "Contenido",
+    users: "Usuarios",
+    goals: "Metas",
+  };
+
+  const handleChange = (_: any, tab: string) => {
+    navigate(`/explore/${tab}`);
+  };
+
   return (
     <Page title="Explora">
       <div className="flex flex-col gap-3">
-        <Typography variant="h5">Descubre</Typography>
+        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+          <Typography
+            variant="h5"
+            className="order-2 !text-center md:-order-1 md:text-left"
+          >
+            {labels[activeTab as ExploreTabsType]}
+          </Typography>
+
+          <Tabs
+            value={activeTab}
+            onChange={handleChange}
+            variant="scrollable"
+            allowScrollButtonsMobile
+          >
+            <Tab value={"goals"} icon={<CrisisAlert />} />
+            <Tab value={"posts"} icon={<ImageOutlined />} />
+            <Tab value={"users"} icon={<PersonOutlineOutlined />} />
+          </Tabs>
+        </div>
         <div className="flex flex-col gap-10">
-          <ExploreSection
-            title="Objetivos"
-            loading={loadingGoals}
-            error={isGoalError ? goalError : undefined}
-            slides={
-              goals?.map((goal) => (
-                <GoalTeaserInfo key={goal.id} {...goal} />
-              )) || []
-            }
-          />
+          {activeTab === "goals" &&
+            goalRecommendations &&
+            Object.entries(goalRecommendations)?.map(([key, goals]) => (
+              <ExploreSection
+                title={
+                  texts.recommendTitles.goals[
+                    key as keyof typeof texts.recommendTitles.goals
+                  ]
+                }
+                loading={loadingGoals}
+                error={isGoalError ? goalError : undefined}
+                slides={
+                  goals?.map((goal) => (
+                    <GoalTeaserInfo key={goal.id} {...goal} />
+                  )) || []
+                }
+              />
+            ))}
 
-          <ExploreSection
-            title="Usuarios"
-            loading={loadingUsers}
-            error={isUserError ? userError : undefined}
-            slides={
-              users?.map((user) => <UserTeaser key={user?.id} {...user} />) ||
-              []
-            }
-          />
+          {activeTab === "users" &&
+            userRecommendations &&
+            Object.entries(userRecommendations)?.map(([key, users]) => (
+              <ExploreSection
+                title={
+                  texts.recommendTitles.users[
+                    key as keyof typeof texts.recommendTitles.users
+                  ]
+                }
+                loading={loadingUsers}
+                error={isUserError ? userError : undefined}
+                slides={
+                  users?.map((user) => (
+                    <UserTeaser key={user?.id} {...user} />
+                  )) || []
+                }
+              />
+            ))}
 
-          <ExploreSection
-            title="Posts"
-            loading={loadingPosts}
-            error={isPostError ? postError : undefined}
-            slides={
-              posts?.map((post) => (
-                <PostTeaser withoutComments key={post.id} {...post} />
-              )) || []
-            }
-          />
+          {activeTab === "posts" &&
+            postRecommendations &&
+            Object.entries(postRecommendations)?.map(([key, posts]) => (
+              <ExploreSection
+                title={
+                  texts.recommendTitles.posts[
+                    key as keyof typeof texts.recommendTitles.posts
+                  ]
+                }
+                loading={loadingPosts}
+                error={isPostError ? postError : undefined}
+                slides={
+                  posts?.map((post) => (
+                    <PostTeaser withoutComments key={post.id} {...post} />
+                  )) || []
+                }
+              />
+            ))}
         </div>
       </div>
     </Page>
@@ -109,8 +162,8 @@ const ExploreSection = (props: {
   const contentChunks = arrayUtils.chunk(props.slides, 3);
 
   return (
-    <>
-      <Typography variant="h6">{props.title}</Typography>
+    <section>
+      <Typography variant="h5">{props.title}</Typography>
       <DataLoader
         isLoading={props.loading}
         error={props.error}
@@ -129,7 +182,7 @@ const ExploreSection = (props: {
         ))}
       </Carousel>
       <Carousel
-        duration={1500}
+        duration={500}
         interval={7500}
         animation="slide"
         className="lg:hidden"
@@ -140,7 +193,7 @@ const ExploreSection = (props: {
           </div>
         ))}
       </Carousel>
-    </>
+    </section>
   );
 };
 
