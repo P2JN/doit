@@ -51,7 +51,7 @@ const ExplorePage = () => {
     if (isGoalError) {
       addNotification({
         content: goalError.message,
-        title: "Error loading goals",
+        title: "Error cargando tus metas",
         variant: "error",
       });
     }
