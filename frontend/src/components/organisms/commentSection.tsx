@@ -49,8 +49,8 @@ const CommentSection = (post: SocialTypes.Post) => {
     <div className="flex flex-col gap-3">
       <Card>
         <div className="flex items-center justify-between">
-          <Typography variant="h5">
-            <strong>Comentarios</strong>
+          <Typography variant="h6">
+            <strong>Interacciones</strong>
           </Typography>
           {post.id && (
             <PostCounters

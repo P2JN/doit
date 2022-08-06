@@ -38,7 +38,7 @@ def populate_followers(users):
                 follow.save()
 
 
-def populate_goals_objectives(users):
+def populate_goals_and_objectives(users):
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
 
@@ -628,10 +628,11 @@ def populate():
 
     populate_followers(users)
 
-    populate_goals_objectives(users)
+    populate_goals_and_objectives(users)
     goals = Goal.objects.all()
     objectives = Objective.objects.all()
-    print("Populated goals'" + str(goals.count()) + "' and objectives'" + str(objectives.count()) + "'", )
+    print("Populated goals'" + str(goals.count()) +
+          "' and objectives'" + str(objectives.count()) + "'", )
 
     populate_participations(users, goals)
     participations = Participate.objects.all()
