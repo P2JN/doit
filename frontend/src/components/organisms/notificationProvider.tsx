@@ -1,22 +1,41 @@
+import { useLocation } from "react-router-dom";
 import { ReactNode, useEffect, useState } from "react";
 import { Snackbar } from "@mui/material";
 
-import { useNotificationStore } from "store";
+import { useActiveUser, useAlertCount, useNotificationStore } from "store";
+import { socialService } from "services";
 import { axiosInstance } from "services/config";
 
 import { NotificationAlert } from "components/molecules";
 
 const NotificationProvider = (props: { children: ReactNode }) => {
+  const { activeUser } = useActiveUser();
   const { notifications, addNotification, hideNotificationSnack } =
     useNotificationStore();
 
+  const location = useLocation();
+
   const [interceptorAdded, setInterceptorAdded] = useState(false);
+
+  const { data: alertCount, refetch } =
+    socialService.useUncheckedNotificationsCount(activeUser?.id);
+  const { setAlertCount } = useAlertCount();
+
+  useEffect(() => {
+    refetch();
+  }, [refetch, location]);
+
+  useEffect(() => {
+    setAlertCount(alertCount || 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alertCount]);
 
   useEffect(() => {
     if (!interceptorAdded)
       axiosInstance.interceptors.response.use(
         (response) => {
           if (response.data.notification) {
+            refetch();
             const { notification, ...rest } = response.data;
             addNotification(notification);
 

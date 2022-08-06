@@ -154,6 +154,11 @@ const requests = {
       )
       .then((response) => response.data),
 
+  getUncheckedNotificationsCount: (userId?: Id) =>
+    axiosInstance
+      .get("/user/" + (userId || "missing") + "/unchecked-notifications")
+      .then((response) => response.data),
+
   checkNotification: (notificationId?: Id) =>
     axiosInstance
       .patch("/notification/" + (notificationId || "missing") + "/", {
@@ -315,6 +320,12 @@ const socialService = {
     useMutation<any, AxiosError, Id>(
       "check-notification",
       requests.checkNotification
+    ),
+  // Use unchecked notifications count
+  useUncheckedNotificationsCount: (userId?: Id) =>
+    useQuery<number, AxiosError>(
+      "unchecked-notifications-count-" + userId,
+      () => requests.getUncheckedNotificationsCount(userId)
     ),
 
   // Log in an user

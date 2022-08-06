@@ -8,9 +8,9 @@ import {
   PersonOutlineOutlined,
   PowerSettingsNewOutlined,
 } from "@mui/icons-material";
-import { Divider, Icon } from "@mui/material";
+import { Badge, Divider, Icon } from "@mui/material";
 
-import { useActiveUser } from "store";
+import { useActiveUser, useAlertCount } from "store";
 import { socialService } from "services";
 
 import Logo from "assets/Logo.svg";
@@ -38,6 +38,7 @@ const NavLink = (props: {
 
 const AppNavbar = () => {
   const { activeUser } = useActiveUser();
+  const { alertCount } = useAlertCount();
   const { mutate: logout } = socialService.useLogout();
 
   return (
@@ -63,7 +64,19 @@ const AppNavbar = () => {
           <NavLink to="/explore" icon={<ExploreOutlined />} title="Explora" />
           <NavLink
             to="/notifications"
-            icon={<NotificationsOutlined />}
+            icon={
+              <Badge
+                badgeContent={alertCount}
+                className="font-bold"
+                color="primary"
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+              >
+                <NotificationsOutlined />
+              </Badge>
+            }
             title="Actividad"
           />
         </section>

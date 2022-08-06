@@ -50,7 +50,8 @@ urlpatterns = [
     path('api/goal/<str:goal_id>/my-progress', GoalProgress.as_view()),
     path('api/goal/<str:goal_id>/leaderboard', LeaderBoard.as_view()),
     path('api/goal/<goal_id>/is-participating', UserIsParticipating.as_view()),
-    path('api/user/<str:user_id>/unchecked-notifications', UncheckedNotifications.as_view()),
+    path('api/user/<str:user_id>/unchecked-notifications',
+         UncheckedNotifications.as_view()),
     path('api/media/', MediaUploadApi.as_view()),
     path('api/media/<media_id>', MediaApi.as_view()),
 
