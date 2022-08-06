@@ -2,13 +2,12 @@ import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Alert, Button, CircularProgress, TextField } from "@mui/material";
 
-import { useActiveUser, useNotificationStore } from "store";
+import { useActiveUser } from "store";
 import { goalService } from "services";
 
 const TrackingForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addNotification } = useNotificationStore();
   const {
     mutate: createTracking,
     isLoading,
