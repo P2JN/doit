@@ -1,17 +1,28 @@
 import { useEffect } from "react";
-import { Typography } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
+import { Tab, Tabs, Typography } from "@mui/material";
+import {
+  CrisisAlert,
+  ImageOutlined,
+  PersonOutlineOutlined,
+} from "@mui/icons-material";
 import Carousel from "react-material-ui-carousel";
 import { AxiosError } from "axios";
 
 import { Page } from "layout";
 import { useActiveUser, useNotificationStore } from "store";
-import { arrayUtils } from "utils";
-import recommendationService from "services/recommendationService";
+import { arrayUtils, texts } from "utils";
+import { recommendationService } from "services";
 
 import { DataLoader } from "components/molecules";
 import { GoalTeaserInfo, PostTeaser, UserTeaser } from "components/organisms";
 
+type ExploreTabsType = "posts" | "users" | "goals";
+
 const ExplorePage = () => {
+  const { activeTab } = useParams();
+
+  const navigate = useNavigate();
   const { addNotification } = useNotificationStore();
   const { activeUser } = useActiveUser();
 
@@ -47,16 +58,48 @@ const ExplorePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGoalError, goalError]);
 
+  const labels = {
+    posts: "Contenido",
+    users: "Usuarios",
+    goals: "Metas",
+  };
+
+  const handleChange = (_: any, tab: string) => {
+    navigate(`/explore/${tab}`);
+  };
+
   return (
     <Page title="Explora">
       <div className="flex flex-col gap-3">
-        <Typography variant="h5">Descubre</Typography>
+        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+          <Typography
+            variant="h5"
+            className="order-2 !text-center md:-order-1 md:text-left"
+          >
+            {labels[activeTab as ExploreTabsType]}
+          </Typography>
+
+          <Tabs
+            value={activeTab}
+            onChange={handleChange}
+            variant="scrollable"
+            allowScrollButtonsMobile
+          >
+            <Tab value={"goals"} icon={<CrisisAlert />} />
+            <Tab value={"posts"} icon={<ImageOutlined />} />
+            <Tab value={"users"} icon={<PersonOutlineOutlined />} />
+          </Tabs>
+        </div>
         <div className="flex flex-col gap-10">
-          <Typography variant="h4">Metas</Typography>
-          {goalRecommendations &&
+          {activeTab === "goals" &&
+            goalRecommendations &&
             Object.entries(goalRecommendations)?.map(([key, goals]) => (
               <ExploreSection
-                title={key}
+                title={
+                  texts.recommendTitles.goals[
+                    key as keyof typeof texts.recommendTitles.goals
+                  ]
+                }
                 loading={loadingGoals}
                 error={isGoalError ? goalError : undefined}
                 slides={
@@ -67,11 +110,15 @@ const ExplorePage = () => {
               />
             ))}
 
-          <Typography variant="h4">Usuarios</Typography>
-          {userRecommendations &&
+          {activeTab === "users" &&
+            userRecommendations &&
             Object.entries(userRecommendations)?.map(([key, users]) => (
               <ExploreSection
-                title={key}
+                title={
+                  texts.recommendTitles.users[
+                    key as keyof typeof texts.recommendTitles.users
+                  ]
+                }
                 loading={loadingUsers}
                 error={isUserError ? userError : undefined}
                 slides={
@@ -82,11 +129,15 @@ const ExplorePage = () => {
               />
             ))}
 
-          <Typography variant="h4">Posts</Typography>
-          {postRecommendations &&
+          {activeTab === "posts" &&
+            postRecommendations &&
             Object.entries(postRecommendations)?.map(([key, posts]) => (
               <ExploreSection
-                title={key}
+                title={
+                  texts.recommendTitles.posts[
+                    key as keyof typeof texts.recommendTitles.posts
+                  ]
+                }
                 loading={loadingPosts}
                 error={isPostError ? postError : undefined}
                 slides={
@@ -111,8 +162,8 @@ const ExploreSection = (props: {
   const contentChunks = arrayUtils.chunk(props.slides, 3);
 
   return (
-    <>
-      <Typography variant="h6">{props.title}</Typography>
+    <section>
+      <Typography variant="h5">{props.title}</Typography>
       <DataLoader
         isLoading={props.loading}
         error={props.error}
@@ -131,7 +182,7 @@ const ExploreSection = (props: {
         ))}
       </Carousel>
       <Carousel
-        duration={1500}
+        duration={500}
         interval={7500}
         animation="slide"
         className="lg:hidden"
@@ -142,7 +193,7 @@ const ExploreSection = (props: {
           </div>
         ))}
       </Carousel>
-    </>
+    </section>
   );
 };
 
