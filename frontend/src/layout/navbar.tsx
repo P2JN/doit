@@ -64,7 +64,7 @@ const AppNavbar = () => {
           <NavLink
             to="/notifications"
             icon={<NotificationsOutlined />}
-            title="Alertas"
+            title="Actividad"
           />
         </section>
 

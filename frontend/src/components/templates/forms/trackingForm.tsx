@@ -35,11 +35,6 @@ const TrackingForm = () => {
         },
         {
           onSuccess: () => {
-            addNotification({
-              title: "Avance guardado con éxito",
-              content: "Felicidades, sigue así!",
-              type: "transient",
-            });
             navigate(
               location.pathname.split("/").slice(0, -1).join("/") +
                 "?refresh=" +

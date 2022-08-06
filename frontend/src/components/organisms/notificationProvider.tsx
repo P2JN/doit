@@ -1,21 +1,18 @@
 import { ReactNode, useEffect, useState } from "react";
-import { Alert, Snackbar } from "@mui/material";
+import { Snackbar } from "@mui/material";
 
 import { useNotificationStore } from "store";
 import { axiosInstance } from "services/config";
 
+import { NotificationAlert } from "components/molecules";
+
 const NotificationProvider = (props: { children: ReactNode }) => {
-  const {
-    notifications,
-    addNotification,
-    dismissNotification,
-    hideNotificationSnack,
-  } = useNotificationStore();
+  const { notifications, addNotification, hideNotificationSnack } =
+    useNotificationStore();
 
   const [interceptorAdded, setInterceptorAdded] = useState(false);
 
   useEffect(() => {
-    // Notification interceptor
     if (!interceptorAdded)
       axiosInstance.interceptors.response.use(
         (response) => {
@@ -34,12 +31,15 @@ const NotificationProvider = (props: { children: ReactNode }) => {
       );
 
     setInterceptorAdded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interceptorAdded]);
 
   return (
     <>
       {notifications.map(
         (notification) =>
+          notification &&
+          !notification.checked &&
           !notification.snackHidden && (
             <Snackbar
               autoHideDuration={5000}
@@ -48,13 +48,9 @@ const NotificationProvider = (props: { children: ReactNode }) => {
               onClose={() => hideNotificationSnack(notification.id)}
               open={!notification.snackHidden}
             >
-              <Alert
-                severity={notification.variant}
-                onClose={() => dismissNotification(notification.id)}
-              >
-                <p className="text-sm">{notification.title}</p>
-                <p>{notification.content}</p>
-              </Alert>
+              <div>
+                <NotificationAlert key={notification.id} {...notification} />
+              </div>
             </Snackbar>
           )
       )}

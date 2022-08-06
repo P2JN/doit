@@ -148,10 +148,17 @@ const requests = {
   getNotifications: (userId?: Id, page?: number) =>
     axiosInstance
       .get(
-        "/notification/?user=" +
+        "/notification/?order_by=-creationDate&user=" +
           (userId || "missing") +
           (page ? "&page=" + page : "")
       )
+      .then((response) => response.data),
+
+  checkNotification: (notificationId?: Id) =>
+    axiosInstance
+      .patch("/notification/" + (notificationId || "missing") + "/", {
+        checked: true,
+      })
       .then((response) => response.data),
 };
 
@@ -302,6 +309,12 @@ const socialService = {
     useInfiniteQuery<PagedList<SocialTypes.Notification>, AxiosError>(
       "notifications-" + userId,
       () => requests.getNotifications(userId)
+    ),
+  // Use check notification
+  useCheckNotification: () =>
+    useMutation<any, AxiosError, Id>(
+      "check-notification",
+      requests.checkNotification
     ),
 
   // Log in an user

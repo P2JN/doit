@@ -16,12 +16,18 @@ export const useNotificationStore = () => {
       notification.variant = "info";
     }
 
-    if (!notifications.find((n) => n.id === notification.id)) {
-      if (!notification.creationDate) {
-        notification.creationDate = new Date().toISOString();
-      }
+    if (!notification.creationDate) {
+      notification.creationDate = new Date().toISOString();
+    }
 
+    const existingNotification = notifications.find(
+      (n) => n.id === notification.id
+    );
+
+    if (!existingNotification) {
       dispatch({ type: "ADD_NOTIFICATION", payload: notification });
+    } else {
+      dispatch({ type: "UPDATE_NOTIFICATION", payload: notification });
     }
   };
 
