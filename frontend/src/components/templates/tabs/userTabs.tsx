@@ -9,11 +9,33 @@ import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
 import { FollowTable, PostTeaser, TrackingTeaser } from "components/organisms";
+import { UserForm } from "components/templates";
 
 const UserInfoTab = (user: SocialTypes.User) => {
+  const { activeUser } = useActiveUser();
+
+  const [editUserEnabled, setEditUserEnabled] = useState(false);
+
+  const isMyProfile = useMemo(
+    () => activeUser?.id === user.id,
+    [activeUser, user.id]
+  );
+
   return (
-    <section className="mb-10 flex flex-col gap-5">
-      <p>User Info</p>
+    <section className="mb-10 flex animate-fade-in flex-col gap-5">
+      <div className="flex justify-between">
+        <Typography variant="h5">Datos</Typography>
+        {isMyProfile && (
+          <Button
+            color="primary"
+            size="large"
+            onClick={() => setEditUserEnabled(!editUserEnabled)}
+          >
+            {editUserEnabled ? "Cerrar" : "Editar"}
+          </Button>
+        )}
+      </div>
+      <UserForm initial={user} disabled={!editUserEnabled} />
     </section>
   );
 };
@@ -51,7 +73,7 @@ const UserFeedTab = (user: SocialTypes.User) => {
     <section className="animate-fade-in">
       {isMyProfile && (
         <div className="mb-3 flex justify-between">
-          <Typography variant="h5">Mis posts</Typography>
+          <Typography variant="h5">Últimas publicaciones</Typography>
           <Button onClick={() => navigate("new-post")}>Nuevo</Button>
         </div>
       )}
