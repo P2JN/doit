@@ -1,10 +1,12 @@
+import datetime
+
 from rest_framework import status
 from rest_framework.response import Response
 
-from goals.models import Frequency, Goal, Objective
+from goals.models import Frequency, Goal, Objective, Tracking
 from social.models import Participate, Notification, User, NotificationIconType
 from social.serializers import NotificationSerializer
-from utils.utils import get_progress
+from utils.utils import get_progress, translate_objective_frequency
 
 
 def create_user_notification(user, title, content, icon_type):
@@ -42,6 +44,8 @@ def create_notification_tracking(self, serializer, request, *args, **kwargs):
     objectives = Objective.objects.filter(goal=goal_id)
     user = User.objects.get(id=serializer.data.get("createdBy"))
     progress = get_progress(goal, objectives, user)
+    notify_streak(user, goal)
+    notify_close_objetives(progress, objectives, goal, user)
     notifications = notify_completed_objectives(
         progress, objectives, goal, user, serializer)
     notifications.append(notification)
@@ -61,24 +65,34 @@ def notify_completed_objectives(progress, objectives, goal, user, tracking):
             for participant in participants:
                 create_user_notification(participant.createdBy, "Objetivo " + translate_objective_frequency(
                     objective.frequency) + " completado",
-                    "Has completado el objetivo " + translate_objective_frequency(
-                    objective.frequency) + " de la meta '" + goal.title + "'",
-                    NotificationIconType.COMPLETED)
+                                         "Has completado el objetivo " + translate_objective_frequency(
+                                             objective.frequency) + " de la meta '" + goal.title + "'",
+                                         NotificationIconType.COMPLETED)
         notifications.append(create_user_notification(user, "Objetivo " + translate_objective_frequency(
             objective.frequency) + " completado", "Has completado el objetivo " + translate_objective_frequency(
             objective.frequency) + " de la meta '" + goal.title + "'", NotificationIconType.COMPLETED).data)
     return notifications
 
 
-def translate_objective_frequency(frequency):
-    match frequency:
-        case Frequency.TOTAL:
-            return "total"
-        case Frequency.YEARLY:
-            return "anual"
-        case Frequency.MONTHLY:
-            return "mensual"
-        case Frequency.WEEKLY:
-            return "semanal"
-        case Frequency.DAILY:
-            return "diario"
+def notify_streak(user, goal):
+    today = datetime.datetime.now()
+    start_week = today - datetime.timedelta(days=today.weekday())
+    end_week = start_week + datetime.timedelta(days=6)
+    streak = Tracking.objects.filter(createdBy=user, goal=goal,
+                                     date__lte=end_week.replace(hour=23, minute=59, second=59),
+                                     date__gte=start_week.replace(hour=0, minute=0, second=0)).count()
+    if streak > 3:
+        create_user_notification(user, "¡Estas en racha!", "Esta semana has introducido ya '"
+                                 + str(streak) + "' registros de progreso a la meta '" + goal.title + "'.",
+                                 NotificationIconType.INFO)
+
+
+def notify_close_objetives(progress, objectives, goal, user):
+    objectives_to_notify = [objective for objective in objectives if
+                            0.75 < progress[objective.frequency] / objective.quantity < 1]
+    for objective in objectives_to_notify:
+        create_user_notification(user, "Objetivo " + translate_objective_frequency(
+            objective.frequency) + " cerca de cumplirse", "El objetivo " + translate_objective_frequency(
+            objective.frequency) + " de la meta '" + goal.title + "' esta cerca de completarse, se ha cumplido un "
+                                 + str(progress[objective.frequency] / objective.quantity) + "% del objetivo",
+                                 NotificationIconType.INFO)

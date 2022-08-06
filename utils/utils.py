@@ -86,3 +86,17 @@ def get_progress(goal, objectives, user):
         if Frequency.TOTAL in progress:
             progress[Frequency.TOTAL] += tracking.amount
     return progress
+
+
+def translate_objective_frequency(frequency):
+    match frequency:
+        case Frequency.TOTAL:
+            return "total"
+        case Frequency.YEARLY:
+            return "anual"
+        case Frequency.MONTHLY:
+            return "mensual"
+        case Frequency.WEEKLY:
+            return "semanal"
+        case Frequency.DAILY:
+            return "diario"

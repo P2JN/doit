@@ -5,17 +5,14 @@ from rest_framework.response import Response
 from rest_framework_mongoengine import viewsets
 
 from auth.permissions import IsOwnerOrReadOnly, IsParticipating
-from goals.models import Goal, Objective, Tracking, Frequency
+from goals.models import Goal, Objective, Tracking
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Participate, LikeTracking, User, NotificationIconType
-from social.serializers import UserSerializer
 from utils.filters import FilterSet
-
 # ViewSet views
-from utils.notifications import notify_completed_objectives, create_notification, translate_objective_frequency, \
+from utils.notifications import create_notification, \
     create_user_notification, delete_notification, create_notification_tracking
-
-from utils.utils import get_trackings, set_amount, get_progress
+from utils.utils import get_trackings, set_amount, get_progress, translate_objective_frequency
 
 
 class GoalViewSet(viewsets.ModelViewSet):
@@ -49,7 +46,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         return delete_notification(self, instance, request, "¡Meta eliminada!",
-                                   "La meta '" + instance.title + "' ha sido eliminada.",NotificationIconType.GOAL)
+                                   "La meta '" + instance.title + "' ha sido eliminada.", NotificationIconType.GOAL)
 
 
 class ObjectiveViewSet(viewsets.ModelViewSet):
