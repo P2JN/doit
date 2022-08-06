@@ -221,3 +221,9 @@ class UserIsParticipating(viewsets.GenericAPIView):
         if len(Participate.objects.filter(createdBy=user, goal=goal)) > 0:
             return Response(True)
         return Response(False)
+
+
+class UncheckedNotifications(viewsets.GenericAPIView):
+    def get(self, request, user_id, *args, **kwargs):
+        user = User.objects.get(id=user_id)
+        return Response(Notification.objects.filter(user=user, checked=False).count())
