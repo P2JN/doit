@@ -57,7 +57,9 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
   return (
     <Card className="cursor-pointer" onClick={onOpenGoal}>
       <header className="flex items-center justify-between">
-        <Typography variant="h5">{goal.title}</Typography>
+        <Typography variant="h5" className="!font-bold">
+          {goal.title}
+        </Typography>
         {goal.type && (
           <Chip
             label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
@@ -87,12 +89,13 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
       className="min-h-[calc(32px+40px)] cursor-pointer"
       onClick={onOpenGoal}
     >
-      <header className="flex items-center justify-between">
-        <Typography variant="h5">
-          <strong>{goal.title}</strong>
+      <header className="flex items-center justify-between gap-3">
+        <Typography variant="h6" className="!font-bold leading-tight">
+          {goal.title}
         </Typography>
         {goal.type && (
           <Chip
+            className="ml-auto -mr-2"
             label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
             color="info"
           />
