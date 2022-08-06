@@ -16,6 +16,7 @@ class NotificationIconType(str, Enum):
     COMMENT = 'comment'
     COMPLETED = 'completed'
     GOAL = 'goal'
+    TRACKING = 'tracking'
 
 
 class User(Document):
