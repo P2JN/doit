@@ -586,18 +586,6 @@ def populate_posts_comments(users, goals):
     )
     comment.save()
 
-
-def populate_notifications(users):
-    for user in users:
-        for i in range(int(random.random() * 8)):
-            notification = Notification(
-                title='Notification ' + str(i),
-                content='This is a notification description for ' + user.username,
-                user=user,
-            )
-            notification.save()
-
-
 def populate_likes(users, trackings, posts):
     for user in users:
         for tracking in trackings:
@@ -654,4 +642,3 @@ def populate():
     trackings = Tracking.objects.all()
 
     populate_likes(users, trackings, posts)
-    populate_notifications(users)
