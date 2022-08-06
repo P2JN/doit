@@ -4,15 +4,12 @@ from rest_framework.response import Response
 from goals.models import Frequency, Goal, Objective
 from social.models import Participate, Notification, User, NotificationIconType
 from social.serializers import NotificationSerializer
-
-import datetime
-
 from utils.utils import get_progress
 
 
-def create_user_notification(user, title, content, icon_type, goal=None):
+def create_user_notification(user, title, content, icon_type):
     notification = Notification(
-        user=user, title=title, content=content, goal=goal, iconType=icon_type)
+        user=user, title=title, content=content, iconType=icon_type)
     notification.save()
     return NotificationSerializer(notification)
 
@@ -66,11 +63,10 @@ def notify_completed_objectives(progress, objectives, goal, user, tracking):
                     objective.frequency) + " completado",
                     "Has completado el objetivo " + translate_objective_frequency(
                     objective.frequency) + " de la meta '" + goal.title + "'",
-                    NotificationIconType.COMPLETED, str(goal.id))
+                    NotificationIconType.COMPLETED)
         notifications.append(create_user_notification(user, "Objetivo " + translate_objective_frequency(
             objective.frequency) + " completado", "Has completado el objetivo " + translate_objective_frequency(
-            objective.frequency) + " de la meta '" + goal.title + "'", NotificationIconType.COMPLETED,
-            str(goal.id)).data)
+            objective.frequency) + " de la meta '" + goal.title + "'", NotificationIconType.COMPLETED).data)
     return notifications
 
 

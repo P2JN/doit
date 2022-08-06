@@ -60,7 +60,6 @@ class Notification(Document):
     content = fields.StringField(max_length=1250)
     creationDate = fields.DateTimeField(default=datetime.utcnow)
     checked = fields.BooleanField(default=False)
-    goal = fields.StringField(max_length=25)
     user = fields.ReferenceField('User', required=True)
 
     iconType = fields.EnumField(
