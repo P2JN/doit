@@ -27,7 +27,6 @@ import {
   GoalLeaderboardTab,
   GoalStatsTab,
   GoalTrackingsTab,
-  ObjectivesForm,
   TrackingForm,
   PostForm,
 } from "components/templates";
@@ -109,17 +108,6 @@ const GoalModals = (goal: GoalTypes.Goal) => {
         element={
           <ModalDrawer title="Registrar progreso" onClose={() => navigate(-1)}>
             <TrackingForm />
-          </ModalDrawer>
-        }
-      />
-      <Route
-        path="objectives"
-        element={
-          <ModalDrawer
-            title="Objetivos temporales"
-            onClose={() => navigate("/home?refresh=goals")}
-          >
-            <ObjectivesForm />
           </ModalDrawer>
         }
       />

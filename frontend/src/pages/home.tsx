@@ -39,7 +39,7 @@ const HomePage = () => {
     <Page title="Inicio">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <Typography variant="h5">Mis objetivos</Typography>
+          <Typography variant="h5">Mis metas</Typography>
           <Button onClick={() => navigate("/home/new-goal")}>Nuevo</Button>
         </div>
 

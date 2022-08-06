@@ -40,7 +40,7 @@ class UserSerializer(serializers.DocumentSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'birthDate', 'firstName', 'lastName', 'numFollowers',
+        fields = ['id', 'username', 'email', 'password', 'firstName', 'lastName', 'numFollowers',
                   'numFollowing', 'numPosts', 'media', 'urlMedia', 'numTrackings']
         extra_kwargs = {
             'password': {'write_only': True},
@@ -69,7 +69,8 @@ class UserSerializer(serializers.DocumentSerializer):
 class NotificationSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'content', 'creationDate', 'user', 'checked', 'iconType']
+        fields = ['id', 'title', 'content',
+                  'creationDate', 'user', 'checked', 'iconType']
         read_only_fields = ['creationDate', 'iconType']
 
 

@@ -63,7 +63,7 @@ const UserDetailPage = () => {
   const labels = {
     info: "Información",
     feed: "Contenido",
-    trackings: "Registros",
+    trackings: "Progreso",
     related: "Usuarios relacionados",
     stats: "Estadísticas",
   };
