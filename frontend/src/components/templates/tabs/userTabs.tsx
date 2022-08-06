@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Tab, Tabs, Typography } from "@mui/material";
 
 import { goalService, socialService } from "services";
@@ -13,8 +13,9 @@ import { UserForm } from "components/templates";
 
 const UserInfoTab = (user: SocialTypes.User) => {
   const { activeUser } = useActiveUser();
+  const navigate = useNavigate();
 
-  const [editUserEnabled, setEditUserEnabled] = useState(false);
+  const editUserEnabled = useMatch("/users/:userId/info/edit");
 
   const isMyProfile = useMemo(
     () => activeUser?.id === user.id,
@@ -29,7 +30,11 @@ const UserInfoTab = (user: SocialTypes.User) => {
           <Button
             color="primary"
             size="large"
-            onClick={() => setEditUserEnabled(!editUserEnabled)}
+            onClick={() =>
+              navigate(
+                `/users/${user.id}/info${editUserEnabled ? "" : "/edit"}`
+              )
+            }
           >
             {editUserEnabled ? "Cerrar" : "Editar"}
           </Button>

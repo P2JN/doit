@@ -69,6 +69,7 @@ const UserForm = (props: {
           content: "Has cambiado tus datos de perfil",
           type: "transient",
         });
+        navigate(`/users/${user.id}/info?refresh=user`);
       },
     });
   };

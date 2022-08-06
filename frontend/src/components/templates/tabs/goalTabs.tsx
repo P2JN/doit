@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { Alert, Button, Divider, Tab, Tabs, Typography } from "@mui/material";
 
 import { useActiveUser, useNotificationStore } from "store";
@@ -19,8 +19,8 @@ import { GoalForm, ObjectivesForm } from "components/templates";
 
 const GoalInfoTab = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
-  const [editObjectivesEnabled, setEditObjectivesEnabled] = useState(false);
-  const [editGoalEnabled, setEditGoalEnabled] = useState(false);
+  const editObjectivesEnabled = useMatch("/goals/:id/info/edit-objectives");
+  const editGoalEnabled = useMatch("/goals/:id/info/edit");
 
   const { addNotification } = useNotificationStore();
 
@@ -119,7 +119,11 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
           <Button
             color="primary"
             size="large"
-            onClick={() => setEditGoalEnabled(!editGoalEnabled)}
+            onClick={() =>
+              navigate(
+                `/goals/${goal.id}/info${editGoalEnabled ? "" : "/edit"}`
+              )
+            }
           >
             {editGoalEnabled ? "Cerrar" : "Editar"}
           </Button>
@@ -134,7 +138,13 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
             <Button
               color="primary"
               size="large"
-              onClick={() => setEditObjectivesEnabled(!editObjectivesEnabled)}
+              onClick={() =>
+                navigate(
+                  `/goals/${goal.id}/info${
+                    editObjectivesEnabled ? "" : "/edit-objectives"
+                  }`
+                )
+              }
             >
               {editObjectivesEnabled ? "Cerrar" : "Editar"}
             </Button>
@@ -294,7 +304,7 @@ const GoalTrackingsTab = (goal: GoalTypes.Goal) => {
   return (
     <section className="animate-fade-in">
       <div className="mb-3 flex justify-between">
-        <Typography variant="h5">Últimos Progresos</Typography>
+        <Typography variant="h5">Últimos Registros</Typography>
         <div className="flex gap-2">
           <Button
             color="primary"
