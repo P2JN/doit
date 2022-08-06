@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_mongoengine import viewsets
 from rest_framework.response import Response
@@ -21,8 +23,8 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_fields = ['title', 'content', 'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [('likes', lambda value: [post.id for post in LikePost.objects.filter(
         post=value).values_list('post')]), ('follows', lambda value: [post.id for post in Post.objects.filter(
-            createdBy__in=Follow.objects.filter(
-                follower=value).values_list('user'))])]
+        createdBy__in=Follow.objects.filter(
+            follower=value).values_list('user'))])]
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
@@ -36,7 +38,7 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         content = "La publicación '" + \
-            serializer.data.get("title") + "' ha sido añadida."
+                  serializer.data.get("title") + "' ha sido añadida."
         if serializer.instance.goal:
             content = "La publicación '" + serializer.data.get("title") + "' ha sido añadida a la meta '" + \
                       serializer.instance.goal.title + "'."
@@ -191,8 +193,10 @@ class LikePostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.post.createdBy, "A '" + instance.createdBy.username + "' le ha gustado tu publicación.",
-                                 "Al usuario " + instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.", NotificationIconType.LIKE)
+        create_user_notification(instance.post.createdBy,
+                                 "A '" + instance.createdBy.username + "' le ha gustado tu publicación.",
+                                 "Al usuario " + instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.",
+                                 NotificationIconType.LIKE)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -246,7 +250,7 @@ class UserRecommendations(viewsets.GenericAPIView):
             users, key=lambda x: x.get("numTrackings"), reverse=True)
         max_trackings = sort_by_trackings[0].get("numTrackings") if sort_by_trackings else 0
         sort_by_activity = sorted(users, key=lambda x: ((x.get("numTrackings") + 1) / (max_trackings + 1)) + (
-            (x.get("numPosts")+1) / (max_posts+1)) * 0.5, reverse=True)
+                (x.get("numPosts") + 1) / (max_posts + 1)) * 0.5, reverse=True)
         sort_by_affinity = sorted(users,
                                   key=lambda user: get_users_affinity(logged_user_goals, user, max_followers, max_posts,
                                                                       max_trackings), reverse=True)
@@ -262,7 +266,9 @@ class PostRecommendations(viewsets.GenericAPIView):
         follows = Follow.objects().filter(follower=user_id).values_list('user')
         liked_posts = [post.id for post in LikePost.objects().filter(createdBy=user_id).values_list('post')]
         posts = [PostSerializer(post).data for post in Post.objects.filter(id__nin=liked_posts, createdBy__ne=user_id,
-                                                                           createdBy__nin=follows)]
+                                                                           createdBy__nin=follows,
+                                                                           creationDate__gte=datetime.now() - timedelta(
+                                                                               weeks=12))]
         sort_by_likes = sorted(
             posts, key=lambda x: x.get("likes"), reverse=True)
         max_likes = sort_by_likes[0].get("likes") if sort_by_likes else 0
@@ -273,7 +279,8 @@ class PostRecommendations(viewsets.GenericAPIView):
             "numComments")).get("numComments") if posts else 0
         sort_by_activity = sorted(posts, key=lambda x: ((x.get("likes") + 1) / (max_likes + 1)) + (
                 (x.get("numComments") + 1) / (max_comments + 1)) * 0.5, reverse=True)
-        post_by_followers = PostSerializer(Post.objects.filter(id__nin=liked_posts,
+        post_by_followers = PostSerializer(Post.objects.filter(creationDate__gte=datetime.now() - timedelta(weeks=12),
+                                                               id__nin=liked_posts,
                                                                createdBy__in=Follow.objects().filter(
                                                                    follower__in=follows, user__ne=user_id,
                                                                    user__nin=follows)

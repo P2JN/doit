@@ -356,10 +356,9 @@ def populate_participations(users, goals):
 
 def populate_trackings(participations):
     for participation in participations:
-        for _ in range(int(random.random() * 3)):
-            if random.random() < 0.25:
-                tracking = Tracking(amount=int(
-                    random.random() * 100), goal=participation.goal, createdBy=participation.createdBy)
+        for _ in range(random.randint(1, 4)):
+            if random.random() >= 0.25:
+                tracking = Tracking(amount=random.randint(1, 10), goal=participation.goal, createdBy=participation.createdBy)
                 tracking.save()
 
 

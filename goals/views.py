@@ -50,7 +50,7 @@ class GoalViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         return delete_notification(self, instance, request, "¡Meta eliminada!",
-                                   "La meta '" + instance.title + "' ha sido eliminada.",NotificationIconType.GOAL)
+                                   "La meta '" + instance.title + "' ha sido eliminada.", NotificationIconType.GOAL)
 
 
 class ObjectiveViewSet(viewsets.ModelViewSet):
@@ -149,12 +149,15 @@ class GoalsRecommendations(viewsets.GenericAPIView):
                       Participate.objects.filter(createdBy=user_id).values_list('goal')]
         user_goals_ids = [user_goal.get("id") for user_goal in user_goals]
         goals = [GoalSerializer(goal).data for goal in
-                 Goal.objects.filter(createdBy__ne=user_id, id__nin=user_goals_ids)]
+                 Goal.objects.filter(createdBy__ne=user_id, id__nin=user_goals_ids,
+                                     creationDate__gte=datetime.datetime.now() - datetime.timedelta(
+                                         weeks=12))]
         sorted_by_participants = sorted(goals, key=lambda x: x.get("numParticipants"), reverse=True)
         max_participants = sorted_by_participants[0].get("numParticipants") if sorted_by_participants else 0
         goals_by_followers = GoalSerializer(Participate.objects.filter(
             createdBy__in=Follow.objects(follower=user_id).values_list('user')
-            , goal__nin=user_goals_ids).order_by('?')[0:9].values_list('goal'), many=True).data
+            , goal__nin=user_goals_ids, creationDate__gte=datetime.datetime.now() - datetime.timedelta(
+                weeks=12)).order_by('?')[0:9].values_list('goal'), many=True).data
         goals_by_affinity = sorted(goals, key=lambda x: get_goals_affinity(user_goals, x, max_participants),
                                    reverse=True)
         goals_by_tracking = sorted(goals, key=lambda x: get_tracking_score_by_goal(x), reverse=True)
