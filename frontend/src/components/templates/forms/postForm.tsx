@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 
-import { useActiveUser, useNotificationStore } from "store";
+import { useActiveUser } from "store";
 import { socialService } from "services";
 import { GoalTypes, SocialTypes } from "types";
 import { Id } from "types/apiTypes";
@@ -19,7 +19,6 @@ import { MediaForm } from "components/templates";
 
 const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
   const navigate = useNavigate();
-  const { addNotification } = useNotificationStore();
 
   const [mediaId, setMediaId] = useState<Id | undefined>(undefined);
 
@@ -46,11 +45,6 @@ const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
         { ...post, createdBy: activeUser?.id, goal: props.relatedGoal?.id },
         {
           onSuccess: () => {
-            addNotification({
-              title: "Post creado",
-              content: "Puedes verlo en tu perfil.",
-              type: "transient",
-            });
             hasRelatedGoal
               ? navigate(
                   "/goals/" + props.relatedGoal?.id + "/feed?refresh=goal-posts"

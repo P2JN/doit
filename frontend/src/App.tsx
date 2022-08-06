@@ -18,13 +18,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
         <ThemeProvider theme={responsiveFontSizes(createTheme(theme))}>
-          <NotificationProvider />
           <Router>
             <AuthProvider>
-              <div className="container mx-auto flex h-full w-full justify-center">
-                <AppNavbar />
-                <AppPages />
-              </div>
+              <NotificationProvider>
+                <div className="container mx-auto flex h-full w-full justify-center">
+                  <AppNavbar />
+                  <AppPages />
+                </div>
+              </NotificationProvider>
             </AuthProvider>
           </Router>
         </ThemeProvider>
@@ -33,6 +34,7 @@ function App() {
   );
 }
 
+// TODO: move this to auth folder
 const AuthProvider = (props: { children: ReactNode }) => {
   const { setActiveUser } = useActiveUser();
   const loggedOut = useMatch("/auth/login");

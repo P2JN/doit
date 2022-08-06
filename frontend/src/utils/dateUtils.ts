@@ -8,17 +8,17 @@ const dateUtils = {
     const now = new Date();
 
     if (now.getTime() - dateObj.getTime() < 60000) {
-      return "just now";
+      return "justo ahora";
     } else if (now.getTime() - dateObj.getTime() < 3600000) {
-      return `${Math.floor(
+      return `hace ${Math.floor(
         (now.getTime() - dateObj.getTime()) / 60000
-      )} min ago`;
+      )} min`;
     } else if (now.getTime() - dateObj.getTime() < 86400000) {
-      return `${Math.floor(
+      return `hace ${Math.floor(
         (now.getTime() - dateObj.getTime()) / 3600000
-      )} hours ago`;
+      )} horas`;
     } else if (dateObj.getDate() === now.getDate() - 1) {
-      return "yesterday";
+      return "ayer";
     } else {
       const month = dateObj.getMonth() + 1;
       const day = dateObj.getDate();

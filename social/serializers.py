@@ -63,8 +63,8 @@ class UserSerializer(serializers.DocumentSerializer):
 class NotificationSerializer(serializers.DocumentSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'content', 'creationDate', 'user']
-        read_only_fields = ['creationDate']
+        fields = ['id', 'title', 'content', 'creationDate', 'user', 'checked', 'iconType']
+        read_only_fields = ['creationDate', 'iconType']
 
 
 class FollowSerializer(serializers.DocumentSerializer):

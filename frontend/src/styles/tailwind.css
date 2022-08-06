@@ -27,6 +27,10 @@
   @apply justify-center;
 }
 
+.MuiBadge-colorPrimary {
+  @apply !font-bold !text-white;
+}
+
 /* Your own custom component styles */
 
 /* Start purging... */

@@ -1,6 +1,6 @@
-import { NotificationTypes } from "types";
+import { SocialTypes } from "types";
 
-export interface StateNotification extends NotificationTypes.Notification {
+export interface StateNotification extends SocialTypes.Notification {
   type?: "persistent" | "transient";
   variant?: "success" | "error" | "warning" | "info";
   snackHidden?: boolean;

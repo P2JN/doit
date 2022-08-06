@@ -63,3 +63,22 @@ export type Follow = {
   follower: Id;
   user: Id;
 };
+
+export type NotificationIconType =
+  | "like"
+  | "comment"
+  | "follow"
+  | "post"
+  | "goal"
+  | "info"
+  | "completed"
+  | "tracking";
+export type Notification = {
+  id?: Id;
+  title?: string;
+  content: string;
+  creationDate?: string;
+
+  iconType?: NotificationIconType;
+  checked?: boolean;
+};

@@ -69,12 +69,6 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
             },
             {
               onSuccess: () => {
-                addNotification({
-                  title: "Objetivo creado",
-                  content:
-                    "Ahora añade tus objetivos temporales y empieza a cumplirlos!",
-                  type: "transient",
-                });
                 navigate("/home/" + data.id + "/objectives");
               },
             }
