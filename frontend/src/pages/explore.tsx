@@ -101,6 +101,7 @@ const ExplorePage = () => {
             goalRecommendations &&
             Object.entries(goalRecommendations)?.map(([key, goals]) => (
               <ExploreSection
+                key={"goals-" + key}
                 title={
                   texts.recommendTitles.goals[
                     key as keyof typeof texts.recommendTitles.goals
@@ -120,6 +121,7 @@ const ExplorePage = () => {
             userRecommendations &&
             Object.entries(userRecommendations)?.map(([key, users]) => (
               <ExploreSection
+                key={"users-" + key}
                 title={
                   texts.recommendTitles.users[
                     key as keyof typeof texts.recommendTitles.users
@@ -139,6 +141,7 @@ const ExplorePage = () => {
             postRecommendations &&
             Object.entries(postRecommendations)?.map(([key, posts]) => (
               <ExploreSection
+                key={"posts-" + key}
                 title={
                   texts.recommendTitles.posts[
                     key as keyof typeof texts.recommendTitles.posts
