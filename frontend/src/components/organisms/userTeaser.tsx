@@ -129,10 +129,31 @@ const UserAvatar = (user: SocialTypes.User) => {
   );
 };
 
+const UserSearchResult = (user: SocialTypes.User) => {
+  const navigate = useNavigate();
+  const onOpenUser = () => navigate("/users/" + user.id + "/info");
+  return (
+    <article>
+      <section onClick={onOpenUser}>
+        <Typography variant="h6" className="!font-bold leading-tight">
+          {user.firstName} {user.lastName}
+        </Typography>
+      </section>
+      <section className="flex cursor-pointer items-center gap-4 py-1">
+        {user && <UserAvatar {...user} />}
+        <div className="!mr-auto">{user && <UserUsername {...user} />}</div>
+        <FollowButton {...user} />
+        <UserCounters followers={user.numFollowers} posts={user.numPosts} />
+      </section>
+    </article>
+  );
+};
+
 export {
   UserTeaserReduced,
   UserTeaser,
   UserTeaserInfo,
   UserUsername,
   UserAvatar,
+  UserSearchResult,
 };

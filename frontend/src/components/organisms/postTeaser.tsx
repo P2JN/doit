@@ -1,5 +1,6 @@
-import { Typography } from "@mui/material";
-import { useMatch } from "react-router-dom";
+import { IconButton, Typography } from "@mui/material";
+import { useMatch, useNavigate } from "react-router-dom";
+import { CrisisAlert } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
 import { goalService, socialService } from "services";
@@ -10,6 +11,8 @@ import {
   UserTeaserReduced,
   CommentSection,
   GoalTeaserReduced,
+  UserAvatar,
+  UserUsername,
 } from "components/organisms";
 
 const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
@@ -64,4 +67,37 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
   );
 };
 
-export { PostTeaser };
+const PostSearchResult = (post: SocialTypes.Post) => {
+  const navigate = useNavigate();
+
+  const { data: user } = socialService.useUser(post.createdBy);
+  const onOpenGoal = () => navigate("/goals/" + post.goal + "/feed");
+
+  return (
+    <article>
+      <section>
+        <Typography variant="h6" className="!font-bold leading-tight">
+          {post.title}
+        </Typography>
+      </section>
+      <section className="flex cursor-pointer items-center gap-4 py-1">
+        {user && <UserAvatar {...user} />}
+        <div className="!mr-auto">{user && <UserUsername {...user} />}</div>
+        {post.goal && (
+          <IconButton onClick={onOpenGoal}>
+            <CrisisAlert />
+          </IconButton>
+        )}
+        {post.id && (
+          <PostCounters
+            postId={post.id}
+            comments={post.numComments}
+            likes={post.likes}
+          />
+        )}
+      </section>
+    </article>
+  );
+};
+
+export { PostTeaser, PostSearchResult };
