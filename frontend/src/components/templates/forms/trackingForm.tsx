@@ -1,6 +1,12 @@
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Alert, Button, CircularProgress, TextField } from "@mui/material";
+import {
+  Alert,
+  Button,
+  CircularProgress,
+  FormHelperText,
+  TextField,
+} from "@mui/material";
 
 import { useActiveUser } from "store";
 import { goalService } from "services";
@@ -18,7 +24,11 @@ const TrackingForm = () => {
   const { goalId } = useParams();
   const { activeUser } = useActiveUser();
 
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       amount: 1,
     },
@@ -46,13 +56,24 @@ const TrackingForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2 flex flex-col gap-4">
         <Controller
           name="amount"
-          rules={{ required: true, min: 1 }}
+          rules={{
+            required: true,
+            min: {
+              value: 1,
+              message: "No puede ser negativo ni 0",
+            },
+          }}
           control={control}
           render={({ field }) => (
-            <TextField label="Cantidad" type="number" {...field} />
+            <div className="flex w-full flex-col">
+              <TextField label="Cantidad" type="number" {...field} />
+              {errors.amount && (
+                <FormHelperText error>{errors.amount.message}</FormHelperText>
+              )}
+            </div>
           )}
         />
 
