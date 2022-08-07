@@ -71,14 +71,13 @@ def notify_completed_objectives(progress, objectives, goal, user, tracking):
 
 
 def translate_objective_frequency(frequency):
-    match frequency:
-        case Frequency.TOTAL:
-            return "total"
-        case Frequency.YEARLY:
-            return "anual"
-        case Frequency.MONTHLY:
-            return "mensual"
-        case Frequency.WEEKLY:
-            return "semanal"
-        case Frequency.DAILY:
-            return "diario"
+    if frequency == Frequency.DAILY:
+        return "diario"
+    elif frequency == Frequency.WEEKLY:
+        return "semanal"
+    elif frequency == Frequency.MONTHLY:
+        return "mensual"
+    elif frequency == Frequency.YEARLY:
+        return "anual"
+    elif frequency == Frequency.TOTAL:
+        return "total"

@@ -47,7 +47,11 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
     error: deleteError,
   } = goalService.useDeleteObjective();
 
-  const { control, handleSubmit } = useForm<GoalTypes.Progress>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<GoalTypes.Progress>({
     defaultValues: formParsers.fromGoalObjectivesToFormValues(props.initial),
   });
 
@@ -148,12 +152,25 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
               key={type + index}
               name={type as GoalTypes.Frequency}
               control={control}
+              rules={{
+                min: {
+                  message: "El valor no puede ser menor que 0",
+                  value: 0,
+                },
+              }}
               render={({ field }) => (
-                <TextField
-                  type="number"
-                  label={texts.objectiveLabels[type as GoalTypes.Frequency]}
-                  {...field}
-                />
+                <div className="flex w-full flex-col">
+                  <TextField
+                    type="number"
+                    label={texts.objectiveLabels[type as GoalTypes.Frequency]}
+                    {...field}
+                  />
+                  {errors[type as GoalTypes.Frequency] && (
+                    <FormHelperText error>
+                      {errors[type as GoalTypes.Frequency]?.message}
+                    </FormHelperText>
+                  )}
+                </div>
               )}
             />
           )
