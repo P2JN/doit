@@ -44,10 +44,7 @@ const AppPages = () => {
         <Route path="*" element={<Navigate to="/auth/login" />} />
       )}
 
-      <Route
-        path="/404"
-        element={<ErrorPage errorMessage="404!, not found!" />}
-      />
+      <Route path="/404" element={<ErrorPage />} />
       <Route path="*" element={<Navigate to="/404" />} />
       <Route path="/" element={<Navigate to="/landing" />} />
     </Routes>

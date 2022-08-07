@@ -1,5 +1,4 @@
 import { GoalTypes, SocialTypes } from "types";
-import { Id } from "./apiTypes";
 
 export type GoalRecommendations = {
   participants: GoalTypes.Goal[];
