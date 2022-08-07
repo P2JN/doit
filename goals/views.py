@@ -5,16 +5,14 @@ from rest_framework.response import Response
 from rest_framework_mongoengine import viewsets
 
 from auth.permissions import IsOwnerOrReadOnly, IsParticipating
-from goals.models import Goal, Objective, Tracking, Frequency
+from goals.models import Goal, Objective, Tracking
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
-from social.models import Participate, LikeTracking, User, Follow
+from social.models import Follow
 from social.models import Participate, LikeTracking, User, NotificationIconType
-from social.serializers import UserSerializer
 from utils.filters import FilterSet
-from utils.recomendations import get_tracking_score_by_goal, get_goals_affinity
-from utils.notifications import notify_completed_objectives, create_notification, translate_objective_frequency, \
+from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
-
+from utils.recomendations import get_tracking_score_by_goal, get_goals_affinity
 from utils.utils import get_trackings, set_amount, get_progress
 
 
