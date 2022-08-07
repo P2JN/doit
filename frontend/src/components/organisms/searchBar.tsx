@@ -62,7 +62,8 @@ const SearchBar = () => {
     }
 
     timer.current = setTimeout(() => {
-      setSearchParams({ q: query });
+      const finalQuery = query === "" ? " " : query;
+      setSearchParams({ q: finalQuery });
     }, 500);
   };
 
@@ -93,72 +94,63 @@ const SearchBar = () => {
             />
             <div>
               <Typography variant="h5">Goals</Typography>
-              {loadingGoals ? (
-                <Typography variant="body1">Cargando...</Typography>
-              ) : (
-                <div>
-                  <ul>
-                    {goals?.map((goal) => (
-                      <li key={goal.id} className="my-1 border-t py-1">
-                        <GoalSearchResult {...goal} />
-                      </li>
-                    ))}
-                  </ul>
-                  <DataLoader
-                    isLoading={loadingGoals}
-                    error={goalError}
-                    hasNextPage={hasNextGoalPage}
-                    loadMore={fetchNextGoalPage}
-                    hasData={!!goals?.length}
-                  />
-                </div>
-              )}
+
+              <div>
+                <ul>
+                  {goals?.map((goal) => (
+                    <li key={goal.id} className="my-1 border-t py-1">
+                      <GoalSearchResult {...goal} />
+                    </li>
+                  ))}
+                </ul>
+                <DataLoader
+                  isLoading={loadingGoals}
+                  error={goalError}
+                  hasNextPage={hasNextGoalPage}
+                  loadMore={fetchNextGoalPage}
+                  hasData={!!goals?.length}
+                />
+              </div>
             </div>
             <div>
               <Typography variant="h5">Usuarios</Typography>
-              {loadingUsers ? (
-                <div>Cargando...</div>
-              ) : (
-                <div>
-                  <ul>
-                    {users?.map((user) => (
-                      <li key={user.id} className="my-1 border-t py-1">
-                        <UserSearchResult {...user} />
-                      </li>
-                    ))}
-                  </ul>
-                  <DataLoader
-                    isLoading={loadingUsers}
-                    hasNextPage={hasNextUserPage}
-                    loadMore={fetchNextUserPage}
-                    error={userError}
-                    hasData={!!users?.length}
-                  />
-                </div>
-              )}
+
+              <div>
+                <ul>
+                  {users?.map((user) => (
+                    <li key={user.id} className="my-1 border-t py-1">
+                      <UserSearchResult {...user} />
+                    </li>
+                  ))}
+                </ul>
+                <DataLoader
+                  isLoading={loadingUsers}
+                  hasNextPage={hasNextUserPage}
+                  loadMore={fetchNextUserPage}
+                  error={userError}
+                  hasData={!!users?.length}
+                />
+              </div>
             </div>
             <div>
               <Typography variant="h5">Posts</Typography>
-              {loadingPosts ? (
-                <Typography variant="body1">Cargando...</Typography>
-              ) : (
-                <div>
-                  <ul>
-                    {posts?.map((post) => (
-                      <li key={post.id} className="my-1 border-t py-1">
-                        <PostSearchResult {...post} />
-                      </li>
-                    ))}
-                  </ul>
-                  <DataLoader
-                    isLoading={loadingPosts}
-                    hasNextPage={hasNextPostPage}
-                    loadMore={fetchNextPostPage}
-                    error={postError}
-                    hasData={!!posts?.length}
-                  />
-                </div>
-              )}
+
+              <div>
+                <ul>
+                  {posts?.map((post) => (
+                    <li key={post.id} className="my-1 border-t py-1">
+                      <PostSearchResult {...post} />
+                    </li>
+                  ))}
+                </ul>
+                <DataLoader
+                  isLoading={loadingPosts}
+                  hasNextPage={hasNextPostPage}
+                  loadMore={fetchNextPostPage}
+                  error={postError}
+                  hasData={!!posts?.length}
+                />
+              </div>
             </div>
           </div>
         </ModalDrawer>

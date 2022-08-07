@@ -110,13 +110,13 @@ const GoalSearchResult = (goal: GoalTypes.Goal) => {
   const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
 
   return (
-    <article onClick={onOpenGoal}>
+    <article onClick={onOpenGoal} className="cursor-pointer">
       <section>
-        <Typography variant="h6" className=" !font-bold leading-tight">
+        <Typography variant="h6" className="!font-bold leading-tight">
           {goal.title}
         </Typography>
       </section>
-      <section className="flex cursor-pointer items-center gap-4 py-1">
+      <section className="flex items-center gap-4 py-1">
         <Chip
           label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
           color="info"

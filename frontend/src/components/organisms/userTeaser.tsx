@@ -134,7 +134,7 @@ const UserSearchResult = (user: SocialTypes.User) => {
   const onOpenUser = () => navigate("/users/" + user.id + "/info");
   return (
     <article>
-      <section onClick={onOpenUser}>
+      <section onClick={onOpenUser} className="cursor-pointer">
         <Typography variant="h6" className="!font-bold leading-tight">
           {user.firstName} {user.lastName}
         </Typography>
