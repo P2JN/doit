@@ -69,12 +69,6 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
             },
             {
               onSuccess: () => {
-                addNotification({
-                  title: "Objetivo creado",
-                  content:
-                    "Ahora añade tus objetivos temporales y empieza a cumplirlos!",
-                  type: "transient",
-                });
                 navigate("/home/" + data.id + "/objectives");
               },
             }
@@ -87,11 +81,11 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
     updateGoal(goal, {
       onSuccess: () => {
         addNotification({
-          title: "Objetivo actualizado",
-          content: "Los datos del objetivo se han actualizado correctamente",
+          title: "Meta actualizada",
+          content: "Los datos de tu meta se han actualizado correctamente",
           type: "transient",
         });
-        navigate("/goals/" + goal.id + "/info?refresh=");
+        navigate("/goals/" + goal.id + "/info?refresh=goal");
       },
     });
   };
@@ -190,8 +184,13 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
 
         {!props.disabled && (
           <Button size="large" variant="outlined" type="submit">
-            <strong>{isUpdate ? "Actualizar" : "Crear"}</strong>
-            {isLoading && <CircularProgress size={20} />}
+            {isLoading ? (
+              <CircularProgress size={16} />
+            ) : isUpdate ? (
+              "Actualizar"
+            ) : (
+              "Crear"
+            )}
           </Button>
         )}
       </div>

@@ -15,15 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
+from django.conf.urls.static import static
+
 from rest_framework_mongoengine import routers
 
 from auth.googleOAuth2Adapter import GoogleLogin
+from doit.settings import MEDIA_ROOT, MEDIA_URL
 from doit.views import PopulateDB
 from frontend.views import app
-
+from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress, LeaderBoard, GoalsRecommendations
+from media.views import MediaUploadApi, MediaApi
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
-    LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating
-from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress
+    LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating, UserRecommendations, PostRecommendations,\
+    UncheckedNotifications
 
 router = routers.DefaultRouter()
 
@@ -33,8 +37,8 @@ router.register(r'user', UserViewSet, "user")
 router.register(r'notification', NotificationViewSet, "notification")
 router.register(r'follow', FollowViewSet, 'follow')
 router.register(r'participate', ParticipateViewSet, 'participate')
-router.register(r'likePost', LikePostViewSet, 'likePost')
-router.register(r'likeTracking', LikeTrackingViewSet, 'likeTracking')
+router.register(r'like-post', LikePostViewSet, 'like-post')
+router.register(r'like-tracking', LikeTrackingViewSet, 'like-tracking')
 router.register(r'comment', CommentViewSet, 'comment')
 
 # Goals API
@@ -45,7 +49,16 @@ router.register(r'tracking', TrackingViewSet, "tracking")
 urlpatterns = [
     # Customs endpoints
     path('api/goal/<str:goal_id>/my-progress', GoalProgress.as_view()),
+    path('api/goal/<str:goal_id>/leaderboard', LeaderBoard.as_view()),
     path('api/goal/<goal_id>/is-participating', UserIsParticipating.as_view()),
+    path('api/user/<str:user_id>/user-recommendations', UserRecommendations.as_view()),
+    path('api/user/<str:user_id>/goal-recommendations', GoalsRecommendations.as_view()),
+    path('api/user/<str:user_id>/post-recommendations', PostRecommendations.as_view()),
+    path('api/user/<str:user_id>/unchecked-notifications',
+         UncheckedNotifications.as_view()),
+    path('api/media/', MediaUploadApi.as_view()),
+    path('api/media/<media_id>', MediaApi.as_view()),
+
     # ViewSet endpoints
     path('api/', include(router.urls)),
 
@@ -56,6 +69,10 @@ urlpatterns = [
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/signup/', include('dj_rest_auth.registration.urls')),
     path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
-
-    re_path('', app),
 ]
+
+# Serve media files
+urlpatterns = urlpatterns + static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+# Frontend
+urlpatterns = urlpatterns + [re_path('', app)]

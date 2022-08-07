@@ -1,16 +1,16 @@
 import { ReactNode } from "react";
 import { Link, useMatch } from "react-router-dom";
 import {
-  ContentCopyOutlined,
   ExploreOutlined,
   HomeOutlined,
+  ImageOutlined,
   NotificationsOutlined,
   PersonOutlineOutlined,
   PowerSettingsNewOutlined,
 } from "@mui/icons-material";
-import { Divider, Icon } from "@mui/material";
+import { Badge, Divider, Icon } from "@mui/material";
 
-import { useActiveUser } from "store";
+import { useActiveUser, useAlertCount } from "store";
 import { socialService } from "services";
 
 import Logo from "assets/Logo.svg";
@@ -27,7 +27,7 @@ const NavLink = (props: {
     className={
       "flex items-center justify-start gap-5 hover:text-primary" +
       " " +
-      (useMatch(props.to) ? "font-bold text-primary" : "")
+      (useMatch(props.to + "/*") ? "font-bold text-primary" : "")
     }
     onClick={props.onClick}
   >
@@ -38,6 +38,7 @@ const NavLink = (props: {
 
 const AppNavbar = () => {
   const { activeUser } = useActiveUser();
+  const { alertCount } = useAlertCount();
   const { mutate: logout } = socialService.useLogout();
 
   return (
@@ -47,7 +48,7 @@ const AppNavbar = () => {
         (!activeUser ? "hidden" : "")
       }
     >
-      <aside className="flex items-center justify-between gap-5 px-4 py-3 md:h-full md:flex-col md:items-start md:px-8">
+      <aside className="flex items-center justify-between gap-5 px-4 py-3 md:h-full md:flex-col md:items-start md:py-6 md:px-8">
         <Link to="/landing" className="flex items-center justify-start gap-5">
           <Icon>
             <img src={Logo} alt="React Logo" />
@@ -58,13 +59,29 @@ const AppNavbar = () => {
         <Divider className="hidden md:block" />
 
         <section className="flex gap-5 sm:gap-8 md:block">
-          <NavLink to="/home" icon={<HomeOutlined />} title="Home" />
-          <NavLink to="/feed" icon={<ContentCopyOutlined />} title="Feed" />
-          <NavLink to="/explore" icon={<ExploreOutlined />} title="Explore" />
+          <NavLink to="/home" icon={<HomeOutlined />} title="Inicio" />
+          <NavLink to="/feed" icon={<ImageOutlined />} title="Contenido" />
+          <NavLink
+            to="/explore/goals"
+            icon={<ExploreOutlined />}
+            title="Explora"
+          />
           <NavLink
             to="/notifications"
-            icon={<NotificationsOutlined />}
-            title="Alertas"
+            icon={
+              <Badge
+                badgeContent={alertCount}
+                className="font-bold"
+                color="primary"
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+              >
+                <NotificationsOutlined />
+              </Badge>
+            }
+            title="Actividad"
           />
         </section>
 

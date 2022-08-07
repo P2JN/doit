@@ -15,10 +15,12 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
   return (
     <Card>
       <header className="flex items-center justify-between">
-        <Typography variant="h5">
-          <strong className="cursor-pointer" onClick={onOpenGoal}>
-            {goal.title}
-          </strong>
+        <Typography
+          variant="h5"
+          className="cursor-pointer !font-bold"
+          onClick={onOpenGoal}
+        >
+          {goal.title}
         </Typography>
         <IconButton
           color="primary"
@@ -55,8 +57,15 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
   return (
     <Card className="cursor-pointer" onClick={onOpenGoal}>
       <header className="flex items-center justify-between">
-        <Typography variant="h5">{goal.title}</Typography>
-        {goal.type && <Chip label={goal.type} color="info" />}
+        <Typography variant="h5" className="!font-bold">
+          {goal.title}
+        </Typography>
+        {goal.type && (
+          <Chip
+            label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
+            color="info"
+          />
+        )}
       </header>
       {goal.description && (
         <Typography variant="body1">{goal.description}</Typography>
@@ -76,13 +85,17 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
   const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
 
   return (
-    <Card className="cursor-pointer" onClick={onOpenGoal}>
-      <header className="flex items-center justify-between">
-        <Typography variant="h5">
-          <strong>{goal.title}</strong>
+    <Card
+      className="min-h-[calc(32px+40px)] cursor-pointer"
+      onClick={onOpenGoal}
+    >
+      <header className="flex items-center justify-between gap-3">
+        <Typography variant="h6" className="!font-bold leading-tight">
+          {goal.title}
         </Typography>
         {goal.type && (
           <Chip
+            className="ml-auto -mr-2"
             label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
             color="info"
           />
@@ -92,4 +105,30 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
   );
 };
 
-export { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced };
+const GoalSearchResult = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
+  return (
+    <article onClick={onOpenGoal} className="cursor-pointer">
+      <section>
+        <Typography variant="h6" className="!font-bold leading-tight">
+          {goal.title}
+        </Typography>
+      </section>
+      <section className="flex items-center gap-4 py-1">
+        <Chip
+          label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
+          color="info"
+          className="!mr-auto"
+        />
+        <GoalCounters
+          participants={goal.numParticipants}
+          posts={goal.numPosts}
+        />
+      </section>
+    </article>
+  );
+};
+
+export { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced, GoalSearchResult };

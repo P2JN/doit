@@ -1,18 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Skeleton,
-  Typography,
-} from "@mui/material";
+import { Button, Skeleton, Typography } from "@mui/material";
 
 import { Page } from "layout";
 import { goalService } from "services";
 import { GoalTypes } from "types";
 import { useActiveUser } from "store";
+import { paginationUtils } from "utils";
 
+import { DataLoader } from "components/molecules";
 import { GoalTeaser, ModalDrawer } from "components/organisms";
 import { GoalForm, ObjectivesForm, TrackingForm } from "components/templates";
 
@@ -20,10 +16,14 @@ const HomePage = () => {
   const { activeUser } = useActiveUser();
 
   const {
-    data: goals,
+    data: goalPages,
     isLoading: loadingGoals,
     refetch,
   } = goalService.useGoalsByParticipant(activeUser?.id);
+  const goals = useMemo(
+    () => paginationUtils.combinePages(goalPages),
+    [goalPages]
+  );
 
   const navigate = useNavigate();
 
@@ -36,30 +36,21 @@ const HomePage = () => {
   }, [params, refetch, setSearchParams]);
 
   return (
-    <Page title="Home">
+    <Page title="Inicio">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <Typography variant="h5">Mis objetivos</Typography>
-          <Button onClick={() => navigate("/home/new-goal")}>
-            <strong>Nuevo</strong>
-          </Button>
+          <Typography variant="h5">Mis metas</Typography>
+          <Button onClick={() => navigate("/home/new-goal")}>Nuevo</Button>
         </div>
-        {loadingGoals && <CircularProgress />}
-        {!loadingGoals && !goals?.length && (
-          <Alert
-            severity="info"
-            className="my-7"
-            action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
-                Reintentar
-              </Button>
-            }
-          >
-            No se han encontrado objetivos
-          </Alert>
-        )}
+
+        <DataLoader
+          isLoading={loadingGoals}
+          hasData={!!goals?.length}
+          retry={refetch}
+        />
+
         {goals?.map((goal) => (
-          <GoalTeaserProvider {...goal} />
+          <GoalTeaserProvider key={goal.id} {...goal} />
         ))}
       </div>
       <HomeModals />
@@ -107,7 +98,6 @@ const HomeModals = () => {
           </ModalDrawer>
         }
       />
-      <Route path="/:goalId" element={<></>} />
     </Routes>
   );
 };

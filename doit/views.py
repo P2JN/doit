@@ -6,14 +6,14 @@ from .populate import populate, drop_all
 
 class PopulateDB(APIView):
 
-    def post(self, request, format=None):
+    def post(self, request):
         """
         DB population
         """
         populate()
         return Response({"message": "DB populated"})
 
-    def delete(self, request, format=None):
+    def delete(self, request):
         """
         DB clear
         """

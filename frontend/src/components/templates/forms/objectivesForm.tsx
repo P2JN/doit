@@ -14,7 +14,7 @@ import { goalService } from "services";
 import { GoalTypes } from "types";
 import { formParsers, texts } from "utils";
 
-import { ParsedError } from "components/atoms";
+import { Loader, ParsedError } from "components/atoms";
 import { GoalTeaserInfo } from "components/organisms";
 
 const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
@@ -47,7 +47,11 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
     error: deleteError,
   } = goalService.useDeleteObjective();
 
-  const { control, handleSubmit } = useForm<GoalTypes.Progress>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<GoalTypes.Progress>({
     defaultValues: formParsers.fromGoalObjectivesToFormValues(props.initial),
   });
 
@@ -121,12 +125,6 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
       }
     });
 
-    addNotification({
-      title: "Listo!",
-      content: "Ya puedes empezar a generar progreso!",
-      type: "transient",
-    });
-
     setTimeout(() => {
       if (isUpdate) navigate("/goals/" + goalId + "/info?refresh=goal");
       else navigate("/home?refresh=goals");
@@ -137,7 +135,7 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       {!isUpdate && (
         <>
-          {loadingGoal && <CircularProgress />}
+          {loadingGoal && <Loader />}
           {goal && <GoalTeaserInfo {...goal} />}
 
           <Divider className="!my-2" />
@@ -154,20 +152,38 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
               key={type + index}
               name={type as GoalTypes.Frequency}
               control={control}
+              rules={{
+                min: {
+                  message: "El valor no puede ser menor que 0",
+                  value: 0,
+                },
+              }}
               render={({ field }) => (
-                <TextField
-                  type="number"
-                  label={texts.objectiveLabels[type as GoalTypes.Frequency]}
-                  {...field}
-                />
+                <div className="flex w-full flex-col">
+                  <TextField
+                    type="number"
+                    label={texts.objectiveLabels[type as GoalTypes.Frequency]}
+                    {...field}
+                  />
+                  {errors[type as GoalTypes.Frequency] && (
+                    <FormHelperText error>
+                      {errors[type as GoalTypes.Frequency]?.message}
+                    </FormHelperText>
+                  )}
+                </div>
               )}
             />
           )
         )}
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>{isUpdate ? "Actualizar" : "Guardar"}</strong>
-          {isLoading && <CircularProgress size={20} />}
+          {isLoading ? (
+            <CircularProgress size={16} />
+          ) : isUpdate ? (
+            "Actualizar"
+          ) : (
+            "Guardar"
+          )}
         </Button>
       </div>
       {(isLoading || loadingDelete || loadingUpdate) && (

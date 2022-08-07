@@ -2,13 +2,13 @@ import Axios from "axios";
 import { QueryClient, DefaultOptions } from "react-query";
 
 const localHostnames = ["localhost", "127.0.0.1", "0.0.0.0"];
-const isLocal = localHostnames.includes(window.location.hostname);
+export const isDevEnv = localHostnames.includes(window.location.hostname);
 
-const BASE_URL =
-  (isLocal ? "http" : "https") +
+export const BASE_URL =
+  (isDevEnv ? "http" : "https") +
   "://" +
   window.location.hostname +
-  (isLocal ? ":8000" : "");
+  (isDevEnv ? ":8000" : "");
 
 export const API_URL = BASE_URL + "/api";
 
@@ -31,15 +31,6 @@ axiosInstance.interceptors.request.use(
   (config) => config,
   (error) => {
     // Do something with request error
-    return Promise.reject(error);
-  }
-);
-
-axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
     return Promise.reject(error);
   }
 );

@@ -1,22 +1,32 @@
-import { useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Alert, Button, CircularProgress, Typography } from "@mui/material";
+import { useEffect, useMemo } from "react";
+import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import { Button, Typography } from "@mui/material";
 
 import { Page } from "layout";
 import { socialService } from "services";
 import { useActiveUser } from "store";
 import { SocialTypes } from "types";
+import { paginationUtils } from "utils";
 
-import { PostTeaser } from "components/organisms";
+import { DataLoader } from "components/molecules";
+import { ModalDrawer, PostTeaser } from "components/organisms";
+import { PostForm } from "components/templates";
 
 const FeedPage = () => {
   const { activeUser } = useActiveUser();
 
   const {
-    data: posts,
+    data: postPages,
     isLoading: loadingPosts,
+    isFetchingNextPage,
     refetch,
+    fetchNextPage,
+    hasNextPage,
   } = socialService.useFeedPosts(activeUser?.id);
+  const posts = useMemo(
+    () => paginationUtils.combinePages(postPages),
+    [postPages]
+  );
 
   const navigate = useNavigate();
 
@@ -26,37 +36,25 @@ const FeedPage = () => {
   }, [params, refetch]);
 
   return (
-    <Page title="Feed">
+    <Page title="Contenido">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Typography variant="h5">Últimos posts</Typography>
-          <Button onClick={() => navigate("/feed/new-post")}>
-            <strong>Nuevo</strong>
-          </Button>
+          <Button onClick={() => navigate("/feed/new-post")}>Nuevo</Button>
         </div>
-        {loadingPosts && <CircularProgress />}
-        {!loadingPosts && !posts?.length && (
-          <Alert
-            severity="info"
-            className="my-7"
-            action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
-                Reintentar
-              </Button>
-            }
-          >
-            No se han encontrado posts,{" "}
-            <Link to="/explore" className="font-bold">
-              explora
-            </Link>{" "}
-            y encuentra a alguien a quien seguir.
-          </Alert>
-        )}
         <div className="flex flex-col gap-10">
           {posts?.map((post) => (
             <PostTeaserProvider key={post.id} {...post} />
           ))}
         </div>
+        <DataLoader
+          isLoading={loadingPosts || isFetchingNextPage}
+          hasData={!!posts?.length}
+          retry={refetch}
+          hasNextPage={hasNextPage}
+          loadMore={fetchNextPage}
+        />
+        <FeedModals />
       </div>
     </Page>
   );
@@ -64,6 +62,23 @@ const FeedPage = () => {
 
 const PostTeaserProvider = (post: SocialTypes.Post) => {
   return <PostTeaser {...post} />;
+};
+
+const FeedModals = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Routes>
+      <Route
+        path="/new-post"
+        element={
+          <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
+            <PostForm />
+          </ModalDrawer>
+        }
+      />
+    </Routes>
+  );
 };
 
 export default FeedPage;

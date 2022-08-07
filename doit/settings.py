@@ -68,13 +68,15 @@ AUTHENTICATION_BACKENDS = [
     # django's allauth authentication backend
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-
+# Rest auth config
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'auth.authSerializer.CustomRegisterSerializer',
 }
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'auth.authSerializer.CustomUserDetailsSerializer',
 }
+
+
 ROOT_URLCONF = 'doit.urls'
 
 TEMPLATES = [
@@ -92,6 +94,9 @@ TEMPLATES = [
         },
     },
 ]
+
+# Django rest framework config
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -99,9 +104,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
         'auth.permissions.IsOwnerOrReadOnly',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'doit.pagination.CustomPageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
+
+# AllAuth config
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
 
 SOCIALACCOUNT_STORE_TOKENS = True
@@ -189,9 +198,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'frontend', 'build', 'static'),
 )
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

@@ -96,7 +96,7 @@ const LandingPage = () => {
           </div>
 
           <LandingSection
-            title="Anota tus objetivos"
+            title="Anota tus metas y objetivos"
             content="Anota tus objetivos, es el primer paso para llegar a conseguir algo."
             img={Goals}
           />

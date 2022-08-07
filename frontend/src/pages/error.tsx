@@ -1,6 +1,6 @@
 import { Page } from "layout";
 
-const ErrorPage = (props: { errorMessage?: string }) => {
+const ErrorPage = () => {
   return (
     <Page title="Vaya, no hemos encontrado lo que buscas">
       <p>404!</p>

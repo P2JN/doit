@@ -1,19 +1,19 @@
 import { Controller, useForm } from "react-hook-form";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
-import { Alert, Button, CircularProgress, TextField } from "@mui/material";
+  Alert,
+  Button,
+  CircularProgress,
+  FormHelperText,
+  TextField,
+} from "@mui/material";
 
-import { useActiveUser, useNotificationStore } from "store";
+import { useActiveUser } from "store";
 import { goalService } from "services";
 
 const TrackingForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addNotification } = useNotificationStore();
   const {
     mutate: createTracking,
     isLoading,
@@ -24,10 +24,11 @@ const TrackingForm = () => {
   const { goalId } = useParams();
   const { activeUser } = useActiveUser();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setSearchParams] = useSearchParams();
-
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       amount: 1,
     },
@@ -43,11 +44,6 @@ const TrackingForm = () => {
         },
         {
           onSuccess: () => {
-            addNotification({
-              title: "Avance guardado con éxito",
-              content: "Felicidades, sigue así!",
-              type: "transient",
-            });
             navigate(
               location.pathname.split("/").slice(0, -1).join("/") +
                 "?refresh=" +
@@ -60,19 +56,29 @@ const TrackingForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2 flex flex-col gap-4">
         <Controller
           name="amount"
-          rules={{ required: true, min: 1 }}
+          rules={{
+            required: true,
+            min: {
+              value: 1,
+              message: "No puede ser negativo ni 0",
+            },
+          }}
           control={control}
           render={({ field }) => (
-            <TextField label="Cantidad" type="number" {...field} />
+            <div className="flex w-full flex-col">
+              <TextField label="Cantidad" type="number" {...field} />
+              {errors.amount && (
+                <FormHelperText error>{errors.amount.message}</FormHelperText>
+              )}
+            </div>
           )}
         />
 
         <Button size="large" variant="outlined" type="submit">
-          <strong>Submit</strong>
-          {isLoading && <CircularProgress size={20} />}
+          {isLoading ? <CircularProgress size={16} /> : "Registrar"}
         </Button>
       </div>
       {isError && <Alert severity="error">{error.message}</Alert>}

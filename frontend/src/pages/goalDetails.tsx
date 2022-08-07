@@ -6,26 +6,20 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { Tab, Tabs, Typography } from "@mui/material";
 import {
-  Alert,
-  Button,
-  CircularProgress,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import {
-  Feed,
-  Info,
-  Leaderboard,
-  Timeline,
-  TrackChanges,
+  ImageOutlined,
+  InfoOutlined,
+  LeaderboardOutlined,
+  TimelineOutlined,
+  TrackChangesOutlined,
 } from "@mui/icons-material";
 
 import { GoalTypes } from "types";
 import { Page } from "layout";
 import { goalService } from "services";
 
+import { DataLoader } from "components/molecules";
 import { ModalDrawer } from "components/organisms";
 import {
   GoalFeedTab,
@@ -33,8 +27,8 @@ import {
   GoalLeaderboardTab,
   GoalStatsTab,
   GoalTrackingsTab,
-  ObjectivesForm,
   TrackingForm,
+  PostForm,
 } from "components/templates";
 
 type GoalTabsType = "info" | "feed" | "trackings" | "leaderboard" | "stats";
@@ -64,9 +58,9 @@ const GoalDetailPage = () => {
 
   const labels = {
     info: "Información",
-    feed: "Feed",
-    trackings: "Mis registros",
-    leaderboard: "Leaderboard",
+    feed: "Contenido",
+    trackings: "Progreso",
+    leaderboard: "Líderes",
     stats: "Estadísticas",
   };
 
@@ -74,7 +68,10 @@ const GoalDetailPage = () => {
     <Page title={goal?.title || "Objetivo sin título"}>
       <div className="flex flex-col gap-3">
         <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
-          <Typography variant="h5">
+          <Typography
+            variant="h5"
+            className="order-2 !text-center md:-order-1 md:text-left"
+          >
             {labels[activeTab as GoalTabsType]}
           </Typography>
 
@@ -82,40 +79,26 @@ const GoalDetailPage = () => {
             value={activeTab}
             onChange={handleChange}
             variant="scrollable"
-            scrollButtons
             allowScrollButtonsMobile
           >
-            <Tab value={"info"} icon={<Info />} />
-            <Tab value={"feed"} icon={<Feed />} />
-            <Tab value={"leaderboard"} icon={<Leaderboard />} />
-            <Tab value={"trackings"} icon={<TrackChanges />} />
-            <Tab value={"stats"} icon={<Timeline />} />
+            <Tab value={"info"} icon={<InfoOutlined />} />
+            <Tab value={"trackings"} icon={<TrackChangesOutlined />} />
+            <Tab value={"feed"} icon={<ImageOutlined />} />
+            <Tab value={"leaderboard"} icon={<LeaderboardOutlined />} />
+            <Tab value={"stats"} icon={<TimelineOutlined />} />
           </Tabs>
         </div>
-        {loadingGoal && <CircularProgress />}
-        {!loadingGoal && !goal && (
-          <Alert
-            severity="info"
-            className="my-7"
-            action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
-                Reintentar
-              </Button>
-            }
-          >
-            No se ha encontrado el objetivo
-          </Alert>
-        )}
+        <DataLoader isLoading={loadingGoal} hasData={!!goal} retry={refetch} />
         {activeTab && goal && <GoalTabs activeTab={activeTab} goal={goal} />}
       </div>
-      <GoalModals />
+      {goal && <GoalModals {...goal} />}
     </Page>
   );
 };
 
 export default GoalDetailPage;
 
-const GoalModals = () => {
+const GoalModals = (goal: GoalTypes.Goal) => {
   const navigate = useNavigate();
 
   return (
@@ -129,17 +112,13 @@ const GoalModals = () => {
         }
       />
       <Route
-        path="objectives"
+        path="/new-post"
         element={
-          <ModalDrawer
-            title="Objetivos temporales"
-            onClose={() => navigate("/home?refresh=goals")}
-          >
-            <ObjectivesForm />
+          <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
+            <PostForm relatedGoal={goal} />
           </ModalDrawer>
         }
       />
-      <Route path="/:goalId" element={<></>} />
     </Routes>
   );
 };
@@ -149,9 +128,9 @@ const GoalTabs = (props: { activeTab: string; goal: GoalTypes.Goal }) => {
   return (
     <section>
       {activeTab === "info" && <GoalInfoTab {...goal} />}
-      {activeTab === "feed" && <GoalFeedTab />}
-      {activeTab === "trackings" && <GoalTrackingsTab />}
-      {activeTab === "leaderboard" && <GoalLeaderboardTab />}
+      {activeTab === "trackings" && <GoalTrackingsTab {...goal} />}
+      {activeTab === "feed" && <GoalFeedTab {...goal} />}
+      {activeTab === "leaderboard" && <GoalLeaderboardTab {...goal} />}
       {activeTab === "stats" && <GoalStatsTab />}
     </section>
   );
