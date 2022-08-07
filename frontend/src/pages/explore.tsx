@@ -15,7 +15,12 @@ import { arrayUtils, texts } from "utils";
 import { recommendationService } from "services";
 
 import { DataLoader } from "components/molecules";
-import { GoalTeaserInfo, PostTeaser, UserTeaser } from "components/organisms";
+import {
+  GoalTeaserInfo,
+  PostTeaser,
+  SearchBar,
+  UserTeaser,
+} from "components/organisms";
 
 type ExploreTabsType = "posts" | "users" | "goals";
 
@@ -71,6 +76,7 @@ const ExplorePage = () => {
   return (
     <Page title="Explora">
       <div className="flex flex-col gap-3">
+        <SearchBar />
         <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
           <Typography
             variant="h5"

@@ -9,8 +9,7 @@ import { SocialTypes } from "types";
 const FollowButton = (user: SocialTypes.User) => {
   const { activeUser } = useActiveUser();
   const { addNotification } = useNotificationStore();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setSearchParams] = useSearchParams();
+  const [params, setSearchParams] = useSearchParams();
 
   const { data: followData, refetch: refetchFollowData } =
     socialService.useFollowData(user.id, activeUser?.id);
@@ -27,7 +26,7 @@ const FollowButton = (user: SocialTypes.User) => {
         unfollow(followData.id, {
           onSuccess: () => {
             refetchFollowData();
-            setSearchParams("?refresh=user");
+            !params.get("q") && setSearchParams("?refresh=user");
             addNotification({
               title: "Has dejado de seguir a este usuario.",
               content: "Ya no verás sus posts en el feed.",
@@ -46,7 +45,7 @@ const FollowButton = (user: SocialTypes.User) => {
             {
               onSuccess: () => {
                 refetchFollowData();
-                setSearchParams("?refresh=user");
+                !params.get("q") && setSearchParams("?refresh=user");
                 addNotification({
                   title: "Has comenzado a seguir a este usuario.",
                   content: "Verás sus posts en el feed.",

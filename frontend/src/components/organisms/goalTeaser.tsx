@@ -105,4 +105,30 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
   );
 };
 
-export { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced };
+const GoalSearchResult = (goal: GoalTypes.Goal) => {
+  const navigate = useNavigate();
+  const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
+
+  return (
+    <article onClick={onOpenGoal} className="cursor-pointer">
+      <section>
+        <Typography variant="h6" className="!font-bold leading-tight">
+          {goal.title}
+        </Typography>
+      </section>
+      <section className="flex items-center gap-4 py-1">
+        <Chip
+          label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
+          color="info"
+          className="!mr-auto"
+        />
+        <GoalCounters
+          participants={goal.numParticipants}
+          posts={goal.numPosts}
+        />
+      </section>
+    </article>
+  );
+};
+
+export { GoalTeaser, GoalTeaserInfo, GoalTeaserReduced, GoalSearchResult };
