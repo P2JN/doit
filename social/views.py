@@ -23,8 +23,8 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_fields = ['title', 'content', 'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [('likes', lambda value: [post.id for post in LikePost.objects.filter(
         post=value).values_list('post')]), ('follows', lambda value: [post.id for post in Post.objects.filter(
-        createdBy__in=Follow.objects.filter(
-            follower=value).values_list('user'))])]
+        createdBy__in=list(Follow.objects.filter(
+            follower=value).values_list('user')) + [value])])]
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
