@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from goals.models import Frequency, Goal, GoalType, Objective, Tracking
 from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification, Comment
+from stats.models import Stats
 
 
 def populate_users(n):
@@ -28,7 +29,8 @@ def populate_users(n):
         )
 
         user.save()
-
+        stats = Stats(createdBy=user)
+        stats.save()
 
 def populate_followers(users):
     for user in users:
@@ -58,6 +60,7 @@ def populate_goals_and_objectives(users):
     )
     goal.save()
     objective.save()
+    Stats.objects.filter(createdBy=users[1]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -85,6 +88,7 @@ def populate_goals_and_objectives(users):
         goal=goal,
     )
     objective.save()
+    Stats.objects.filter(createdBy=users[2]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -105,6 +109,7 @@ def populate_goals_and_objectives(users):
     )
     goal.save()
     objective.save()
+    Stats.objects.filter(createdBy=users[1]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -125,6 +130,7 @@ def populate_goals_and_objectives(users):
         goal=goal,
     )
     objective.save()
+    Stats.objects.filter(createdBy=users[3]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -146,6 +152,7 @@ def populate_goals_and_objectives(users):
         goal=goal,
     )
     objective.save()
+    Stats.objects.filter(createdBy=users[4]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -176,6 +183,8 @@ def populate_goals_and_objectives(users):
     )
     objective.save()
 
+    Stats.objects.filter(createdBy=users[5]).update_one(inc__createdGoals=1)
+
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
 
@@ -198,6 +207,8 @@ def populate_goals_and_objectives(users):
     )
     objective.save()
 
+    Stats.objects.filter(createdBy=users[6]).update_one(inc__createdGoals=1)
+
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
 
@@ -218,6 +229,8 @@ def populate_goals_and_objectives(users):
         goal=goal,
     )
     objective.save()
+
+    Stats.objects.filter(createdBy=users[7]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -241,6 +254,8 @@ def populate_goals_and_objectives(users):
     )
     objective.save()
 
+    Stats.objects.filter(createdBy=users[8]).update_one(inc__createdGoals=1)
+
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
 
@@ -261,6 +276,8 @@ def populate_goals_and_objectives(users):
         goal=goal,
     )
     objective.save()
+
+    Stats.objects.filter(createdBy=users[9]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -283,6 +300,8 @@ def populate_goals_and_objectives(users):
     )
     objective.save()
 
+    Stats.objects.filter(createdBy=users[10]).update_one(inc__createdGoals=1)
+
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
 
@@ -304,6 +323,8 @@ def populate_goals_and_objectives(users):
     )
     objective.save()
 
+    Stats.objects.filter(createdBy=users[11]).update_one(inc__createdGoals=1)
+
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
 
@@ -323,6 +344,8 @@ def populate_goals_and_objectives(users):
         goal=goal,
     )
     objective.save()
+
+    Stats.objects.filter(createdBy=users[12]).update_one(inc__createdGoals=1)
 
     start_date = datetime.utcnow() + timedelta(days=random.randint(1, 30))
     deadline = start_date + timedelta(days=random.randint(1, 30))
@@ -345,6 +368,8 @@ def populate_goals_and_objectives(users):
     )
     objective.save()
 
+    Stats.objects.filter(createdBy=users[13]).update_one(inc__createdGoals=1)
+
 
 def populate_participations(users, goals):
     for user in users:
@@ -352,6 +377,7 @@ def populate_participations(users, goals):
             if (user.id == goal.createdBy.id) or (random.random() < 0.15):
                 participation = Participate(createdBy=user, goal=goal)
                 participation.save()
+                Stats.objects.filter(createdBy=user).update_one(inc__participatedGoals=1)
 
 
 def populate_trackings(participations):
@@ -614,6 +640,7 @@ def drop_all():
     Goal.objects.all().delete()
 
     User.objects.filter(user_id=None).delete()
+
 
 
 def populate():

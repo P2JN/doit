@@ -4,6 +4,7 @@ from django.http import Http404
 
 from goals.models import Tracking, Frequency
 from social.serializers import UserSerializer
+from stats.models import Stats
 
 
 def get_obj_or_404(klass, *args, **kwargs):
@@ -86,3 +87,16 @@ def get_progress(goal, objectives, user):
         if Frequency.TOTAL in progress:
             progress[Frequency.TOTAL] += tracking.amount
     return progress
+
+
+def update_stats(user, frecuency):
+    if Frequency.TOTAL == frecuency:
+        Stats.objects.filter(createdBy=user).update_one(inc__totalObjectivesCompleted=1)
+    elif Frequency.YEARLY == frecuency:
+        Stats.objects.filter(createdBy=user).update_one(inc__yearlyObjectivesCompleted=1)
+    elif Frequency.MONTHLY == frecuency:
+        Stats.objects.filter(createdBy=user).update_one(inc__monthlyObjectivesCompleted=1)
+    elif Frequency.WEEKLY == frecuency:
+        Stats.objects.filter(createdBy=user).update_one(inc__weeklyObjectivesCompleted=1)
+    elif Frequency.DAILY == frecuency:
+        Stats.objects.filter(createdBy=user).update_one(inc__dailyObjectivesCompleted=1)

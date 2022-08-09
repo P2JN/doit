@@ -11,6 +11,7 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
     NotificationIconType
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
+from stats.models import Stats
 from utils.filters import FilterSet
 from utils.recomendations import get_users_affinity, get_post_recomendations
 from utils.notifications import delete_notification, create_notification, create_user_notification
@@ -140,6 +141,7 @@ class ParticipateViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        Stats.objects.filter(createdBy=serializer.instance.createdBy).update_one(inc__participatedGoals=1)
         return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en una meta!",
                                    "Has empezado a participar en la meta '" +
                                    serializer.instance.goal.title + "'.",
