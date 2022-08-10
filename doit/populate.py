@@ -2,8 +2,9 @@ import random
 from datetime import datetime, timedelta
 
 from goals.models import Frequency, Goal, GoalType, Objective, Tracking
+from media.models import Media
 from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification, Comment
-from stats.models import Stats
+from stats.models import Stats, Achievement
 
 
 def populate_users(n):
@@ -31,6 +32,7 @@ def populate_users(n):
         user.save()
         stats = Stats(createdBy=user)
         stats.save()
+
 
 def populate_followers(users):
     for user in users:
@@ -384,7 +386,8 @@ def populate_trackings(participations):
     for participation in participations:
         for _ in range(random.randint(1, 4)):
             if random.random() >= 0.25:
-                tracking = Tracking(amount=random.randint(1, 10), goal=participation.goal, createdBy=participation.createdBy)
+                tracking = Tracking(amount=random.randint(1, 10), goal=participation.goal,
+                                    createdBy=participation.createdBy)
                 tracking.save()
 
 
@@ -611,6 +614,7 @@ def populate_posts_comments(users, goals):
     )
     comment.save()
 
+
 def populate_likes(users, trackings, posts):
     for user in users:
         for tracking in trackings:
@@ -621,6 +625,50 @@ def populate_likes(users, trackings, posts):
             if random.random() < 0.35:
                 like_post = LikePost(createdBy=user, post=post)
                 like_post.save()
+
+
+def populate_achievement():
+    json = [{"title": 'Primer goal creado',
+             "description": '¡Has creado tu primer goal!', "url": ""},
+            {"title": 'Primer objetivo completado',
+             "description": '¡Has completado tu primer objetivo!', "url": ""},
+            {"title": 'Primero en el ranking',
+             "description": '¡Has sido el primero en el ranking!', "url": ""},
+            {"title": 'Primera publicación',
+             "description": '¡Has comentado en una publicación por primera vez!', "url": ""},
+            {"title": 'Primer comentario',
+             "description": '¡Has creado tu primer comentario!', "url": ""},
+            {"title": 'Primer like',
+             "description": '¡Recibiste tu primer like!', "url": ""},
+            {"title": 'Crack de los progresos',
+             "description": 'Completaste un objetivo registrando un único progreso', "url": ""},
+            {"title": 'Rey de los progresos',
+             "description": 'Has registrado más de 500 trackings que barbaridad', "url": ""},
+            {"title": 'Rey de los objetivos',
+             "description": 'Has completado más de 100 objetivos', "url": ""},
+            {"title": 'Rey de las metas',
+             "description": 'Has completado más de 100 metas', "url": ""},
+            {"title": 'Lider de los goals cooperativos',
+             "description": 'A un goal cooperativo tuyo ya se han unido mas de 10 personas', "url": ""},
+            {"title": 'Rey de las publicaciones',
+             "description": 'Has creado más de 100 publicaciones', "url": ""},
+            {"title": 'Rey de los comentarios',
+             "description": 'Has creado más de 100 comentarios', "url": ""},
+            {"title": 'Primer progreso registrado',
+             "description": 'Has registrado tu primer progreso', "url": ""},
+            ]
+    i = 1
+    for ach in json:
+        media = Media(url=ach['url'])
+
+        achievement = Achievement(
+            id=i,
+            title=ach['title'],
+            description=ach['description'],
+            media=media.id
+        )
+        achievement.save()
+        i += 1
 
 
 def drop_all():
@@ -640,7 +688,7 @@ def drop_all():
     Goal.objects.all().delete()
 
     User.objects.filter(user_id=None).delete()
-
+    Achievement.objects.all().delete()
 
 
 def populate():
@@ -669,3 +717,4 @@ def populate():
     trackings = Tracking.objects.all()
 
     populate_likes(users, trackings, posts)
+    populate_achievement()

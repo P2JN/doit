@@ -9,7 +9,7 @@ from goals.models import Goal, Objective, Tracking
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Follow
 from social.models import Participate, LikeTracking, User, NotificationIconType
-from stats.models import Stats
+from utils.achievement import update_goal_stats_achievement, save_achievement
 from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
@@ -42,7 +42,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        Stats.objects.filter(createdBy=serializer.instance.createdBy).update_one(inc__createdGoals=1)
+        update_goal_stats_achievement(serializer.instance)
         return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
                                    "La meta '" + serializer.data.get("title") + "' ha sido creada.",
                                    NotificationIconType.GOAL)
@@ -138,8 +138,11 @@ class LeaderBoard(viewsets.GenericAPIView):
         amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
                   participants}
         query = sorted(participants, key=lambda x: amount[x.username], reverse=True)
+        save_achievement(query[0], 3)
         query = self.paginate_queryset(query)
         res = [set_amount(user, amount[user.username]) for user in query]
+        deadline = Goal.objects.filter(id=goal_id).only('deadline').first()
+
         return self.get_paginated_response(res)
 
 
