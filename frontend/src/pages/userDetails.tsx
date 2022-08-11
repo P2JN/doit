@@ -120,7 +120,7 @@ const UserTabs = (props: { activeTab: string; user: SocialTypes.User }) => {
       {activeTab === "trackings" && <UserTrackingsTab {...user} />}
       {activeTab === "feed" && <UserFeedTab {...user} />}
       {activeTab === "related" && <UserFollowersTab {...user} />}
-      {activeTab === "stats" && <UserStatsTab />}
+      {activeTab === "stats" && <UserStatsTab {...user} />}
     </section>
   );
 };

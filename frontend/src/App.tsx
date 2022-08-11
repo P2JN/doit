@@ -21,7 +21,7 @@ function App() {
           <Router>
             <AuthProvider>
               <NotificationProvider>
-                <div className="container mx-auto flex h-full w-full justify-center">
+                <div className="container mx-auto flex h-screen w-screen flex-col justify-center md:flex-row">
                   <AppNavbar />
                   <AppPages />
                 </div>

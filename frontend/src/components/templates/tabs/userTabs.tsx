@@ -142,9 +142,8 @@ const UserTrackingsTab = (user: SocialTypes.User) => {
     </section>
   );
 };
-const UserStatsTab = () => {
-  const { activeUser } = useActiveUser();
-  const { data: stats } = statsService.useUserStats(activeUser?.id);
+const UserStatsTab = (user: SocialTypes.User) => {
+  const { data: stats } = statsService.useUserStats(user?.id);
 
   return (
     <section className="flex flex-col gap-5">

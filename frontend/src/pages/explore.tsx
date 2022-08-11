@@ -186,7 +186,10 @@ const ExploreSection = (props: {
         fullHeightHover={false}
       >
         {contentChunks.map((chunk, i) => (
-          <div key={"chunk-slide-" + i} className="grid grid-cols-3 gap-3 px-3">
+          <div
+            key={"chunk-slide-" + i}
+            className="grid h-full grid-cols-3 gap-3 p-2"
+          >
             {chunk.map((child) => child)}
           </div>
         ))}
@@ -200,7 +203,7 @@ const ExploreSection = (props: {
         navButtonsAlwaysInvisible
       >
         {props.slides.map((child, i) => (
-          <div key={"mobile-slide-" + i} className="px-3">
+          <div key={"mobile-slide-" + i} className="h-full p-2">
             {child}
           </div>
         ))}
