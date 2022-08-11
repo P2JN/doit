@@ -6,20 +6,20 @@ from stats.models import Stats
 
 
 class StatsSerializer(serializers.DocumentSerializer):
-    actually_participated_goals = serializers.serializers.SerializerMethodField()
+    actuallyParticipatedGoals = serializers.serializers.SerializerMethodField()
     numTrackings = serializers.serializers.SerializerMethodField()
     numPosts = serializers.serializers.SerializerMethodField()
     numLikes = serializers.serializers.SerializerMethodField()
-    num_comments = serializers.serializers.SerializerMethodField()
+    numComments = serializers.serializers.SerializerMethodField()
 
     class Meta:
         model = Stats
         fields = ['id', 'createdGoals', 'participatedGoals', 'totalObjectivesCompleted',
                   'monthlyObjectivesCompleted', 'yearlyObjectivesCompleted', 'dailyObjectivesCompleted',
-                  'weeklyObjectivesCompleted', 'createdBy', 'actually_participated_goals', 'numTrackings', 'numPosts',
-                  'numLikes', 'num_comments']
+                  'weeklyObjectivesCompleted', 'createdBy', 'actuallyParticipatedGoals', 'numTrackings', 'numPosts',
+                  'numLikes', 'numComments']
 
-    def get_actually_participated_goals(self, obj):
+    def get_actuallyParticipatedGoals(self, obj):
         return Participate.objects.filter(createdBy=obj.createdBy).count()
 
     def get_numTrackings(self, obj):
@@ -31,5 +31,5 @@ class StatsSerializer(serializers.DocumentSerializer):
     def get_numLikes(self, obj):
         return LikePost.objects(post__in=Post.objects.filter(createdBy=obj.createdBy)).count()
 
-    def get_num_comments(self, obj):
+    def get_numComments(self, obj):
         return Comment.objects().filter(createdBy=obj.createdBy).count()
