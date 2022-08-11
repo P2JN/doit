@@ -9,6 +9,7 @@ from goals.models import Goal, Objective, Tracking
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Follow
 from social.models import Participate, LikeTracking, User, NotificationIconType
+from stats.models import Stats
 from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
@@ -41,6 +42,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        Stats.objects.filter(createdBy=serializer.instance.createdBy).update_one(inc__createdGoals=1)
         return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
                                    "La meta '" + serializer.data.get("title") + "' ha sido creada.",
                                    NotificationIconType.GOAL)

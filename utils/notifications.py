@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from goals.models import Frequency, Goal, Objective
 from social.models import Participate, Notification, User, NotificationIconType
 from social.serializers import NotificationSerializer
-from utils.utils import get_progress
+from utils.utils import get_progress, update_stats
 
 
 def create_user_notification(user, title, content, icon_type):
@@ -53,17 +53,20 @@ def notify_completed_objectives(progress, objectives, goal, user, tracking):
     objectives_to_notify = [objective for objective in objectives if
                             progress[objective.frequency] >= objective.quantity >
                             progress[objective.frequency] - tracking.instance.amount]
+
     notifications = []
     for objective in objectives_to_notify:
+        update_stats(user, objective.frequency)
         if goal.type == 'cooperative':
             participants = list(Participate.objects.filter(
                 goal=goal, createdBy__ne=user))
             for participant in participants:
+                update_stats(participant.createdBy, objective.frequency)
                 create_user_notification(participant.createdBy, "Objetivo " + translate_objective_frequency(
                     objective.frequency) + " completado",
-                    "Has completado el objetivo " + translate_objective_frequency(
-                    objective.frequency) + " de la meta '" + goal.title + "'",
-                    NotificationIconType.COMPLETED)
+                                         "Has completado el objetivo " + translate_objective_frequency(
+                                             objective.frequency) + " de la meta '" + goal.title + "'",
+                                         NotificationIconType.COMPLETED)
         notifications.append(create_user_notification(user, "Objetivo " + translate_objective_frequency(
             objective.frequency) + " completado", "Has completado el objetivo " + translate_objective_frequency(
             objective.frequency) + " de la meta '" + goal.title + "'", NotificationIconType.COMPLETED).data)

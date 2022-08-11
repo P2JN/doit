@@ -4,6 +4,7 @@ from rest_framework import serializers
 from dj_rest_auth.serializers import UserDetailsSerializer
 from social.models import User as MongoUser
 from social.serializers import UserSerializer
+from stats.models import Stats
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -26,6 +27,8 @@ class CustomRegisterSerializer(RegisterSerializer):
         mongo_user = MongoUser(user_id=user.id, username=user.username, email=user.email, password=user.password,
                                firstName=user.first_name, lastName=user.last_name)
         mongo_user.save()
+        stats = Stats(createdBy=mongo_user)
+        stats.save()
         return user
 
 
