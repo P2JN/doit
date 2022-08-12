@@ -8,7 +8,7 @@ const Card = (props: {
   return (
     <article
       className={
-        "flex h-min flex-col gap-3 overflow-hidden rounded-lg bg-white px-6 py-4 shadow-lg" +
+        "flex h-min flex-col gap-3 overflow-hidden rounded-lg bg-white px-6 py-5 shadow-lg" +
         (props.className ? " " + props.className : "")
       }
       onClick={props.onClick}
