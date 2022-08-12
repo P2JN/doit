@@ -3,6 +3,7 @@ import datetime
 from django.http import Http404
 
 from goals.models import Tracking, Frequency
+from social.models import Participate
 from social.serializers import UserSerializer
 from stats.models import Stats
 
@@ -100,3 +101,12 @@ def update_stats(user, frecuency):
         Stats.objects.filter(createdBy=user).update_one(inc__weeklyObjectivesCompleted=1)
     elif Frequency.DAILY == frecuency:
         Stats.objects.filter(createdBy=user).update_one(inc__dailyObjectivesCompleted=1)
+
+
+def get_leader_board(goal_id, today, start_week, end_week, frequency):
+    trackings = get_trackings([frequency], goal_id, None, today, start_week, end_week)
+    participants = Participate.objects.filter(goal=goal_id).values_list('createdBy')
+    amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
+              participants}
+    query = sorted(participants, key=lambda x: amount[x.username], reverse=True)
+    return [query, amount]

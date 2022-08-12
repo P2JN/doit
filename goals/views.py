@@ -14,7 +14,7 @@ from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
 from utils.recomendations import get_tracking_score_by_goal, get_goals_affinity
-from utils.utils import get_trackings, set_amount, get_progress
+from utils.utils import get_trackings, set_amount, get_progress, get_leader_board
 
 
 # ViewSet views
@@ -133,11 +133,7 @@ class LeaderBoard(viewsets.GenericAPIView):
         today = datetime.datetime.now()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)
-        participants = Participate.objects.filter(goal=goal_id).values_list('createdBy')
-        amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
-                  participants}
-        query = sorted(participants, key=lambda x: amount[x.username], reverse=True)
+        query, amount = get_leader_board(goal_id, today, start_week, end_week, request.query_params.get('frequency'))
         query = self.paginate_queryset(query)
         res = [set_amount(user, amount[user.username]) for user in query]
         return self.get_paginated_response(res)

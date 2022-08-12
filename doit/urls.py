@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 
 from rest_framework_mongoengine import routers
 
+from assistant.views import HomeAssistantAPI
 from auth.googleOAuth2Adapter import GoogleLogin
 from doit.settings import MEDIA_ROOT, MEDIA_URL
 from doit.views import PopulateDB
@@ -60,6 +61,7 @@ urlpatterns = [
     path('api/user/<str:user_id>/stats', UserStatsApi.as_view()),
     path('api/media/', MediaUploadApi.as_view()),
     path('api/media/<media_id>', MediaApi.as_view()),
+    path('api/user/<str:user_id>/assistant-home', HomeAssistantAPI.as_view()),
 
     # ViewSet endpoints
     path('api/', include(router.urls)),

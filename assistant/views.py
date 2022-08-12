@@ -4,13 +4,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import random
 
-# Custom endpoint
 from goals.models import Tracking, Goal, Objective
 from social.models import User, Participate, Follow, Post, LikePost, Notification
+from stats.models import Stats
+from stats.serializers import StatsSerializer
 from utils.notifications import translate_objective_frequency
-from utils.utils import get_progress
+from utils.utils import get_progress, get_leader_board, set_amount, get_trackings
 
-
+# Custom endpoint
 class HomeAssistantAPI(APIView):
     def get(self, request, user_id):
         probability = random.random()
@@ -93,7 +94,6 @@ class FeedAssistantAPI(APIView):
                 message = "Veo que sigues a mucha gente interesante, pero podrian intersarte otros usuarios de la vista de explora"
 
         elif probability < 0.75:
-            # Tus seguidos no son muy activos <10 post
             num_post = Post.objects.filter(
                 createdBy__in=Follow.objects.filter(follower=user_id).values_list("user")).count()
             if num_post < 10:
@@ -122,6 +122,7 @@ class ExploreAssistantAPI(APIView):
             message = "Si no encuentras lo que buscas puedes clicar en el boton de buscar y " \
                       "hacer una búsqueda personalizada"
         return Response({"message": message})
+
 
 class NotificationsAssistantAPI(APIView):
     def get(self, request, user_id):
@@ -256,7 +257,84 @@ class UserRelatedAssistantAPI(APIView):
             message = "Veo que no sigues a " + not_followers.username + ", ¿Porque no le sigues a el?"
         return Response({"message": message})
 
-# class UserStatsAssistantAPI(APIView):
-#     def get(self, request,user_id):
+
+class UserStatsAssistantAPI(APIView):
+    def get(self, request, user_id):
+        user = User.objects.filter(id=user_id).first()
+        stats = Stats.objects.filter(createdBy=user_id).first()
+        stats_serializer = StatsSerializer(stats)
+        probability = random.random()
+        if probability < 0.25:
+            total_objectives = {"diario": stats.dailyObjectivesCompleted, "semanal": stats.weeklyObjectivesCompleted,
+                                "mensual": stats.monthlyObjectivesCompleted, "anual": stats.yearlyObjectivesCompleted,
+                                "total": stats.totalObjectivesCompleted}
+            if sum(total_objectives) == 0:
+                message = "Veo que no has completado ninguna objetivo todavía, ¿Porque no empezamos a registrar en alguna meta?"
+            else:
+                sorted(total_objectives, key=total_objectives.get, reverse=True)
+                message = "Veo que has completado muchos objetivos de tipo " + list(total_objectives.keys())[
+                    0] + "tal vez te gustaría probar con otra frecuencia"
+
+        elif probability < 0.5:
+            if stats_serializer.numPosts == 0:
+                message = "Veo que no has publicado ninguna publicación todavía, ¿Porque no publicas alguna?"
+            else:
+                ranking = list(Follow.objects.filter(follower=user_id).values_list("user")) + [user]
+                sorted(ranking, key=lambda x: Post.objects().filter(createdBy=x.createdBy).count(), reverse=True)
+                message = "Eres el " + str(
+                    ranking.index(user) + 1) + "º usuario que publica más publicaciones entre tus seguidos"
+        elif probability < 0.75:
+            if stats_serializer.numTrackings == 0:
+                message = "Veo que no has registrado ningún progreso todavía, ¿Porque no registras en alguna meta?"
+            else:
+                ranking = list(Follow.objects.filter(follower=user_id).values_list("user")) + [user]
+                sorted(ranking, key=lambda x: Tracking.objects().filter(createdBy=x.createdBy).count(), reverse=True)
+                message = "Eres el " + str(
+                    ranking.index(user) + 1) + "º usuario que registra más progresos entre tus seguidos"
+        else:
+            if stats_serializer.numLikes == 0:
+                message = "Veo que no has dado like a ninguna publicación todavía, ¿Porque no das like a alguna?"
+            else:
+                ranking = list(Follow.objects.filter(follower=user_id).values_list("user")) + [user]
+                sorted(ranking, key=lambda x: LikePost.objects().filter(createdBy=x.createdBy).count(), reverse=True)
+                message = "Eres el " + str(
+                    ranking.index(user) + 1) + "º usuario que dá like a más publicaciones entre tus seguidos"
+        return Response({"message": message})
+
 
 # Lederboard
+class LeaderboardAssistantAPI(APIView):
+    def get(self, request, goal_id):
+        today = datetime.now()
+        start_week = today - timedelta(days=today.weekday())
+        end_week = start_week + timedelta(days=6)
+        frequency = request.query_params.get('frequency')
+        query, amount = get_leader_board(goal_id, today, start_week, end_week, frequency)
+        res = [set_amount(user, amount[user.username]) for user in query]
+        user = User.objects.filter(id=request.query_params("userId")).first()
+        probability = random.random()
+
+        if probability < 0.25:
+            if user.get("username") != res[0].get("username"):
+                message = "Veo que el lider de la meta es " + res[0][
+                    'username'] + " que ha registrado " + get_trackings([frequency], goal_id, None, today, start_week,
+                                                                        end_week).count() + " progresos"
+            else:
+                message = "Veo que eres el lider de la meta, ¡Felicidades!"
+        elif probability < 0.5:
+            if user.get("username") != res[1].get("username"):
+                message = "Veo que el segundo en la meta es " + res[1][
+                    'username'] + " que ha registrado " + get_trackings([frequency], goal_id, None, today, start_week,
+                                                                        end_week).count() + " progresos"
+            else:
+                message = "Veo que eres el segundo de la meta, ¡Felicidades!"
+        elif probability < 0.75:
+            if user.get("username") != res[2].get("username"):
+                message = "Veo que el tercero de la meta es " + res[2][
+                    'username'] + " que ha registrado " + get_trackings([frequency], goal_id, None, today, start_week,
+                                                                        end_week).count() + " progresos"
+            else:
+                message = "Veo que eres el tercero de la meta, ¡Felicidades!"
+        else:
+            message = "Te encuentras en el " + str(res.index(user) + 1) + "º lugar de la meta"
+        return Response({"message": message})
