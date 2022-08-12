@@ -1,16 +1,15 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
+
 from dateutil import parser
 from dateutil.parser import ParserError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from goals.models import Goal, Objective, Tracking
+from goals.models import Goal, Tracking
 from social.models import User
 from stats.models import Stats
 from stats.serializers import StatsSerializer
-
 # Custom endpoint
-from utils.utils import get_progress, get_obj_or_404
 
 
 class UserStatsApi(APIView):
