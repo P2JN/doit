@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Carousel from "react-material-ui-carousel";
 import { Tab, Tabs, Typography } from "@mui/material";
 import {
   CrisisAlert,
   ImageOutlined,
   PersonOutlineOutlined,
 } from "@mui/icons-material";
-import Carousel from "react-material-ui-carousel";
 import { AxiosError } from "axios";
 
 import { Page } from "layout";
@@ -179,10 +179,11 @@ const ExploreSection = (props: {
         hasData={!!props.slides.length}
       />
       <Carousel
-        duration={1500}
+        duration={1250}
         interval={7500}
         animation="slide"
         className="hidden lg:block"
+        fullHeightHover={false}
       >
         {contentChunks.map((chunk, i) => (
           <div key={"chunk-slide-" + i} className="grid grid-cols-3 gap-3 px-3">
@@ -195,6 +196,8 @@ const ExploreSection = (props: {
         interval={7500}
         animation="slide"
         className="lg:hidden"
+        fullHeightHover={false}
+        navButtonsAlwaysInvisible
       >
         {props.slides.map((child, i) => (
           <div key={"mobile-slide-" + i} className="px-3">
