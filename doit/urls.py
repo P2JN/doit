@@ -19,7 +19,9 @@ from django.conf.urls.static import static
 
 from rest_framework_mongoengine import routers
 
-from assistant.views import HomeAssistantAPI
+from assistant.views import HomeAssistantAPI, FeedAssistantAPI, ExploreAssistantAPI, NotificationsAssistantAPI, \
+    UserInfoAssistantAPI, UserTrackingsAssistantAPI, UserFeedAssistantAPI, UserRelatedAssistantAPI, \
+    UserStatsAssistantAPI, LeaderboardAssistantAPI
 from auth.googleOAuth2Adapter import GoogleLogin
 from doit.settings import MEDIA_ROOT, MEDIA_URL
 from doit.views import PopulateDB
@@ -61,7 +63,20 @@ urlpatterns = [
     path('api/user/<str:user_id>/stats', UserStatsApi.as_view()),
     path('api/media/', MediaUploadApi.as_view()),
     path('api/media/<media_id>', MediaApi.as_view()),
+    # Assistants API
     path('api/user/<str:user_id>/assistant-home', HomeAssistantAPI.as_view()),
+    path('api/user/<str:user_id>/assistant-feed', FeedAssistantAPI.as_view()),
+    path('api/user/assistant-explore', ExploreAssistantAPI.as_view()),
+    path('api/user/<str:user_id>/assistant-notifications', NotificationsAssistantAPI.as_view()),
+    path('api/user/<str:user_id>/assistant-info', UserInfoAssistantAPI.as_view()),
+    path('api/user/<str:user_id>/assistant-trackings', UserTrackingsAssistantAPI.as_view()),
+    path('api/user/<str:user_id>/assistant-user-feed', UserFeedAssistantAPI.as_view()),
+    path('api/user/<str:user_id>/assistant-related', UserRelatedAssistantAPI.as_view()),
+    path('api/user/<str:user_id>/assistant-stats', UserStatsAssistantAPI.as_view()),
+    path('api/goal/<str:goal_id>/assistant-leader-board', LeaderboardAssistantAPI.as_view()),
+
+
+
 
     # ViewSet endpoints
     path('api/', include(router.urls)),

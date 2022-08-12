@@ -21,7 +21,7 @@ class NotificationIconType(str, Enum):
 
 class User(Document):
     user_id = fields.IntField()
-    username = fields.StringField(max_length=30, required=True)
+    username = fields.StringField(max_length=30, required=True, unique=True)
     email = fields.EmailField(required=True)
     password = fields.StringField()
     birthDate = fields.DateTimeField()
