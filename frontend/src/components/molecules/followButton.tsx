@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 
 import { socialService } from "services";
 import { useActiveUser, useNotificationStore } from "store";
@@ -16,9 +16,11 @@ const FollowButton = (user: SocialTypes.User) => {
 
   const isFollowing = useMemo(() => !!followData, [followData]);
 
-  const { mutate: follow } = socialService.useFollow();
+  const { mutate: follow, isLoading: loadingFollow } =
+    socialService.useFollow();
 
-  const { mutate: unfollow } = socialService.useUnfollow();
+  const { mutate: unfollow, isLoading: loadingUnfollow } =
+    socialService.useUnfollow();
 
   const onFollowClick = () => {
     if (user.id) {
@@ -66,7 +68,13 @@ const FollowButton = (user: SocialTypes.User) => {
       color={isFollowing ? "error" : "success"}
       onClick={onFollowClick}
     >
-      {isFollowing ? "No seguir" : "Seguir"}
+      {loadingFollow || loadingUnfollow ? (
+        <CircularProgress size={18} />
+      ) : isFollowing ? (
+        "No seguir"
+      ) : (
+        "Seguir"
+      )}
     </Button>
   );
 };

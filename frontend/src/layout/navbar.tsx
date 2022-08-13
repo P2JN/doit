@@ -44,7 +44,7 @@ const AppNavbar = () => {
   return (
     <nav
       className={
-        "fixed bottom-0 z-20 w-full border-t bg-white md:relative md:h-screen md:w-1/3 md:border-t-0 xl:w-1/5 " +
+        "z-20 order-last w-full border-t bg-white md:relative md:order-first md:h-screen md:w-1/3 md:border-t-0 xl:w-1/5 " +
         (!activeUser ? "hidden" : "")
       }
     >
