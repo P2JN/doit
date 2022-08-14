@@ -14,6 +14,8 @@ from pathlib import Path
 import mongoengine
 import os
 from dotenv import load_dotenv
+import sys
+TEST = 'test' in sys.argv
 
 load_dotenv()  # take environment variables from .env.
 SITE_ID = 1
@@ -158,6 +160,9 @@ if os.environ.get('DOCKER'):
         username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
         password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"),
     )
+elif TEST:
+    db = mongoengine.connect("TEST")
+    db.drop_database("TEST")
 else:
     mongoengine.connect("DOIT")
 
