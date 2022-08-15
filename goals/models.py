@@ -32,7 +32,7 @@ class Goal(Document):
     startDate = fields.DateTimeField(default=datetime.utcnow)
     deadline = fields.DateTimeField(future=True)
 
-    createdBy = fields.ReferenceField('User')
+    createdBy = fields.ReferenceField('User', required=True)
 
     meta = {'indexes': [
         {'fields': ['$title', "$description"],
@@ -45,9 +45,8 @@ class Goal(Document):
 class Objective(Document):
     quantity = fields.FloatField(required=True, min_value=0)
     frequency = fields.EnumField(Frequency, default=Frequency.TOTAL)
-    completed = fields.BooleanField(default=False)
 
-    goal = fields.ReferenceField('Goal')
+    goal = fields.ReferenceField('Goal', required=True, reverse_delete_rule=CASCADE)
 
     meta = {
         'indexes': [
@@ -60,5 +59,5 @@ class Tracking(Document):
     date = fields.DateTimeField(default=datetime.utcnow)
     amount = fields.FloatField(required=True, min_value=0)
 
-    createdBy = fields.ReferenceField('User')
-    goal = fields.ReferenceField('Goal', reverse_delete_rule=CASCADE)
+    createdBy = fields.ReferenceField('User', required=True)
+    goal = fields.ReferenceField('Goal', required=True, reverse_delete_rule=CASCADE)

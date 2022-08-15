@@ -9,7 +9,7 @@ from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowVi
 from utils.utils import set_up_test
 
 
-class SocailViewSetTest(TestCase):
+class SocialViewTest(TestCase):
     def setUp(self):
         super().setUpClass()
         set_up_test(self)
@@ -19,6 +19,9 @@ class SocailViewSetTest(TestCase):
                                         content="testContent")
         self.tracking = Tracking.objects.create(createdBy=self.mongo_user, goal=self.goal, amount=10)
 
+    @classmethod
+    def tearDownClass(cls):
+        pass
     # Test post viewSet
     def test_post_view_set_get(self):
         request = APIRequestFactory().get("")
