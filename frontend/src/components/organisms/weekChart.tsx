@@ -19,6 +19,7 @@ import { dateUtils } from "utils";
 import { GoalTypes } from "types";
 
 import { DataLoader } from "components/molecules";
+import { StatCounter } from "components/atoms";
 
 ChartJS.register(
   CategoryScale,
@@ -79,20 +80,7 @@ const WeekChart = (goal: GoalTypes.Goal) => {
     <>
       {goal && data && (
         <section>
-          <Bar
-            options={options}
-            data={{
-              labels: weekLabels,
-              datasets: [
-                {
-                  label: goal.unit || "unit",
-                  data: weekData,
-                  backgroundColor: "#93C08C",
-                },
-              ],
-            }}
-          />
-          <div className="mt-10 flex items-start justify-around ">
+          <div className="mt-10 flex items-center justify-around ">
             <IconButton
               disabled={isLoading}
               onClick={showPreviousWeek}
@@ -127,6 +115,35 @@ const WeekChart = (goal: GoalTypes.Goal) => {
               <ChevronRight />
             </IconButton>
           </div>
+          <Bar
+            options={options}
+            data={{
+              labels: weekLabels,
+              datasets: [
+                {
+                  label: goal.unit || "unit",
+                  data: weekData,
+                  backgroundColor: "#93C08C",
+                },
+              ],
+            }}
+          />
+          <section className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <StatCounter
+              value={weekData.reduce((a, b) => a + b, 0)}
+              label="Total semanal"
+            />
+            <StatCounter
+              value={weekData.reduce((a, b) => a + b, 0)}
+              label={
+                "Total " + dateUtils.beautifyMonth(Number(refDay.split("-")[1]))
+              }
+            />
+            <StatCounter
+              value={weekData.reduce((a, b) => a + b, 0)}
+              label={"Total " + refDay.split("-")[0]}
+            />
+          </section>
         </section>
       )}
       <DataLoader
