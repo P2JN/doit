@@ -172,7 +172,7 @@ const goalService = {
       PagedList<SocialTypes.User & { amount: number }>,
       AxiosError
     >(
-      `goal-${id}-leaderboard`,
+      `goal-${id}-leaderboard-${frequency}`,
       ({ pageParam = 0 }) =>
         requests.getGoalLeaderboard(id, frequency, pageParam),
       {
