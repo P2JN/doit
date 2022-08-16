@@ -47,8 +47,8 @@ const WeekChart = (goal: GoalTypes.Goal) => {
   const { activeUser } = useActiveUser();
   const navigate = useNavigate();
 
-  const { monday } = useParams();
-  const refDay = monday || dateUtils.ISODateOnly(new Date());
+  const { day } = useParams();
+  const refDay = day || dateUtils.ISODateOnly(new Date());
 
   const { data, isLoading, error } = statsService.useWeekData(
     goal.id,
@@ -109,7 +109,7 @@ const WeekChart = (goal: GoalTypes.Goal) => {
             <Typography variant="h4" className="w-full text-center">
               <strong>
                 {dateUtils.beautifyMonth(Number(refDay.split("-")[1]))}
-              </strong>{" "}
+              </strong>
               <br />
               {refDay.split("-")[0]}
             </Typography>

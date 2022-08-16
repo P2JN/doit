@@ -430,7 +430,7 @@ const GoalStatsTab = (goal: GoalTypes.Goal) => {
           path="/"
           element={<Navigate to={dateUtils.ISODateOnly(new Date())} />}
         />
-        <Route path="/:monday" element={<WeekChart {...goal} />} />
+        <Route path="/:day" element={<WeekChart {...goal} />} />
       </Routes>
     </section>
   );
