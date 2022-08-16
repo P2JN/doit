@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { Snackbar } from "@mui/material";
 
 import { useActiveUser, useAlertCount, useNotificationStore } from "store";
@@ -8,12 +8,20 @@ import { axiosInstance } from "services/config";
 
 import { NotificationAlert } from "components/molecules";
 
+const HIDE_TIME = 2500;
+
 const NotificationProvider = (props: { children: ReactNode }) => {
   const { activeUser } = useActiveUser();
   const { notifications, addNotification, hideNotificationSnack } =
     useNotificationStore();
 
+  const [currentlyDisplayed, setCurrentlyDisplayed] = useState<number>(0);
+
   const location = useLocation();
+  const isNotificationsPage = useMemo(
+    () => location.pathname === "/notifications",
+    [location]
+  );
 
   const [interceptorAdded, setInterceptorAdded] = useState(false);
 
@@ -38,7 +46,6 @@ const NotificationProvider = (props: { children: ReactNode }) => {
             refetch();
             const { notification, ...rest } = response.data;
             addNotification(notification);
-
             const values = Object.values(rest)[0] as any;
             return { ...response, data: { ...values } };
           }
@@ -53,19 +60,25 @@ const NotificationProvider = (props: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interceptorAdded]);
 
+  const toBeDisplayed = useMemo(() => {
+    setCurrentlyDisplayed(0);
+    return notifications.filter((n) => n && !n.checked && !n.snackHidden);
+  }, [notifications]);
+
   return (
     <>
-      {notifications.map(
-        (notification) =>
-          notification &&
-          !notification.checked &&
-          !notification.snackHidden && (
+      {toBeDisplayed.map(
+        (notification, index) =>
+          !isNotificationsPage && (
             <Snackbar
-              autoHideDuration={5000}
+              autoHideDuration={(index + 1) * HIDE_TIME}
               anchorOrigin={{ vertical: "top", horizontal: "right" }}
               key={notification.id}
-              onClose={() => hideNotificationSnack(notification.id)}
-              open={!notification.snackHidden}
+              onClose={() => {
+                hideNotificationSnack(notification.id);
+                setCurrentlyDisplayed(index + 1);
+              }}
+              open={!notification.snackHidden && index === currentlyDisplayed}
             >
               <div>
                 <NotificationAlert key={notification.id} {...notification} />
