@@ -36,9 +36,6 @@ export const options = {
     legend: {
       position: "top" as const,
     },
-    title: {
-      display: true,
-    },
   },
 };
 
@@ -59,12 +56,14 @@ const WeekChart = (goal: GoalTypes.Goal) => {
 
   const weekData = useMemo(() => {
     if (!data) return [];
-    return Object.values(data);
+    const { totalMonth, totalYear, ...rest } = data;
+    return Object.values(rest);
   }, [data]);
 
   const weekLabels = useMemo(() => {
     if (!data) return [];
-    return Object.keys(data).map(
+    const { totalMonth, totalYear, ...rest } = data;
+    return Object.keys(rest).map(
       (key, index) => weekDays[index] + "-" + key.split("-")[2]
     );
   }, [data]);
@@ -80,7 +79,7 @@ const WeekChart = (goal: GoalTypes.Goal) => {
     <>
       {goal && data && (
         <section>
-          <div className="mt-10 flex items-center justify-around ">
+          <div className="my-5 flex items-center justify-around ">
             <IconButton
               disabled={isLoading}
               onClick={showPreviousWeek}
@@ -134,13 +133,13 @@ const WeekChart = (goal: GoalTypes.Goal) => {
               label="Total semanal"
             />
             <StatCounter
-              value={weekData.reduce((a, b) => a + b, 0)}
+              value={data?.totalMonth}
               label={
                 "Total " + dateUtils.beautifyMonth(Number(refDay.split("-")[1]))
               }
             />
             <StatCounter
-              value={weekData.reduce((a, b) => a + b, 0)}
+              value={data?.totalYear}
               label={"Total " + refDay.split("-")[0]}
             />
           </section>

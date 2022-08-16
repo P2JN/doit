@@ -19,4 +19,6 @@ export type UserStats = {
 
 export type GoalStats = {
   [key: string]: number;
+  totalMonth: number;
+  totalYear: number;
 };
