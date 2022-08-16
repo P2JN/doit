@@ -16,3 +16,7 @@ export type UserStats = {
   numLikes: number;
   numComments: number;
 };
+
+export type GoalStats = {
+  [key: string]: number;
+};
