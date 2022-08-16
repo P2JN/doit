@@ -44,9 +44,12 @@ const TrackingTeaser = (tracking: GoalTypes.Tracking) => {
       {!isInGoalPage && goal && <GoalTeaserReduced {...goal} />}
       <Card className="cursor-pointer">
         <header className="flex cursor-pointer items-center justify-between">
-          <Typography variant="h4" className="!font-bold text-primary">
-            +{tracking.amount}
-          </Typography>
+          <div className="flex items-end gap-3 text-primary">
+            <Typography variant="h4" className="!font-bold">
+              +{tracking.amount}
+            </Typography>
+            <Typography variant="body1">{goal?.unit.slice(0, 3)}</Typography>
+          </div>
           {user && <UserTeaserReduced {...user} />}
         </header>
 

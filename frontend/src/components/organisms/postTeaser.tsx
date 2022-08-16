@@ -13,6 +13,7 @@ import {
   UserAvatar,
   UserUsername,
 } from "components/organisms";
+import { dateUtils } from "utils";
 
 const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
   const { data: user } = socialService.useUser(post.createdBy);
@@ -42,19 +43,28 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
               <strong>{post.title}</strong>
             </Typography>
           </header>
-          <section className="mb-4">
+          <section className="mb-4 flex flex-col gap-1">
+            {post.withoutComments && (
+              <Typography variant="body1">
+                {dateUtils.beautifyDate(post.creationDate)}
+              </Typography>
+            )}
             <Typography variant="body1">
               {user && <UserUsername {...user} />} : {post.content}
             </Typography>
           </section>
           <footer className="mt-auto flex items-center justify-between">
             {user && <UserAvatar {...user} />}
-            {post.withoutComments && post.id && (
+            {post.withoutComments && post.id ? (
               <PostCounters
                 comments={post.numComments}
                 likes={post.likes}
                 postId={post.id}
               />
+            ) : (
+              <Typography variant="body1">
+                {dateUtils.beautifyDate(post.creationDate)}
+              </Typography>
             )}
           </footer>
         </Card>

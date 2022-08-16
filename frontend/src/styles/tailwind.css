@@ -20,12 +20,12 @@
   @apply !text-black;
 }
 
-.css-12sazjn-MuiButtonBase-root-MuiTab-root {
-  @apply !min-w-0 !px-3;
+.MuiTabs-flexContainer {
+  @apply !justify-center;
 }
 
-.MuiTabs-flexContainer {
-  @apply justify-center;
+.MuiTabs-flexContainer .MuiButtonBase-root {
+  @apply !min-w-0 !px-3;
 }
 
 .MuiBadge-colorPrimary {

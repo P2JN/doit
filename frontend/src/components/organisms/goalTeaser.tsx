@@ -87,13 +87,16 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
 
   return (
     <Card
-      className="min-h-[calc(32px+40px)] cursor-pointer"
+      className="min-h-[calc(32px+50px)] cursor-pointer"
       onClick={onOpenGoal}
     >
       <header className="flex items-center justify-between gap-3">
-        <Typography variant="h6" className="!font-bold leading-tight">
-          {goal.title}
-        </Typography>
+        <section className="flex items-center gap-3">
+          <CrisisAlert />
+          <Typography variant="h6" className="!font-bold leading-tight">
+            {goal.title}
+          </Typography>
+        </section>
         {goal.type && (
           <Chip
             className="ml-auto -mr-2"
