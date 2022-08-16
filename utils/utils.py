@@ -1,7 +1,7 @@
 import datetime
 
 from django.http import Http404
-
+import calendar
 from goals.models import Tracking, Frequency
 from social.serializers import UserSerializer
 from stats.models import Stats
@@ -30,10 +30,12 @@ def get_trackings(progress, goal, user, today, start_week, end_week):
     if Frequency.TOTAL in progress:
         return trackings.filter(goal=goal)
     elif Frequency.YEARLY in progress:
-        return trackings.filter(goal=goal, date__lte=today.replace(month=12, day=31, hour=23, minute=59, second=59),
+        return trackings.filter(goal=goal, date__lte=today.replace(month=12, day=calendar.monthrange(today.year, 12)[1],
+                                                                   hour=23, minute=59, second=59),
                                 date__gte=today.replace(month=1, day=1, hour=0, minute=0, second=0))
     elif Frequency.MONTHLY in progress:
-        return trackings.filter(goal=goal, date__lte=today.replace(day=31, hour=23, minute=59, second=59),
+        return trackings.filter(goal=goal, date__lte=today.replace(day=calendar.monthrange(today.year, today.month)[1],
+                                                                   hour=23, minute=59, second=59),
                                 date__gte=today.replace(day=1, hour=0, minute=0, second=0))
     elif Frequency.WEEKLY in progress:
         return trackings.filter(goal=goal, date__lte=end_week.replace(hour=23, minute=59, second=59),
