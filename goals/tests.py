@@ -14,11 +14,11 @@ class GoalsViewSetTest(TestCase):
         self.goal = Goal.objects.create(title="test", description="test", unit="test", createdBy=self.mongo_user)
         self.participate = Participate.objects.create(createdBy=self.mongo_user, goal=self.goal)
         self.objective = Objective.objects.create(quantity=10, frequency=Frequency.TOTAL, goal=self.goal)
-        self.tracking = Tracking.objects.create(amount=1, createdBy=self.mongo_user, goal=self.goal)
 
     @classmethod
     def tearDownClass(cls):
         pass
+
     # Test Goal viewset
     def test_goal_view_set_get(self):
         request = APIRequestFactory().get("")
@@ -87,7 +87,20 @@ class GoalsViewSetTest(TestCase):
         self.assertEqual(response.data.get("results")[0]['unit'], goals[0].unit)
         self.assertEqual(response.data.get("results")[0]['createdBy'], str(goals[0].createdBy.id))
 
-    # Test Objective viewset
+
+# Test Objective viewset
+class ObjectiveViewSetTest(TestCase):
+    def setUp(self):
+        super().setUpClass()
+        set_up_test(self)
+        self.goal = Goal.objects.create(title="test", description="test", unit="test", createdBy=self.mongo_user)
+        self.participate = Participate.objects.create(createdBy=self.mongo_user, goal=self.goal)
+        self.objective = Objective.objects.create(quantity=10, frequency=Frequency.TOTAL, goal=self.goal)
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
     def test_objective_view_set_get(self):
         request = APIRequestFactory().get("")
         force_authenticate(request, user=self.user, token=self.token)
@@ -152,7 +165,21 @@ class GoalsViewSetTest(TestCase):
         self.assertEqual(response.data.get("results")[0]['frequency'], objectives[0].frequency)
         self.assertEqual(response.data.get("results")[0]['goal'], str(objectives[0].goal.id))
 
-    # Test Tracking viewset
+
+# Test Tracking viewset
+class TrackingViewSetTest(TestCase):
+    def setUp(self):
+        super().setUpClass()
+        set_up_test(self)
+        self.goal = Goal.objects.create(title="test", description="test", unit="test", createdBy=self.mongo_user)
+        self.participate = Participate.objects.create(createdBy=self.mongo_user, goal=self.goal)
+        self.objective = Objective.objects.create(quantity=10, frequency=Frequency.TOTAL, goal=self.goal)
+        self.tracking = Tracking.objects.create(amount=1, createdBy=self.mongo_user, goal=self.goal)
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
+
     def test_tracking_view_set_get(self):
         request = APIRequestFactory().get("")
         force_authenticate(request, user=self.user, token=self.token)
@@ -164,7 +191,8 @@ class GoalsViewSetTest(TestCase):
         self.assertEqual(response.data.get('goal'), str(self.tracking.goal.id))
 
     def test_tracking_view_set_post(self):
-        request = APIRequestFactory().post("", {'amount': 1, 'goal': str(self.goal.id), "createdBy": str(self.mongo_user.id)})
+        request = APIRequestFactory().post("", {'amount': 1, 'goal': str(self.goal.id),
+                                                "createdBy": str(self.mongo_user.id)})
         force_authenticate(request, user=self.user, token=self.token)
         tracking_detail = TrackingViewSet.as_view({'post': 'create'})
         response = tracking_detail(request)
@@ -174,7 +202,8 @@ class GoalsViewSetTest(TestCase):
         self.assertEqual(response.data.get("tracking").get("goal"), str(self.goal.id))
 
     def test_tracking_view_set_put(self):
-        request = APIRequestFactory().put("", {'amount': 2, 'goal': str(self.goal.id), "createdBy": str(self.mongo_user.id)})
+        request = APIRequestFactory().put("", {'amount': 2, 'goal': str(self.goal.id),
+                                               "createdBy": str(self.mongo_user.id)})
         force_authenticate(request, user=self.user, token=self.token)
         tracking_detail = TrackingViewSet.as_view({'put': 'update'})
         response = tracking_detail(request, id=self.tracking.id)
@@ -213,4 +242,3 @@ class GoalsViewSetTest(TestCase):
         self.assertEqual(response.data.get("results")[0]['amount'], trackings[0].amount)
         self.assertEqual(response.data.get("results")[0]['createdBy'], str(trackings[0].createdBy.id))
         self.assertEqual(response.data.get("results")[0]['goal'], str(trackings[0].goal.id))
-
