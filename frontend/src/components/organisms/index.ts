@@ -27,6 +27,8 @@ import {
 } from "./userTeaser";
 import { TrackingTeaser } from "./trackingTeaser";
 
+import WeekChart from "./weekChart";
+
 export {
   UserTeaser,
   UserTeaserInfo,
@@ -47,4 +49,5 @@ export {
   FollowTable,
   LeaderboardTable,
   SearchBar,
+  WeekChart,
 };

@@ -1,3 +1,18 @@
+const months = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
+
 const dateUtils = {
   beautifyDate: (date?: string) => {
     if (!date) {
@@ -25,6 +40,32 @@ const dateUtils = {
       const year = dateObj.getFullYear();
       return `${day}/${month}/${year}`;
     }
+  },
+  beautifyMonth: (month?: number) => {
+    if (!month) return "";
+    return months[month - 1];
+  },
+  ISODateOnly: (date?: Date) => {
+    if (!date) {
+      return "";
+    }
+    return date.toISOString().split("T")[0];
+  },
+  ISODatePlusOneWeek: (date?: string) => {
+    if (!date) {
+      return "";
+    }
+    const dateObj = new Date(date);
+    dateObj.setDate(dateObj.getDate() + 7);
+    return dateUtils.ISODateOnly(dateObj);
+  },
+  ISODateMinusOneWeek: (date?: string) => {
+    if (!date) {
+      return "";
+    }
+    const dateObj = new Date(date);
+    dateObj.setDate(dateObj.getDate() - 7);
+    return dateUtils.ISODateOnly(dateObj);
   },
 };
 

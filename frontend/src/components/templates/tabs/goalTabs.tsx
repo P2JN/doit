@@ -1,12 +1,20 @@
 import { AxiosError } from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useMatch, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  Route,
+  Routes,
+  useMatch,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Alert, Button, Divider, Tab, Tabs, Typography } from "@mui/material";
 
 import { useActiveUser, useNotificationStore } from "store";
 import { goalService, socialService } from "services";
 import { GoalTypes } from "types";
-import { paginationUtils, texts } from "utils";
+import { dateUtils, paginationUtils, texts } from "utils";
 
 import { ParsedError } from "components/atoms";
 import { DataLoader, ProgressBar } from "components/molecules";
@@ -14,6 +22,7 @@ import {
   LeaderboardTable,
   PostTeaser,
   TrackingTeaser,
+  WeekChart,
 } from "components/organisms";
 import { GoalForm, ObjectivesForm } from "components/templates";
 
@@ -413,10 +422,16 @@ const GoalLeaderboardTab = (goal: GoalTypes.Goal) => {
   );
 };
 
-const GoalStatsTab = () => {
+const GoalStatsTab = (goal: GoalTypes.Goal) => {
   return (
     <section className="animate-fade-in">
-      <p>Goal Stats Content</p>
+      <Routes>
+        <Route
+          path="/"
+          element={<Navigate to={dateUtils.ISODateOnly(new Date())} />}
+        />
+        <Route path="/:day" element={<WeekChart {...goal} />} />
+      </Routes>
     </section>
   );
 };
