@@ -6,6 +6,7 @@ from mongoengine import Document, fields, CASCADE, NULLIFY
 from goals.models import Tracking, Goal
 
 from media.models import Media
+from utils.filters import zona_horaria
 
 
 class NotificationIconType(str, Enum):
@@ -41,7 +42,7 @@ class User(Document):
 class Post(Document):
     title = fields.StringField(max_length=30, required=True)
     content = fields.StringField(max_length=1250)
-    creationDate = fields.DateTimeField(default=datetime.utcnow)
+    creationDate = fields.DateTimeField(default=datetime.now(zona_horaria))
 
     createdBy = fields.ReferenceField('User', required=True)
     goal = fields.ReferenceField('Goal', reverse_delete_rule=CASCADE, required=False)
@@ -58,7 +59,7 @@ class Post(Document):
 class Notification(Document):
     title = fields.StringField(max_length=50, required=True)
     content = fields.StringField(max_length=1250)
-    creationDate = fields.DateTimeField(default=datetime.utcnow)
+    creationDate = fields.DateTimeField(default=datetime.now(zona_horaria))
     checked = fields.BooleanField(default=False)
     user = fields.ReferenceField('User', required=True)
 
@@ -106,7 +107,7 @@ class Participate(Document):
         'User', required=True, reverse_delete_rule=CASCADE)
     goal = fields.ReferenceField(
         'Goal', required=True, reverse_delete_rule=CASCADE)
-    creationDate = fields.DateTimeField(default=datetime.utcnow)
+    creationDate = fields.DateTimeField(default=datetime.now(zona_horaria))
     meta = {
         'indexes': [
             {'fields': ['createdBy', 'goal'], 'unique': True}
@@ -116,7 +117,7 @@ class Participate(Document):
 
 class Comment(Document):
     content = fields.StringField(max_length=1250)
-    creationDate = fields.DateTimeField(default=datetime.utcnow)
+    creationDate = fields.DateTimeField(default=datetime.now(zona_horaria))
     createdBy = fields.ReferenceField('User', required=True)
     post = fields.ReferenceField('Post', required=True, reverse_delete_rule=CASCADE)
 

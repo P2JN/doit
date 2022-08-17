@@ -4,6 +4,7 @@ from mongoengine import Document, fields, CASCADE
 
 
 # Enums
+from utils.filters import zona_horaria
 
 
 class Frequency(str, Enum):
@@ -28,8 +29,8 @@ class Goal(Document):
     description = fields.StringField(max_length=750)
     unit = fields.StringField(required=True, max_length=15)
     type = fields.EnumField(GoalType, default=GoalType.PRIVATE)
-    creationDate = fields.DateTimeField(default=datetime.utcnow)
-    startDate = fields.DateTimeField(default=datetime.utcnow)
+    creationDate = fields.DateTimeField(default=datetime.now(zona_horaria))
+    startDate = fields.DateTimeField(default=datetime.now(zona_horaria))
     deadline = fields.DateTimeField(future=True)
 
     createdBy = fields.ReferenceField('User')
@@ -57,7 +58,7 @@ class Objective(Document):
 
 
 class Tracking(Document):
-    date = fields.DateTimeField(default=datetime.utcnow)
+    date = fields.DateTimeField(default=datetime.now(zona_horaria))
     amount = fields.FloatField(required=True, min_value=0)
 
     createdBy = fields.ReferenceField('User')
