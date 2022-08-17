@@ -14,7 +14,8 @@ def get_users_affinity(logged_user_goals, user, max_followers, max_posts, max_tr
     last_goals = [GoalSerializer(goal).data for goal in
                   Participate.objects.filter(createdBy=user.get("id")).order_by('-creationDate')[0:10].values_list(
                       'goal')]
-    max_participants = max(logged_user_goals + last_goals, key=lambda goal: goal.get("numParticipants")).get("numParticipants") if logged_user_goals + last_goals else 0
+    max_participants = max(logged_user_goals + last_goals, key=lambda goal: goal.get("numParticipants")).get(
+        "numParticipants") if logged_user_goals + last_goals else 0
     affinity = 0.0
     for goal in last_goals:
         for logged_goal in logged_user_goals:
@@ -62,8 +63,18 @@ def get_post_recomendations(posts, user_id, max_likes, max_comments):
 
 
 def post_affinity(logged_post, post, max_likes, max_comments):
-    return SequenceMatcher(None, logged_post.get("title"), post.get("title")).ratio() * 0.45 + \
-           SequenceMatcher(None, logged_post.get("content"), post.get("content")).ratio() * 0.45 + \
-           ((logged_post.get("likes") + 1) / (max_likes + 1) - (post.get("likes") + 1) / (max_likes + 1)) * 0.05 + \
-           ((logged_post.get("numComments") + 1) / (max_comments + 1) - (post.get("numComments") + 1) / (
-                   max_comments + 1)) * 0.05
+    title_score = 0.0
+    if logged_post.get("title") and post.get("title"):
+        title_score = SequenceMatcher(None, logged_post.get("title"), post.get("title")).ratio() * 0.4
+
+    content_score = 0.0
+    if logged_post.get("content") and post.get("content"):
+        content_score = SequenceMatcher(None, logged_post.get("content"), post.get("content")).ratio() * 0.4
+    likes_score = 0.0
+    if logged_post.get("numLikes") and post.get("numLikes"):
+        likes_score = 1 - abs((logged_post.get("numLikes") + 1) / (max_likes + 1) - (post.get("numLikes") + 1) / (max_likes + 1))
+    comments_score = 0.0
+    if logged_post.get("numComments") and post.get("numComments"):
+        comments_score = 1 - abs((logged_post.get("numComments") + 1) / (max_comments + 1) - (post.get("numComments") + 1) / (max_comments + 1))
+
+    return title_score * 0.4 + content_score * 0.4 + likes_score * 0.05 + comments_score * 0.05
