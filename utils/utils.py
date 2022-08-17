@@ -69,7 +69,7 @@ def get_progress(goal, objectives, user):
     for objective in objectives:
         progress[objective.frequency] = 0.0
 
-    today = datetime.datetime.now()
+    today = datetime.datetime.utcnow()
     start_week = today - datetime.timedelta(days=today.weekday())
     end_week = start_week + datetime.timedelta(days=6)
     if goal.type != 'cooperative':
