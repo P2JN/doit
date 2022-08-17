@@ -9,7 +9,7 @@ from utils.utils import get_progress, update_stats
 
 def create_user_notification(user, title, content, icon_type):
     notification = Notification(
-        user=user, title=title, content=content, iconType=icon_type)
+        user=user, title=title[:50], content=content[:1250], iconType=icon_type)
     notification.save()
     return NotificationSerializer(notification)
 
