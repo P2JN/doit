@@ -14,7 +14,8 @@ def get_users_affinity(logged_user_goals, user, max_followers, max_posts, max_tr
     last_goals = [GoalSerializer(goal).data for goal in
                   Participate.objects.filter(createdBy=user.get("id")).order_by('-creationDate')[0:10].values_list(
                       'goal')]
-    max_participants = max(logged_user_goals + last_goals, key=lambda goal: goal.get("numParticipants")).get("numParticipants") if logged_user_goals + last_goals else 0
+    max_participants = max(logged_user_goals + last_goals, key=lambda goal: goal.get("numParticipants")).get(
+        "numParticipants") if logged_user_goals + last_goals else 0
     affinity = 0.0
     for goal in last_goals:
         for logged_goal in logged_user_goals:
