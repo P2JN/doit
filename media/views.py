@@ -8,7 +8,6 @@ from rest_framework.views import APIView
 
 from media.models import Media
 # Custom endpoint
-from utils.filters import zona_horaria
 from utils.utils import handle_uploaded_file
 
 
@@ -21,7 +20,7 @@ class MediaUploadApi(APIView):
         file = request.data['file']
         extension = file.name.split('.')[-1]
         file.name = str(ObjectId.from_datetime(
-            datetime.now(zona_horaria))) + '.' + extension
+            datetime.utcnow())) + '.' + extension
         url = handle_uploaded_file(file)
         media = Media(url=url).save()
         return Response(str(media.id))

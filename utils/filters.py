@@ -1,8 +1,3 @@
-import pytz as tz
-
-zona_horaria = tz.timezone('Europe/Madrid')
-
-
 class FilterSet:
 
     def __init__(self, my_filter_fields, my_custom_filter_fields, query_params, queryset, search_text=False):
@@ -30,7 +25,7 @@ class FilterSet:
             if field_value:
                 has_filtered = True
                 filtering_kwargs['id__in'] = filtering_kwargs['id__in'] + \
-                                             callback(field_value)
+                    callback(field_value)
 
         if not has_filtered:
             return {}

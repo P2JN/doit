@@ -5,7 +5,6 @@ import calendar
 from goals.models import Tracking, Frequency
 from social.serializers import UserSerializer
 from stats.models import Stats
-from utils.filters import zona_horaria
 
 
 def get_obj_or_404(klass, *args, **kwargs):
@@ -70,7 +69,7 @@ def get_progress(goal, objectives, user):
     for objective in objectives:
         progress[objective.frequency] = 0.0
 
-    today = datetime.datetime.now(zona_horaria)
+    today = datetime.datetime.utcnow()
     start_week = today - datetime.timedelta(days=today.weekday())
     end_week = start_week + datetime.timedelta(days=6)
     if goal.type != 'cooperative':
@@ -103,4 +102,3 @@ def update_stats(user, frecuency):
         Stats.objects.filter(createdBy=user).update_one(inc__weeklyObjectivesCompleted=1)
     elif Frequency.DAILY == frecuency:
         Stats.objects.filter(createdBy=user).update_one(inc__dailyObjectivesCompleted=1)
-
