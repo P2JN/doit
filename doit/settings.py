@@ -15,6 +15,7 @@ import mongoengine
 import os
 from dotenv import load_dotenv
 import sys
+
 TEST = 'test' in sys.argv
 
 load_dotenv()  # take environment variables from .env.
@@ -78,7 +79,6 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'auth.authSerializer.CustomUserDetailsSerializer',
 }
 
-
 ROOT_URLCONF = 'doit.urls'
 
 TEMPLATES = [
@@ -110,7 +110,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'doit.pagination.CustomPageNumberPagination',
     'PAGE_SIZE': 10
 }
-
 
 # AllAuth config
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
@@ -161,7 +160,9 @@ if os.environ.get('DOCKER'):
         password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"),
     )
 elif TEST:
-    db = mongoengine.connect("TEST")
+    db = mongoengine.connect("TEST",
+                             username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
+                             password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"), )
     db.drop_database("TEST")
 else:
     mongoengine.connect("DOIT")
@@ -210,7 +211,6 @@ STATICFILES_DIRS = (
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
