@@ -24,11 +24,21 @@ def get_users_affinity(logged_user_goals, user, max_followers, max_posts, max_tr
 
 
 def goal_affinity(logged_goal, goal, max_participants):
-    return SequenceMatcher(None, logged_goal.get("title"), goal.get("title")).ratio() * 0.4 + \
-           SequenceMatcher(None, logged_goal.get("description"), goal.get("description")).ratio() * 0.4 + \
-           (logged_goal.get("type") == goal.get("type")) * 0.15 + \
-           ((logged_goal.get("numParticipants") + 1) / (max_participants + 1) -
-            (goal.get("numParticipants") + 1) / (max_participants + 1)) * 0.05
+    title_score = 0.0
+    if logged_goal.get("title") and goal.get("title"):
+        title_score = SequenceMatcher(None, logged_goal.get("title"), goal.get("title")).ratio()
+
+    description_score = 0.0
+    if logged_goal.get("description") and goal.get("description"):
+        description_score = SequenceMatcher(None, logged_goal.get("description"), goal.get("description")).ratio()
+
+    num_participants_score = 0.0
+    if logged_goal.get("numParticipants") and goal.get("numParticipants"):
+        num_participants_score = 1 - abs((logged_goal.get("numParticipants") + 1) / (max_participants + 1) - (goal.get("numParticipants") + 1) / (max_participants + 1))
+
+    goal_type_score = logged_goal.get("type") == goal.get("type")
+
+    return title_score * 0.4 + description_score * 0.4 + num_participants_score * 0.1 + goal_type_score * 0.1
 
 
 def get_tracking_score_by_goal(goal):
