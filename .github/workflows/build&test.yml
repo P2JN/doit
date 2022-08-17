@@ -18,6 +18,16 @@ jobs:
         ports:
           - 27017:27017
         options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5
+      postgres_db:
+        image: postgres
+        env:
+          POSTGRES_USER: doit
+          POSTGRES_PASSWORD: doit
+          POSTGRES_DB: doit
+          POSTGRES_HOST: postgres_db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
@@ -35,6 +45,10 @@ jobs:
           MONGO_INITDB_DATABASE: doit
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: root
+          POSTGRES_USER: doit
+          POSTGRES_PASSWORD: doit
+          POSTGRES_DB: doit
+          POSTGRES_HOST: postgres_db
         run: |
           coverage run ./manage.py test 
           coverage xml
