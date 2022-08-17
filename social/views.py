@@ -14,7 +14,7 @@ from social.serializers import PostSerializer, UserSerializer, NotificationSeria
 from stats.models import Stats
 from utils.filters import FilterSet
 from utils.recomendations import get_users_affinity, get_post_recomendations
-from utils.notifications import delete_notification, create_notification, create_user_notification
+from utils.notifications import delete_notification, create_notification, create_user_notification, limit_text
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -114,12 +114,12 @@ class FollowViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.user, instance.follower.username + " ha empezado a seguirte.",
+        create_user_notification(instance.user, "Alguien ha comenzado a seguirte.",
                                  instance.follower.username + " te ha seguido.", NotificationIconType.FOLLOW)
 
     def perform_destroy(self, instance):
         instance.delete()
-        create_user_notification(instance.user, instance.follower.username + " ha dejado de seguirte.",
+        create_user_notification(instance.user, "Alguien ha dejado de seguirte.",
                                  instance.follower.username + " ya no te sigue.", NotificationIconType.FOLLOW)
 
 
@@ -171,7 +171,7 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.tracking.createdBy,
-                                 instance.createdBy.username + " te ha dado like a un tracking.",
+                                 "Alguien le ha dado me gusta a un tracking.",
                                  instance.createdBy.username + " te dio un like en tu tracking del " + str(
                                      instance.tracking.date)
                                  + " en el que conseguiste " +
@@ -196,7 +196,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy,
-                                 "A '" + instance.createdBy.username + "' le ha gustado tu publicación.",
+                                 "Alguien le ha dado me gusta a una publicación tuya",
                                  "Al usuario " + instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.",
                                  NotificationIconType.LIKE)
 
@@ -218,9 +218,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy,
-                                 instance.createdBy.username + " ha comentado en tu post '" +
-                                 instance.post.title + "'.",
-                                 instance.createdBy.username + " ha comentado '" + instance.content + "'.",
+                                 "Han comentado en tu post '" +
+                                 limit_text(instance.post.title, 50, 28) + "'.",
+                                 instance.createdBy.username + " ha comentado '" + limit_text(instance.content, 1250,
+                                                                                              17 +
+                                                                                              len(instance.createdBy.username)) + "'.",
                                  NotificationIconType.COMMENT)
 
 

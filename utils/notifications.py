@@ -8,10 +8,6 @@ from utils.utils import get_progress, update_stats
 
 
 def create_user_notification(user, title, content, icon_type):
-    if title and len(title) > 50:
-        title = title[:47] + "..."
-    if content and len(content) > 1250:
-        content = content[:1247] + "..."
     notification = Notification(
         user=user, title=title, content=content, iconType=icon_type)
     notification.save()
@@ -88,3 +84,9 @@ def translate_objective_frequency(frequency):
         return "anual"
     elif frequency == Frequency.TOTAL:
         return "total"
+
+
+def limit_text(text, limit, length):
+    if text and length+len(text) > limit:
+        text = text[:limit-length - 3] + "..."
+    return text
