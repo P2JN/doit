@@ -41,48 +41,55 @@ class GoalStatsApi(APIView):
             if goal.type == 'cooperative':
                 res[days.strftime('%Y-%m-%d')] = Tracking.objects.filter(goal=goal,
                                                                          date__gte=days.replace(hour=0, minute=0,
-                                                                                                second=0),
+                                                                                                second=0)-timedelta(hours=2),
                                                                          date__lte=days.replace(hour=23, minute=59,
-                                                                                                second=59)).sum(
+                                                                                                second=59)-timedelta(hours=2)).sum(
                     "amount")
-                res["totalMonth"] = Tracking.objects.filter(goal=goal,
-                                                            date__gte=ref_day.replace(day=1, hour=0, minute=0,
-                                                                                      second=0),
-                                                            date__lte=ref_day.replace(
-                                                                day=calendar.monthrange(ref_day.year, ref_day.month)[
-                                                                    1],
-                                                                hour=23, minute=59, second=59)).sum(
-                    "amount")
-                res["totalYear"] = Tracking.objects.filter(goal=goal,
-                                                           date__gte=ref_day.replace(month=1, day=1, hour=0, minute=0,
-                                                                                     second=0),
-                                                           date__lte=ref_day.replace(month=12, day=
-                                                           calendar.monthrange(ref_day.year, 12)[1],
-                                                                                     hour=23, minute=59,
-                                                                                     second=59)).sum(
-                    "amount")
+
             else:
                 res[days.strftime('%Y-%m-%d')] = Tracking.objects.filter(createdBy=user, goal=goal,
                                                                          date__gte=days.replace(hour=0, minute=0,
-                                                                                                second=0),
+                                                                                                second=0)-timedelta(hours=2),
                                                                          date__lte=days.replace(hour=23, minute=59,
-                                                                                                second=59)).sum(
-                    "amount")
-                res["totalMonth"] = Tracking.objects.filter(createdBy=user, goal=goal,
-                                                            date__gte=ref_day.replace(day=1, hour=0, minute=0,
-                                                                                      second=0),
-                                                            date__lte=ref_day.replace(
-                                                                day=calendar.monthrange(ref_day.year, ref_day.month)[
-                                                                    1],
-                                                                hour=23, minute=59, second=59)).sum(
-                    "amount")
-                res["totalYear"] = Tracking.objects.filter(createdBy=user, goal=goal,
-                                                           date__gte=ref_day.replace(month=1, day=1, hour=0, minute=0,
-                                                                                     second=0),
-                                                           date__lte=ref_day.replace(month=12, day=
-                                                           calendar.monthrange(ref_day.year, 12)[1],
-                                                                                     hour=23, minute=59,
-                                                                                     second=59)).sum(
+                                                                                                second=59)-timedelta(hours=2)).sum(
                     "amount")
 
+        if goal.type == 'cooperative':
+            res["totalMonth"] = Tracking.objects.filter(goal=goal,
+                                                        date__gte=ref_day.replace(day=1, hour=0, minute=0,
+                                                                                  second=0) - timedelta(hours=2),
+                                                        date__lte=ref_day.replace(
+                                                            day=calendar.monthrange(ref_day.year, ref_day.month)[
+                                                                1],
+                                                            hour=23, minute=59, second=59) - timedelta(
+                                                            hours=2)).sum(
+                "amount")
+            res["totalYear"] = Tracking.objects.filter(goal=goal,
+                                                       date__gte=ref_day.replace(month=1, day=1, hour=0, minute=0,
+                                                                                 second=0) - timedelta(hours=2),
+                                                       date__lte=ref_day.replace(month=12, day=
+                                                       calendar.monthrange(ref_day.year, 12)[1],
+                                                                                 hour=23, minute=59,
+                                                                                 second=59) - timedelta(
+                                                           hours=2)).sum(
+                "amount")
+        else:
+            res["totalMonth"] = Tracking.objects.filter(createdBy=user, goal=goal,
+                                                        date__gte=ref_day.replace(day=1, hour=0, minute=0,
+                                                                                  second=0) - timedelta(hours=2),
+                                                        date__lte=ref_day.replace(
+                                                            day=calendar.monthrange(ref_day.year, ref_day.month)[
+                                                                1],
+                                                            hour=23, minute=59, second=59) - timedelta(
+                                                            hours=2)).sum(
+                "amount")
+            res["totalYear"] = Tracking.objects.filter(createdBy=user, goal=goal,
+                                                       date__gte=ref_day.replace(month=1, day=1, hour=0, minute=0,
+                                                                                 second=0) - timedelta(hours=2),
+                                                       date__lte=ref_day.replace(month=12, day=
+                                                       calendar.monthrange(ref_day.year, 12)[1],
+                                                                                 hour=23, minute=59,
+                                                                                 second=59) - timedelta(
+                                                           hours=2)).sum(
+                "amount")
         return Response(res)

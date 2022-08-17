@@ -31,17 +31,17 @@ def get_trackings(progress, goal, user, today, start_week, end_week):
         return trackings.filter(goal=goal)
     elif Frequency.YEARLY in progress:
         return trackings.filter(goal=goal, date__lte=today.replace(month=12, day=calendar.monthrange(today.year, 12)[1],
-                                                                   hour=23, minute=59, second=59),
-                                date__gte=today.replace(month=1, day=1, hour=0, minute=0, second=0))
+                                                                   hour=23, minute=59, second=59)-datetime.timedelta(hours=2),
+                                date__gte=today.replace(month=1, day=1, hour=0, minute=0, second=0)-datetime.timedelta(hours=2))
     elif Frequency.MONTHLY in progress:
         return trackings.filter(goal=goal, date__lte=today.replace(day=calendar.monthrange(today.year, today.month)[1],
-                                                                   hour=23, minute=59, second=59),
-                                date__gte=today.replace(day=1, hour=0, minute=0, second=0))
+                                                                   hour=23, minute=59, second=59)-datetime.timedelta(hours=2),
+                                date__gte=today.replace(day=1, hour=0, minute=0, second=0)-datetime.timedelta(hours=2))
     elif Frequency.WEEKLY in progress:
-        return trackings.filter(goal=goal, date__lte=end_week.replace(hour=23, minute=59, second=59),
-                                date__gte=start_week.replace(hour=0, minute=0, second=0))
+        return trackings.filter(goal=goal, date__lte=end_week.replace(hour=23, minute=59, second=59)-datetime.timedelta(hours=2),
+                                date__gte=start_week.replace(hour=0, minute=0, second=0)-datetime.timedelta(hours=2))
     elif Frequency.DAILY in progress:
-        return trackings.filter(goal=goal, date__gte=today.replace(hour=0, minute=0, second=0))
+        return trackings.filter(goal=goal, date__gte=today.replace(hour=0, minute=0, second=0)-datetime.timedelta(hours=2))
     else:
         return []
 
