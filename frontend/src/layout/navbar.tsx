@@ -95,7 +95,10 @@ const AppNavbar = () => {
             to="/logout"
             icon={<PowerSettingsNewOutlined />}
             title="Log out"
-            onClick={() => logout({})}
+            onClick={() => {
+              logout({});
+              localStorage.removeItem("token");
+            }}
           />
         </section>
       </aside>
