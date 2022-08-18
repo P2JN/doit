@@ -41,7 +41,12 @@ def create_notification_tracking(self, serializer, request, *args, **kwargs):
     goal = Goal.objects.get(id=goal_id)
     objectives = Objective.objects.filter(goal=goal_id)
     user = User.objects.get(id=serializer.data.get("createdBy"))
-    progress = get_progress(goal, objectives, user)
+    time_zone = request.headers.get("timezone")
+    if time_zone:
+        time_zone = int(time_zone)
+    else:
+        time_zone = -2
+    progress = get_progress(goal, objectives, user, time_zone)
     notifications = notify_completed_objectives(
         progress, objectives, goal, user, serializer)
     notifications.append(notification)

@@ -123,8 +123,12 @@ class GoalProgress(viewsets.GenericAPIView):
         user = User.objects.get(id=request.query_params.get('user_id'))
         goal = Goal.objects.get(id=goal_id)
         objectives = Objective.objects.filter(goal=goal_id)
-
-        progress = get_progress(goal, objectives, user)
+        time_zone = request.headers.get('timezone')
+        if time_zone:
+            time_zone = int(time_zone)
+        else:
+            time_zone = -2
+        progress = get_progress(goal, objectives, user, time_zone)
         return Response(progress, status=200)
 
 
@@ -133,7 +137,13 @@ class LeaderBoard(viewsets.GenericAPIView):
         today = datetime.datetime.utcnow()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)
+        time_zone = request.headers.get('timezone')
+        if time_zone:
+            time_zone = int(time_zone)
+        else:
+            time_zone = -2
+        trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week,
+                                  time_zone)
         participants = Participate.objects.filter(goal=goal_id).values_list('createdBy')
         amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
                   participants}
