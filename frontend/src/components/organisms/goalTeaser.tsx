@@ -63,7 +63,9 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
         </Typography>
       </header>
       {goal.description && (
-        <Typography variant="body1">{goal.description}</Typography>
+        <Typography variant="body1" className="!mb-2 line-clamp-4">
+          {goal.description}
+        </Typography>
       )}
       <footer className="mt-auto flex justify-between">
         {goal.type && (

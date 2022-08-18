@@ -44,31 +44,6 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Session interceptors
-axiosInstance.interceptors.response.use((response) => {
-  if (response.data.key) {
-    localStorage.setItem("token", response.data.key);
-  }
-
-  return response;
-});
-
-axiosInstance.interceptors.request.use((config) => {
-  // if the request origin includes "logout" or "login" remove the token
-  if (config.url?.includes("logout") || config.url?.includes("login")) {
-    localStorage.removeItem("token");
-  }
-
-  const token = localStorage.getItem("token");
-  if (config.headers)
-    if (token) {
-      config.headers.Authorization = `Token ${token}`;
-    } else {
-      delete config.headers.Authorization;
-    }
-  return config;
-});
-
 // React Query
 
 const queryConfig: DefaultOptions = {

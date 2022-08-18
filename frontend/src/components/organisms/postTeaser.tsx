@@ -49,7 +49,10 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
                 {dateUtils.beautifyDate(post.creationDate)}
               </Typography>
             )}
-            <Typography variant="body1">
+            <Typography
+              variant="body1"
+              className={post.withoutComments ? "line-clamp-4" : ""}
+            >
               {user && <UserUsername {...user} />} : {post.content}
             </Typography>
           </section>

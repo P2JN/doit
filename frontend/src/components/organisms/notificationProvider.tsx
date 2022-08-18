@@ -12,8 +12,12 @@ const HIDE_TIME = 2500;
 
 const NotificationProvider = (props: { children: ReactNode }) => {
   const { activeUser } = useActiveUser();
-  const { notifications, addNotification, hideNotificationSnack } =
-    useNotificationStore();
+  const {
+    notifications,
+    addNotification,
+    hideNotificationSnack,
+    cleanNotifications,
+  } = useNotificationStore();
 
   const [currentlyDisplayed, setCurrentlyDisplayed] = useState<number>(0);
 
@@ -57,6 +61,10 @@ const NotificationProvider = (props: { children: ReactNode }) => {
       );
 
     setInterceptorAdded(true);
+
+    return () => {
+      cleanNotifications();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interceptorAdded]);
 

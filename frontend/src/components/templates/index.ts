@@ -24,6 +24,11 @@ import {
   UserTrackingsTab,
   UserFollowersTab,
 } from "./tabs/userTabs";
+import {
+  UsersExploreTab,
+  GoalsExploreTab,
+  PostsExploreTab,
+} from "./tabs/exploreTabs";
 
 // TEASERS
 
@@ -46,4 +51,7 @@ export {
   UserStatsTab,
   UserTrackingsTab,
   UserFollowersTab,
+  UsersExploreTab,
+  GoalsExploreTab,
+  PostsExploreTab,
 };
