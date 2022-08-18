@@ -45,9 +45,9 @@ def goal_affinity(logged_goal, goal, max_participants):
 def get_tracking_score_by_goal(goal):
     trackings = Tracking.objects.filter(goal=goal.get("id"))
     total = trackings.count()
-    last_year = trackings.filter(date__gte=datetime.now() - timedelta(days=365)).count()
-    last_month = trackings.filter(date__gte=datetime.now() - timedelta(days=30)).count()
-    last_week = trackings.filter(date__gte=datetime.now() - timedelta(days=7)).count()
+    last_year = trackings.filter(date__gte=datetime.utcnow() - timedelta(days=365)).count()
+    last_month = trackings.filter(date__gte=datetime.utcnow() - timedelta(days=30)).count()
+    last_week = trackings.filter(date__gte=datetime.utcnow() - timedelta(days=7)).count()
     return total * 0.1 + abs(total - last_year) * 0.2 \
            + abs(total - last_month) * 0.3 + abs(total - last_week) * 0.4
 

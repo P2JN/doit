@@ -271,7 +271,7 @@ class PostRecommendations(viewsets.GenericAPIView):
         liked_posts = [post.id for post in LikePost.objects().filter(createdBy=user_id).values_list('post')]
         posts = [PostSerializer(post).data for post in Post.objects.filter(id__nin=liked_posts, createdBy__ne=user_id,
                                                                            createdBy__nin=follows,
-                                                                           creationDate__gte=datetime.now() - timedelta(
+                                                                           creationDate__gte=datetime.utcnow() - timedelta(
                                                                                weeks=12))]
         sort_by_likes = sorted(
             posts, key=lambda x: x.get("likes"), reverse=True)
@@ -283,7 +283,7 @@ class PostRecommendations(viewsets.GenericAPIView):
             "numComments")).get("numComments") if posts else 0
         sort_by_activity = sorted(posts, key=lambda x: ((x.get("likes") + 1) / (max_likes + 1)) + (
                 (x.get("numComments") + 1) / (max_comments + 1)) * 0.5, reverse=True)
-        post_by_followers = PostSerializer(Post.objects.filter(creationDate__gte=datetime.now() - timedelta(weeks=12),
+        post_by_followers = PostSerializer(Post.objects.filter(creationDate__gte=datetime.utcnow() - timedelta(weeks=12),
                                                                id__nin=liked_posts,
                                                                createdBy__in=Follow.objects().filter(
                                                                    follower__in=follows, user__ne=user_id,

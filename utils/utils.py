@@ -22,7 +22,7 @@ def handle_uploaded_file(f):
     return url
 
 
-def get_trackings(progress, goal, user, today, start_week, end_week):
+def get_trackings(progress, goal, user, today, start_week, end_week, time_zone):
     trackings = Tracking.objects
     if user:
         trackings = trackings.filter(createdBy=user)
@@ -30,18 +30,16 @@ def get_trackings(progress, goal, user, today, start_week, end_week):
     if Frequency.TOTAL in progress:
         return trackings.filter(goal=goal)
     elif Frequency.YEARLY in progress:
-        return trackings.filter(goal=goal, date__lte=today.replace(month=12, day=calendar.monthrange(today.year, 12)[1],
-                                                                   hour=23, minute=59, second=59),
-                                date__gte=today.replace(month=1, day=1, hour=0, minute=0, second=0))
+        return trackings.filter(goal=goal, date__lte=yearly_lte_date(today, time_zone),
+                                date__gte=yearly_gte_date(today, time_zone))
     elif Frequency.MONTHLY in progress:
-        return trackings.filter(goal=goal, date__lte=today.replace(day=calendar.monthrange(today.year, today.month)[1],
-                                                                   hour=23, minute=59, second=59),
-                                date__gte=today.replace(day=1, hour=0, minute=0, second=0))
+        return trackings.filter(goal=goal, date__lte=monthly_lte_date(today, time_zone),
+                                date__gte=monthly_gte_date(today, time_zone))
     elif Frequency.WEEKLY in progress:
-        return trackings.filter(goal=goal, date__lte=end_week.replace(hour=23, minute=59, second=59),
-                                date__gte=start_week.replace(hour=0, minute=0, second=0))
+        return trackings.filter(goal=goal, date__lte=weekly_lte_date(end_week, time_zone),
+                                date__gte=weekly_gte_date(start_week, time_zone))
     elif Frequency.DAILY in progress:
-        return trackings.filter(goal=goal, date__gte=today.replace(hour=0, minute=0, second=0))
+        return trackings.filter(goal=goal, date__gte=daily_gte_date(today, time_zone))
     else:
         return []
 
@@ -63,22 +61,23 @@ def get_frequency_order(frequency):
     return frequency_order[frequency]
 
 
-def get_progress(goal, objectives, user):
+def get_progress(goal, objectives, user, time_zone):
     progress = dict()
 
     for objective in objectives:
         progress[objective.frequency] = 0.0
 
-    today = datetime.datetime.now()
+    today = datetime.datetime.utcnow()
     start_week = today - datetime.timedelta(days=today.weekday())
     end_week = start_week + datetime.timedelta(days=6)
     if goal.type != 'cooperative':
-        trackings = get_trackings(progress.keys(), goal, user, today, start_week, end_week)
+        trackings = get_trackings(progress.keys(), goal, user, today, start_week, end_week, time_zone)
     else:
-        trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week)
+        trackings = get_trackings(progress.keys(), goal, None, today, start_week, end_week, time_zone)
 
+    daily_date = daily_gte_date(today, time_zone)
     for tracking in trackings:
-        if Frequency.DAILY in progress and (today - tracking.date).days == 0:
+        if Frequency.DAILY in progress and daily_date <= tracking.date:
             progress[Frequency.DAILY] += tracking.amount
         if Frequency.WEEKLY in progress and start_week <= today <= end_week:
             progress[Frequency.WEEKLY] += tracking.amount
@@ -102,3 +101,38 @@ def update_stats(user, frecuency):
         Stats.objects.filter(createdBy=user).update_one(inc__weeklyObjectivesCompleted=1)
     elif Frequency.DAILY == frecuency:
         Stats.objects.filter(createdBy=user).update_one(inc__dailyObjectivesCompleted=1)
+
+
+def yearly_lte_date(date, time_zone=-2):
+    return date.replace(month=12, day=calendar.monthrange(date.year, 12)[1],
+                        hour=23, minute=59, second=59) + datetime.timedelta(hours=time_zone)
+
+
+def yearly_gte_date(date, time_zone=2):
+    return date.replace(month=1, day=1, hour=0, minute=0, second=0) + datetime.timedelta(hours=time_zone)
+
+
+def monthly_lte_date(date, time_zone=2):
+    return date.replace(day=calendar.monthrange(date.year, date.month)[1],
+                        hour=23, minute=59, second=59) + datetime.timedelta(hours=time_zone)
+
+
+def monthly_gte_date(date, time_zone=2):
+    return date.replace(day=1, hour=0, minute=0, second=0) + datetime.timedelta(hours=time_zone)
+
+
+def weekly_lte_date(date, time_zone=2):
+    return date.replace(hour=23, minute=59, second=59) + datetime.timedelta(hours=time_zone)
+
+
+def weekly_gte_date(date, time_zone=2):
+    return date.replace(hour=0, minute=0, second=0) + datetime.timedelta(hours=time_zone)
+
+
+def daily_gte_date(date, time_zone=2):
+    if date > date.replace(hour=23, minute=59, second=59) + datetime.timedelta(hours=time_zone):
+        return date.replace(day=date.day + 1, hour=0, minute=0, second=0) + datetime.timedelta(hours=time_zone)
+    elif date <= date.replace(hour=0, minute=0, second=0) + datetime.timedelta(hours=time_zone):
+        return date.replace(day=date.day - 1, hour=23, minute=59, second=59) + datetime.timedelta(hours=time_zone)
+    else:
+        return date.replace(hour=0, minute=0, second=0) + datetime.timedelta(hours=time_zone)

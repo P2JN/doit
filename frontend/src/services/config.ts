@@ -26,6 +26,15 @@ export const axiosInstance = Axios.create({
   },
 });
 
+// Timezone interceptor, passes the timezone hours diff
+axiosInstance.interceptors.request.use((config) => {
+  const timezone = new Date().getTimezoneOffset() / 60;
+  if (config.headers) {
+    config.headers.timezone = timezone;
+  }
+  return config;
+});
+
 // Error handling interceptor
 axiosInstance.interceptors.request.use(
   (config) => config,
