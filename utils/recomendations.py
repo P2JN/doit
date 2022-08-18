@@ -34,7 +34,8 @@ def goal_affinity(logged_goal, goal, max_participants):
 
     num_participants_score = 0.0
     if logged_goal.get("numParticipants") and goal.get("numParticipants"):
-        num_participants_score = 1 - abs((logged_goal.get("numParticipants") + 1) / (max_participants + 1) - (goal.get("numParticipants") + 1) / (max_participants + 1))
+        num_participants_score = 1 - abs((logged_goal.get("numParticipants") + 1) / (max_participants + 1)
+                                         - (goal.get("numParticipants") + 1) / (max_participants + 1))
 
     goal_type_score = logged_goal.get("type") == goal.get("type")
 
