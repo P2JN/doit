@@ -23,12 +23,10 @@ const LandingPage = () => {
         }
       >
         <div className="w-full text-center sm:w-1/2 sm:px-6">
-          <h3 className="text-3xl font-semibold text-gray-900">
-            {props.title}
-          </h3>
+          <h3 className="text-3xl font-semibold text-primary">{props.title}</h3>
           <div className="mt-6 text-xl leading-9">{props.content}</div>
         </div>
-        <div className="w-full fill-primary p-6 sm:w-1/2">
+        <div className="w-full !fill-primary p-6 !text-primary sm:w-1/2">
           <img src={props.img} alt="First feature alt text" />
         </div>
       </div>
@@ -68,14 +66,16 @@ const LandingPage = () => {
               <strong className="text-primary">empieza a hacerlo</strong>
             </h1>
             <div className="mt-4 mb-16 text-2xl">
-              Anota tus <strong className="text-primary">objetivos</strong>,
-              comienza a <strong className="text-primary">trackearlos</strong> y
-              obten apoyo, motivación y participación de la{""}
+              Anota tus <strong className="text-primary">metas</strong> y{" "}
+              <strong className="text-primary">objetivos</strong>, comienza a{" "}
+              <strong className="text-primary">registrar</strong> tu{" "}
+              <strong className="text-primary">progreso</strong> y obten apoyo,
+              motivación y participación de la{" "}
               <strong className="text-primary">comunidad</strong>
             </div>
             <Link to="/home">
-              <Button variant="contained" size="large">
-                <strong>¡Do It!</strong>
+              <Button variant="outlined" size="large">
+                ¡ Doit !
               </Button>
             </Link>
           </header>
@@ -89,9 +89,10 @@ const LandingPage = () => {
               Haz lo que quieres hacer
             </h2>
             <div className="mt-4 text-xl md:px-20">
-              Con Doit, puedes anotar aquello que quieres lograr, planificar
-              tareas en tu calendario, participar en lo que otros también
-              quieren conseguir, recibir apoyo de la comunidad, y mucho más ...
+              Con Doit, puedes anotar aquello que quieres lograr, planificar y
+              organizar tu plan para conseguirlo, registrar y visualizar tu
+              progreso, participar en lo que otros también quieren conseguir,
+              recibir apoyo de la comunidad, y mucho más ...
             </div>
           </div>
 
@@ -102,8 +103,8 @@ const LandingPage = () => {
           />
 
           <LandingSection
-            title="Trackea tu progreso"
-            content="Trackea tu progreso, te ayudará a mantener constancia y dedicación."
+            title="Registra tu progreso"
+            content="Registra tu progreso, te ayudará a mantener constancia y dedicación."
             img={Check}
             reverse
           />
