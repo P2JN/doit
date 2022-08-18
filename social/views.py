@@ -171,7 +171,7 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.tracking.createdBy,
-                                 "Alguien le ha dado me gusta a un tracking.",
+                                 "A alguien le ha gustado tu tracking.",
                                  instance.createdBy.username + " te dio un like en tu tracking del " + str(
                                      instance.tracking.date)
                                  + " en el que conseguiste " +
@@ -196,7 +196,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy,
-                                 "Alguien le ha dado me gusta a una publicación tuya",
+                                 "A alguien le ha gustado tu publicación",
                                  "Al usuario " + instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.",
                                  NotificationIconType.LIKE)
 
