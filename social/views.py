@@ -218,11 +218,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy,
-                                 "Han comentado en tu post '" +
-                                 limit_text(instance.post.title, 50, 28) + "'.",
-                                 instance.createdBy.username + " ha comentado '" + limit_text(instance.content, 1250,
-                                                                                              17 +
-                                                                                              len(instance.createdBy.username)) + "'.",
+                                 "Alguien ha comentado en tu post.",
+                                 "'"+instance.createdBy.username + "' ha comentado en tu post '" + instance.post.title +
+                                 "': '"+limit_text(instance.content, 1250, 34 + len(instance.createdBy.username) +
+                                                  len(instance.post.title)) + "'.",
                                  NotificationIconType.COMMENT)
 
 
