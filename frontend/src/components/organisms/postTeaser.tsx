@@ -8,12 +8,12 @@ import { goalService, socialService } from "services";
 import { Card, Image } from "components/atoms";
 import { PostCounters } from "components/molecules";
 import {
-  UserTeaserReduced,
   CommentSection,
   GoalTeaserReduced,
   UserAvatar,
   UserUsername,
 } from "components/organisms";
+import { dateUtils } from "utils";
 
 const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
   const { data: user } = socialService.useUser(post.createdBy);
@@ -28,11 +28,11 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
         (post.withoutComments ? "!grid-cols-1" : "")
       }
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex h-full flex-col gap-3">
         {goal && !isGoalDetail && !post.withoutComments && (
           <GoalTeaserReduced {...goal} />
         )}
-        <Card>
+        <Card className="!h-full">
           {post?.urlMedia && (
             <div className="-mx-7 -mt-5 flex items-center justify-between transition-all duration-200 ease-in-out hover:-mx-10">
               <Image src={post.urlMedia} alt={post.title} />
@@ -42,22 +42,32 @@ const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
             <Typography variant="h5">
               <strong>{post.title}</strong>
             </Typography>
-            {user && (
-              <div className="ml-auto">
-                <UserTeaserReduced {...user} />
-              </div>
-            )}
           </header>
-          <section className="mb-4">
-            <Typography variant="body1">{post.content}</Typography>
+          <section className="mb-4 flex flex-col gap-1">
+            {post.withoutComments && (
+              <Typography variant="body1">
+                {dateUtils.beautifyDate(post.creationDate)}
+              </Typography>
+            )}
+            <Typography
+              variant="body1"
+              className={post.withoutComments ? "line-clamp-4" : ""}
+            >
+              {user && <UserUsername {...user} />} : {post.content}
+            </Typography>
           </section>
-          <footer className="mt-auto flex justify-end">
-            {post.withoutComments && post.id && (
+          <footer className="mt-auto flex items-center justify-between">
+            {user && <UserAvatar {...user} />}
+            {post.withoutComments && post.id ? (
               <PostCounters
                 comments={post.numComments}
                 likes={post.likes}
                 postId={post.id}
               />
+            ) : (
+              <Typography variant="body1">
+                {dateUtils.beautifyDate(post.creationDate)}
+              </Typography>
             )}
           </footer>
         </Card>

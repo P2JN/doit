@@ -8,6 +8,10 @@ module.exports = {
       colors: {
         primary: "#93C08C",
       },
+      boxShadow: {
+        card: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+        "card-hover": "0px 3px 10px rgba(0, 0, 0, 0.25)",
+      },
       keyframes: {
         "fade-in": {
           "0%": {
@@ -34,6 +38,6 @@ module.exports = {
       },
     },
   },
-  plugins: [],
   content: ["./src/**/*.{js,jsx,ts,tsx,html}", "./public/index.html"],
+  plugins: [require("@tailwindcss/line-clamp")],
 };

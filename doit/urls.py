@@ -28,6 +28,7 @@ from media.views import MediaUploadApi, MediaApi
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
     LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating, UserRecommendations, PostRecommendations,\
     UncheckedNotifications
+from stats.views import UserStatsApi, GoalStatsApi
 
 router = routers.DefaultRouter()
 
@@ -56,6 +57,8 @@ urlpatterns = [
     path('api/user/<str:user_id>/post-recommendations', PostRecommendations.as_view()),
     path('api/user/<str:user_id>/unchecked-notifications',
          UncheckedNotifications.as_view()),
+    path('api/user/<str:user_id>/stats', UserStatsApi.as_view()),
+    path('api/goal/<str:goal_id>/stats', GoalStatsApi.as_view()),
     path('api/media/', MediaUploadApi.as_view()),
     path('api/media/<media_id>', MediaApi.as_view()),
 

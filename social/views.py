@@ -11,9 +11,10 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
     NotificationIconType
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
+from stats.models import Stats
 from utils.filters import FilterSet
 from utils.recomendations import get_users_affinity, get_post_recomendations
-from utils.notifications import delete_notification, create_notification, create_user_notification
+from utils.notifications import delete_notification, create_notification, create_user_notification, limit_text
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -23,8 +24,8 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_fields = ['title', 'content', 'creationDate', 'createdBy', 'goal']
     custom_filter_fields = [('likes', lambda value: [post.id for post in LikePost.objects.filter(
         post=value).values_list('post')]), ('follows', lambda value: [post.id for post in Post.objects.filter(
-        createdBy__in=Follow.objects.filter(
-            follower=value).values_list('user'))])]
+        createdBy__in=list(Follow.objects.filter(
+            follower=value).values_list('user')) + [value])])]
 
     def filter_queryset(self, queryset):
         post_filter = FilterSet(
@@ -113,12 +114,12 @@ class FollowViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
-        create_user_notification(instance.user, instance.follower.username + " ha empezado a seguirte.",
+        create_user_notification(instance.user, "Alguien ha comenzado a seguirte.",
                                  instance.follower.username + " te ha seguido.", NotificationIconType.FOLLOW)
 
     def perform_destroy(self, instance):
         instance.delete()
-        create_user_notification(instance.user, instance.follower.username + " ha dejado de seguirte.",
+        create_user_notification(instance.user, "Alguien ha dejado de seguirte.",
                                  instance.follower.username + " ya no te sigue.", NotificationIconType.FOLLOW)
 
 
@@ -140,6 +141,7 @@ class ParticipateViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        Stats.objects.filter(createdBy=serializer.instance.createdBy).update_one(inc__participatedGoals=1)
         return create_notification(self, serializer, request, "Participate", "¡Has empezado a participar en una meta!",
                                    "Has empezado a participar en la meta '" +
                                    serializer.instance.goal.title + "'.",
@@ -169,7 +171,7 @@ class LikeTrackingViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.tracking.createdBy,
-                                 instance.createdBy.username + " te ha dado like a un tracking.",
+                                 "A alguien le ha gustado tu tracking.",
                                  instance.createdBy.username + " te dio un like en tu tracking del " + str(
                                      instance.tracking.date)
                                  + " en el que conseguiste " +
@@ -194,7 +196,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy,
-                                 "A '" + instance.createdBy.username + "' le ha gustado tu publicación.",
+                                 "A alguien le ha gustado tu publicación",
                                  "Al usuario " + instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.",
                                  NotificationIconType.LIKE)
 
@@ -216,9 +218,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save()
         instance = serializer.instance
         create_user_notification(instance.post.createdBy,
-                                 instance.createdBy.username + " ha comentado en tu post '" +
-                                 instance.post.title + "'.",
-                                 instance.createdBy.username + " ha comentado '" + instance.content + "'.",
+                                 "Alguien ha comentado en tu post.",
+                                 "'"+instance.createdBy.username + "' ha comentado en tu post '" + instance.post.title +
+                                 "': '"+limit_text(instance.content, 1250, 34 + len(instance.createdBy.username) +
+                                                  len(instance.post.title)) + "'.",
                                  NotificationIconType.COMMENT)
 
 
@@ -268,7 +271,7 @@ class PostRecommendations(viewsets.GenericAPIView):
         liked_posts = [post.id for post in LikePost.objects().filter(createdBy=user_id).values_list('post')]
         posts = [PostSerializer(post).data for post in Post.objects.filter(id__nin=liked_posts, createdBy__ne=user_id,
                                                                            createdBy__nin=follows,
-                                                                           creationDate__gte=datetime.now() - timedelta(
+                                                                           creationDate__gte=datetime.utcnow() - timedelta(
                                                                                weeks=12))]
         sort_by_likes = sorted(
             posts, key=lambda x: x.get("likes"), reverse=True)
@@ -280,7 +283,7 @@ class PostRecommendations(viewsets.GenericAPIView):
             "numComments")).get("numComments") if posts else 0
         sort_by_activity = sorted(posts, key=lambda x: ((x.get("likes") + 1) / (max_likes + 1)) + (
                 (x.get("numComments") + 1) / (max_comments + 1)) * 0.5, reverse=True)
-        post_by_followers = PostSerializer(Post.objects.filter(creationDate__gte=datetime.now() - timedelta(weeks=12),
+        post_by_followers = PostSerializer(Post.objects.filter(creationDate__gte=datetime.utcnow() - timedelta(weeks=12),
                                                                id__nin=liked_posts,
                                                                createdBy__in=Follow.objects().filter(
                                                                    follower__in=follows, user__ne=user_id,

@@ -9,6 +9,7 @@ from goals.models import Goal, Objective, Tracking
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Follow
 from social.models import Participate, LikeTracking, User, NotificationIconType
+from stats.models import Stats
 from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
@@ -41,6 +42,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        Stats.objects.filter(createdBy=serializer.instance.createdBy).update_one(inc__createdGoals=1)
         return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
                                    "La meta '" + serializer.data.get("title") + "' ha sido creada.",
                                    NotificationIconType.GOAL)
@@ -77,6 +79,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        self.perform_destroy(instance)
         notification = create_user_notification(instance.goal.createdBy, "¡Objetivo eliminado!",
                                                 "Has borrado un objetivo " + translate_objective_frequency(
                                                     instance.frequency) + " a la meta '" + instance.goal.title + "'.",
@@ -121,17 +124,27 @@ class GoalProgress(viewsets.GenericAPIView):
         user = User.objects.get(id=request.query_params.get('user_id'))
         goal = Goal.objects.get(id=goal_id)
         objectives = Objective.objects.filter(goal=goal_id)
-
-        progress = get_progress(goal, objectives, user)
+        time_zone = request.headers.get('timezone')
+        if time_zone:
+            time_zone = int(time_zone)
+        else:
+            time_zone = -2
+        progress = get_progress(goal, objectives, user, time_zone)
         return Response(progress, status=200)
 
 
 class LeaderBoard(viewsets.GenericAPIView):
     def get(self, request, goal_id, *args, **kwargs):
-        today = datetime.datetime.now()
+        today = datetime.datetime.utcnow()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week)
+        time_zone = request.headers.get('timezone')
+        if time_zone:
+            time_zone = int(time_zone)
+        else:
+            time_zone = -2
+        trackings = get_trackings([request.query_params.get('frequency')], goal_id, None, today, start_week, end_week,
+                                  time_zone)
         participants = Participate.objects.filter(goal=goal_id).values_list('createdBy')
         amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
                   participants}
@@ -148,13 +161,13 @@ class GoalsRecommendations(viewsets.GenericAPIView):
         user_goals_ids = [user_goal.get("id") for user_goal in user_goals]
         goals = [GoalSerializer(goal).data for goal in
                  Goal.objects.filter(createdBy__ne=user_id, id__nin=user_goals_ids,
-                                     creationDate__gte=datetime.datetime.now() - datetime.timedelta(
+                                     creationDate__gte=datetime.datetime.utcnow() - datetime.timedelta(
                                          weeks=12))]
         sorted_by_participants = sorted(goals, key=lambda x: x.get("numParticipants"), reverse=True)
         max_participants = sorted_by_participants[0].get("numParticipants") if sorted_by_participants else 0
         goals_by_followers = GoalSerializer(Participate.objects.filter(
             createdBy__in=Follow.objects(follower=user_id).values_list('user')
-            , goal__nin=user_goals_ids, creationDate__gte=datetime.datetime.now() - datetime.timedelta(
+            , goal__nin=user_goals_ids, creationDate__gte=datetime.datetime.utcnow() - datetime.timedelta(
                 weeks=12)).order_by('?')[0:9].values_list('goal'), many=True).data
         goals_by_affinity = sorted(goals, key=lambda x: get_goals_affinity(user_goals, x, max_participants),
                                    reverse=True)

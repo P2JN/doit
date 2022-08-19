@@ -1,13 +1,12 @@
-import { ReactNode, useEffect, useState } from "react";
-import { BrowserRouter as Router, useMatch } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClientProvider } from "react-query";
 import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material";
 
-import { socialService } from "services";
 import { AppPages } from "routes";
 import { AppNavbar } from "layout";
-import { StoreProvider, useActiveUser } from "store";
+import { StoreProvider } from "store";
 import { queryClient } from "services/config";
+import { AuthProvider } from "auth";
 
 import { NotificationProvider } from "components/organisms";
 
@@ -21,7 +20,7 @@ function App() {
           <Router>
             <AuthProvider>
               <NotificationProvider>
-                <div className="container mx-auto flex h-full w-full justify-center">
+                <div className="container mx-auto flex h-screen w-screen flex-col justify-center md:flex-row">
                   <AppNavbar />
                   <AppPages />
                 </div>
@@ -33,34 +32,5 @@ function App() {
     </QueryClientProvider>
   );
 }
-
-// TODO: move this to auth folder
-const AuthProvider = (props: { children: ReactNode }) => {
-  const { setActiveUser } = useActiveUser();
-  const loggedOut = useMatch("/auth/login");
-  const loggedIn = useMatch("/loading");
-
-  const [isReady, setIsReady] = useState(false);
-
-  const {
-    data: user,
-    isLoading,
-    isError,
-    refetch,
-  } = socialService.useActiveUser();
-
-  useEffect(() => {
-    if (isError) setActiveUser(undefined);
-    else setActiveUser(user?.mongoUser);
-    if (isError || user?.mongoUser) setIsReady(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, isError]);
-
-  useEffect(() => {
-    (loggedOut || loggedIn) && refetch();
-  }, [loggedOut, loggedIn, refetch]);
-
-  return <>{!isLoading && isReady && props.children}</>;
-};
 
 export default App;
