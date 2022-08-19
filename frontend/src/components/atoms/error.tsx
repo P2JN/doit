@@ -17,7 +17,7 @@ const ParsedError = (error: AxiosError) => {
     <Alert severity="error">
       <p>
         <strong>Error,</strong>{" "}
-        {!!error.response?.status
+        {error.response?.status
           ? handledErrors[error.response.status] || "Algo salió mal"
           : error.message || "Algo salió mal"}
       </p>
