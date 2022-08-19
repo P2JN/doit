@@ -27,7 +27,11 @@ const NotificationAlert = (notification: StateNotification) => {
         )
       }
       key={notification.id}
-      severity={!notification.checked ? "success" : notification.variant}
+      severity={
+        notification.type === "persistent" && !notification.checked
+          ? "success"
+          : notification.variant
+      }
       onClose={onClose}
     >
       <p className="mb-1 text-sm leading-4">{notification.title}</p>
