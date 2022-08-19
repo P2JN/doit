@@ -46,12 +46,8 @@ const PostForm = (props: { relatedGoal?: GoalTypes.Goal }) => {
         {
           onSuccess: () => {
             hasRelatedGoal
-              ? navigate(
-                  "/goals/" + props.relatedGoal?.id + "/feed?refresh=goal-posts"
-                )
-              : navigate(
-                  "/users/" + activeUser?.id + "/feed?refresh=user-posts"
-                );
+              ? navigate("/goals/" + props.relatedGoal?.id + "/feed")
+              : navigate("/users/" + activeUser?.id + "/feed");
           },
         }
       );

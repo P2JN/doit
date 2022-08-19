@@ -30,7 +30,9 @@ import {
   PostsExploreTab,
 } from "./tabs/exploreTabs";
 
-// TEASERS
+// confirmation
+import DeleteTrackingConfirmation from "./confirmation/deleteTracking";
+import DeleteGoalConfirmation from "./confirmation/deleteGoal";
 
 export {
   GoalForm,
@@ -54,4 +56,6 @@ export {
   UsersExploreTab,
   GoalsExploreTab,
   PostsExploreTab,
+  DeleteTrackingConfirmation,
+  DeleteGoalConfirmation,
 };

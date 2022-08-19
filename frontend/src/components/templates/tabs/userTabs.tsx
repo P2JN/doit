@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMatch, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useMatch, useNavigate } from "react-router-dom";
 import { Button, Tab, Tabs, Typography } from "@mui/material";
 import {
   CheckCircle,
@@ -75,13 +75,10 @@ const UserFeedTab = (user: SocialTypes.User) => {
     [userPostList]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "user-posts") {
-      refetch();
-      setSearchParams("");
-    }
-  }, [params, refetch, setSearchParams]);
+    refetch();
+  }, [location, refetch]);
 
   return (
     <section className="animate-fade-in">
@@ -124,7 +121,7 @@ const UserTrackingsTab = (user: SocialTypes.User) => {
   return (
     <section className="animate-fade-in">
       <div className="mb-3 flex justify-between">
-        <Typography variant="h5">Últimos Progresos</Typography>
+        <Typography variant="h5">Últimos registros</Typography>
       </div>
       <div className="grid gap-x-5 gap-y-7 md:grid-cols-2 xl:grid-cols-3">
         {trackings?.map((tracking) => (
@@ -289,14 +286,11 @@ const UserFollowersTab = (user: SocialTypes.User) => {
     [followingPages]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "user") {
-      refetch();
-      refetchFollowing();
-      setSearchParams("");
-    }
-  }, [params, refetch, refetchFollowing, setSearchParams]);
+    refetch();
+    refetchFollowing();
+  }, [location, refetch, refetchFollowing]);
 
   return (
     <section className="animate-fade-in">
