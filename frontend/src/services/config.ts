@@ -44,15 +44,6 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Error handling interceptor
-axiosInstance.interceptors.request.use(
-  (config) => config,
-  (error) => {
-    // Do something with request error
-    return Promise.reject(error);
-  }
-);
-
 // React Query
 
 const queryConfig: DefaultOptions = {

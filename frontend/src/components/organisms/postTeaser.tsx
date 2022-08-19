@@ -4,6 +4,7 @@ import { CrisisAlert } from "@mui/icons-material";
 
 import { SocialTypes } from "types";
 import { goalService, socialService } from "services";
+import { dateUtils } from "utils";
 
 import { Card, Image } from "components/atoms";
 import { PostCounters } from "components/molecules";
@@ -13,11 +14,12 @@ import {
   UserAvatar,
   UserUsername,
 } from "components/organisms";
-import { dateUtils } from "utils";
 
 const PostTeaser = (post: SocialTypes.Post & { withoutComments?: boolean }) => {
   const { data: user } = socialService.useUser(post.createdBy);
-  const { data: goal } = goalService.useGoal(post.goal);
+  const { data: goal } = post?.goal
+    ? goalService.useGoal(post?.goal)
+    : { data: null };
 
   const isGoalDetail = useMatch("/goals/:id/feed");
 

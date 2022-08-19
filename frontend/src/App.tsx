@@ -8,7 +8,7 @@ import { StoreProvider } from "store";
 import { queryClient } from "services/config";
 import { AuthProvider } from "auth";
 
-import { NotificationProvider } from "components/organisms";
+import { NotificationProvider, ErrorHandler } from "components/organisms";
 
 import theme from "styles/theme.config.json";
 
@@ -19,12 +19,14 @@ function App() {
         <ThemeProvider theme={responsiveFontSizes(createTheme(theme))}>
           <Router>
             <AuthProvider>
-              <NotificationProvider>
-                <div className="container mx-auto flex h-screen w-screen flex-col justify-center md:flex-row">
-                  <AppNavbar />
-                  <AppPages />
-                </div>
-              </NotificationProvider>
+              <ErrorHandler>
+                <NotificationProvider>
+                  <div className="container mx-auto flex h-screen w-screen flex-col justify-center md:flex-row">
+                    <AppNavbar />
+                    <AppPages />
+                  </div>
+                </NotificationProvider>
+              </ErrorHandler>
             </AuthProvider>
           </Router>
         </ThemeProvider>
