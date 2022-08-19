@@ -79,6 +79,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        self.perform_destroy(instance)
         notification = create_user_notification(instance.goal.createdBy, "¡Objetivo eliminado!",
                                                 "Has borrado un objetivo " + translate_objective_frequency(
                                                     instance.frequency) + " a la meta '" + instance.goal.title + "'.",

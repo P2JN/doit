@@ -14,6 +14,9 @@ from pathlib import Path
 import mongoengine
 import os
 from dotenv import load_dotenv
+import sys
+
+TEST = 'test' in sys.argv
 
 load_dotenv()  # take environment variables from .env.
 SITE_ID = 1
@@ -76,7 +79,6 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'auth.authSerializer.CustomUserDetailsSerializer',
 }
 
-
 ROOT_URLCONF = 'doit.urls'
 
 TEMPLATES = [
@@ -108,7 +110,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'doit.pagination.CustomPageNumberPagination',
     'PAGE_SIZE': 10
 }
-
 
 # AllAuth config
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
@@ -142,7 +143,7 @@ WSGI_APPLICATION = 'doit.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("POSTGRES_NAME"),
+        'NAME': os.environ.get("POSTGRES_DB"),
         'USER': os.environ.get("POSTGRES_USER"),
         'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
         'HOST': os.environ.get("POSTGRES_HOST"),
@@ -158,6 +159,11 @@ if os.environ.get('DOCKER'):
         username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
         password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"),
     )
+elif TEST:
+    db = mongoengine.connect("TEST",
+                             username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
+                             password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"), )
+    db.drop_database("TEST")
 else:
     mongoengine.connect("DOIT")
 
@@ -205,7 +211,6 @@ STATICFILES_DIRS = (
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
