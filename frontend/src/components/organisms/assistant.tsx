@@ -28,48 +28,46 @@ const AppAssistant = () => {
   }, [assistantMessage, debouncedRefetch]);
 
   return (
-    <aside className="z-30 order-first rounded-b-xl p-2 shadow-lg md:order-last md:h-screen md:w-1/3 md:border-t-0 md:pb-5 md:pt-[105px] md:shadow-none xl:w-1/5">
-      <section>
-        <section
-          className="flex items-center justify-end gap-3 !text-primary md:mb-3"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          <div className="mr-auto md:hidden">
-            {collapsed ? <ExpandMore scale={2} /> : <ExpandLess scale={2} />}
-          </div>
-          <Typography variant="h6" className="!font-bold">
-            Asistente
-          </Typography>
-          <Assistant />
-        </section>
-        <section
-          key={collapsed ? "collapsed" : "expanded"}
-          className={
-            "flex w-full flex-col gap-3 transition-all duration-200 ease-in-out " +
-            (collapsed ? "h-0 overflow-hidden" : "mt-3 h-auto md:mt-0")
-          }
-        >
-          {!loadingMessage ? (
-            <Alert
-              severity="success"
-              variant="outlined"
-              icon={false}
-              className="w-full"
-            >
-              <Typography variant="body1" className="animate-fade-in">
-                {assistantMessage?.message || "Estoy aquí para ayudarte"}
-              </Typography>
-            </Alert>
-          ) : (
-            <div className="w-full rounded border p-3">
-              <Skeleton variant="text" />
-              <Skeleton variant="text" />
-              <Skeleton variant="text" />
-            </div>
-          )}
-        </section>
+    <>
+      <section
+        className="flex items-center justify-end gap-3 !text-primary md:mb-3"
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        <div className="mr-auto md:hidden">
+          {collapsed ? <ExpandMore scale={2} /> : <ExpandLess scale={2} />}
+        </div>
+        <Typography variant="h6" className="!font-bold">
+          Asistente
+        </Typography>
+        <Assistant />
       </section>
-    </aside>
+      <section
+        key={collapsed ? "collapsed" : "expanded"}
+        className={
+          "flex w-full flex-col gap-3 transition-all duration-200 ease-in-out " +
+          (collapsed ? "h-0 overflow-hidden" : "mt-3 h-auto md:mt-0")
+        }
+      >
+        {!loadingMessage ? (
+          <Alert
+            severity="success"
+            variant="outlined"
+            icon={false}
+            className="w-full"
+          >
+            <Typography variant="body1" className="animate-fade-in">
+              {assistantMessage?.message || "Estoy aquí para ayudarte"}
+            </Typography>
+          </Alert>
+        ) : (
+          <div className="w-full rounded border p-3">
+            <Skeleton variant="text" />
+            <Skeleton variant="text" />
+            <Skeleton variant="text" />
+          </div>
+        )}
+      </section>
+    </>
   );
 };
 

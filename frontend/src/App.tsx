@@ -3,12 +3,12 @@ import { QueryClientProvider } from "react-query";
 import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material";
 
 import { AppPages } from "routes";
-import { AppNavbar } from "layout";
+import { AppNavbar, AppSidebar } from "layout";
 import { StoreProvider } from "store";
 import { queryClient } from "services/config";
 import { AuthProvider } from "auth";
 
-import { NotificationProvider, AppAssistant } from "components/organisms";
+import { NotificationProvider } from "components/organisms";
 
 import theme from "styles/theme.config.json";
 
@@ -23,7 +23,7 @@ function App() {
                 <div className="container mx-auto flex h-screen w-screen flex-col justify-center md:flex-row">
                   <AppNavbar />
                   <AppPages />
-                  <AppAssistant />
+                  <AppSidebar />
                 </div>
               </NotificationProvider>
             </AuthProvider>
