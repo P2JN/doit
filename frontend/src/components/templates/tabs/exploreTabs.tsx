@@ -64,8 +64,8 @@ const ExploreSkeleton = () => {
     <>
       {Array.from({ length: 3 }, () => (
         <div className="mb-3">
-          <Skeleton variant="text" width={430} />
-          <div className="flex gap-3">
+          <Skeleton variant="text" className="w-[40%]" />
+          <div className="flex flex-col items-center gap-3 md:flex-row">
             {Array.from({ length: 3 }, () => (
               <Skeleton variant="rectangular" width={300} height={300} />
             ))}

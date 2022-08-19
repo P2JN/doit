@@ -1,5 +1,7 @@
 import NotificationProvider from "./notificationProvider";
 
+import AppAssistant from "./assistant";
+
 import ModalDrawer from "./modalDrawer";
 import CommentSection from "./commentSection";
 
@@ -44,6 +46,7 @@ export {
   PostSearchResult,
   TrackingTeaser,
   NotificationProvider,
+  AppAssistant,
   ModalDrawer,
   CommentSection,
   FollowTable,

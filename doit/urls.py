@@ -55,40 +55,51 @@ urlpatterns = [
     path('api/goal/<str:goal_id>/my-progress', GoalProgress.as_view()),
     path('api/goal/<str:goal_id>/leaderboard', LeaderBoard.as_view()),
     path('api/goal/<goal_id>/is-participating', UserIsParticipating.as_view()),
-    path('api/user/<str:user_id>/user-recommendations', UserRecommendations.as_view()),
-    path('api/user/<str:user_id>/goal-recommendations', GoalsRecommendations.as_view()),
-    path('api/user/<str:user_id>/post-recommendations', PostRecommendations.as_view()),
+    path('api/user/<str:user_id>/user-recommendations',
+         UserRecommendations.as_view()),
+    path('api/user/<str:user_id>/goal-recommendations',
+         GoalsRecommendations.as_view()),
+    path('api/user/<str:user_id>/post-recommendations',
+         PostRecommendations.as_view()),
     path('api/user/<str:user_id>/unchecked-notifications',
          UncheckedNotifications.as_view()),
     path('api/user/<str:user_id>/stats', UserStatsApi.as_view()),
     path('api/goal/<str:goal_id>/stats', GoalStatsApi.as_view()),
     path('api/media/', MediaUploadApi.as_view()),
     path('api/media/<media_id>', MediaApi.as_view()),
-    # Assistants API
-    path('api/user/<str:user_id>/assistant-home', HomeAssistantAPI.as_view()),
-    path('api/user/<str:user_id>/assistant-feed', FeedAssistantAPI.as_view()),
-    path('api/user/assistant-explore', ExploreAssistantAPI.as_view()),
-    path('api/user/<str:user_id>/assistant-notifications', NotificationsAssistantAPI.as_view()),
-    path('api/user/<str:user_id>/assistant-info', UserInfoAssistantAPI.as_view()),
-    path('api/user/<str:user_id>/assistant-trackings', UserTrackingsAssistantAPI.as_view()),
-    path('api/user/<str:user_id>/assistant-user-feed', UserFeedAssistantAPI.as_view()),
-    path('api/user/<str:user_id>/assistant-related', UserRelatedAssistantAPI.as_view()),
-    path('api/user/<str:user_id>/assistant-stats', UserStatsAssistantAPI.as_view()),
-    path('api/goal/<str:goal_id>/assistant-leader-board', LeaderboardAssistantAPI.as_view()),
 
+    # Assistant API
+    path('api/assistant/home', HomeAssistantAPI.as_view()),
+    path('api/assistant/feed', FeedAssistantAPI.as_view()),
+    path('api/assistant/explore', ExploreAssistantAPI.as_view()),
 
+    path('api/assistant/notifications', NotificationsAssistantAPI.as_view()),
+    path('api/assistant/users/<str:user_id>/info',
+         UserInfoAssistantAPI.as_view()),
+    path('api/assistant/users/<str:user_id>/trackings',
+         UserTrackingsAssistantAPI.as_view()),
+    path('api/assistant/users/<str:user_id>/feed',
+         UserFeedAssistantAPI.as_view()),
+    path('api/assistant/users/<str:user_id>/related',
+         UserRelatedAssistantAPI.as_view()),
+    path('api/assistant/users/<str:user_id>/stats',
+         UserStatsAssistantAPI.as_view()),
 
+    path('api/assistant/goals/<str:goal_id>/leaderboard',
+         LeaderboardAssistantAPI.as_view()),
 
     # ViewSet endpoints
     path('api/', include(router.urls)),
+
+    # Auth
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/signup/', include('dj_rest_auth.registration.urls')),
+    path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
 
     # Other urls
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
     path('accounts/', include('allauth.urls')),
-    path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/auth/signup/', include('dj_rest_auth.registration.urls')),
-    path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
 ]
 
 # Serve media files

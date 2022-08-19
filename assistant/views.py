@@ -14,9 +14,10 @@ from utils.utils import get_progress, get_leader_board, set_amount, get_tracking
 
 # Custom endpoint
 class HomeAssistantAPI(APIView):
-    def get(self, request, user_id):
+    def get(self, request):
         probability = random.random()
-        user = User.objects.filter(id=user_id).first()
+        user = User.objects.filter(user_id=request.user.id).first()
+        user_id = user.id
 
         if probability < 0.25:
             message = "Hola de nuevo " + user.firstName + ", te conectaste por ultima vez el " + str(
@@ -28,12 +29,13 @@ class HomeAssistantAPI(APIView):
                 '-creationDate')[:30]
             if len(participates) > 0:
                 goal = random.choice(participates)
-                message = "Veo poco movimiento en la meta " + goal.title +\
+                message = "Generas poco movimiento en la meta " + goal.title +\
                           ", ¿que tal si empezamos a registrar progresos?"
             else:
-                message = "Veo que estas generando progreso en todas tus metas, ¡Sigue asi!"
+                message = "Estas generando progreso en todas tus metas, ¡Sigue asi!"
         elif probability < 0.75:
-            participates = Participate.objects.filter(createdBy=user_id).order_by('-creationDate')[:30]
+            participates = Participate.objects.filter(
+                createdBy=user_id).order_by('-creationDate')[:30]
             if len(participates) > 0:
                 participate = random.choice(participates)
                 objectives = Objective.objects.filter(goal=participate.goal)
@@ -53,13 +55,13 @@ class HomeAssistantAPI(APIView):
                                   ", ¿Podrías registrar mas progresos para intentar completar el objetivo?"
                 else:
                     message = "La meta " + participate.goal.title + \
-                              " no tiene objetivos, ¿Porque no añades uno o hablas con el creador para que lo añada?"
+                              " no tiene objetivos temporales, el creador puede editarla y añadirlos"
             else:
-                message = "Veo que no estas participando en ninguna meta," \
-                          " ¿Porque no empezamos a crear metas o " \
-                          "buscamos alguna que te interese en la pagina de explora?"
+                message = "No estas participando en ninguna meta," \
+                          " puedes empezar creando una nueva meta o " \
+                          "buscando alguna que te interese en la pagina de explora"
         elif probability < 0.9:
-            message = "Puedes cliquear en las metas para verlas en detalle"
+            message = "Puedes hacer clic en las metas para verlas en detalle"
         else:
             user_goals = Participate.objects.filter(createdBy=user_id,
                                                     creationDate__gt=datetime.utcnow() - timedelta(90))
@@ -67,58 +69,63 @@ class HomeAssistantAPI(APIView):
             if len([goal for goal in user_goals if goal.createdBy == user_id]) == num_user_goals:
                 message = "Puedes participar en metas de otros usuarios,"
             elif num_user_goals > 10:
-                message = "Veo que estas participando en " + str(num_user_goals) + " metas, debes estar ocupado"
+                message = "Estas participando en " + \
+                    str(num_user_goals) + " metas, debes estar ocupado"
             else:
-                message = "Veo que estas participando en " + str(
-                    num_user_goals) + " metas, ¿Porque no empezamos a crear metas o" \
-                                      " buscamos alguna que te interese en la pagina de explora?"
+                message = "Estas participando en " + str(
+                    num_user_goals) + " metas, ¿quieres añadir alguna más a la lista?" \
+                                      " puedes buscar en la pagina de explora"
         return Response({"message": message})
 
 
 class FeedAssistantAPI(APIView):
-    def get(self, request, user_id):
+    def get(self, request):
+        user = User.objects.filter(user_id=request.user.id).first()
+        user_id = user.id
         probability = random.random()
         if probability < 1/9:
             post = max(Post.objects.filter(
                 createdBy__in=list(Follow.objects.filter(follower=user_id).values_list("user")) + [user_id]).order_by(
                 '-creationDate')[:30], key=lambda x: LikePost.objects.filter(post=x).count())
-            message = "Esta ultima publicación " + post.title + " esta obteniendo bastantes likes, podría gustarte"
+            message = "Esta última publicación " + post.title + \
+                " esta obteniendo bastantes likes, podría gustarte"
         elif probability < 2/9:
             post = max(Post.objects.filter(createdBy=user_id).order_by('-creationDate')[:30],
                        key=lambda x: LikePost.objects.filter(post=x).count())
-            message = "Esta ultima publicación tuya " + post.title + " esta obteniendo bastantes likes,¡Felicidades!"
+            message = "Esta ultima publicación tuya " + post.title + \
+                " esta obteniendo bastantes likes,¡Felicidades!"
         elif probability < 3/9:
             user = max(Follow.objects.filter(follower=user_id).values_list("user"),
                        key=lambda x: Post.objects.filter(createdBy=x).count())
-            message = "El usuario " + user.username + " es el usuario al que sigues con mas posts, podría gustarte"
+            message = "El usuario " + user.username + \
+                " es el usuario al que sigues con mas posts, podría gustarte"
         elif probability < 4/9:
             user = max(Follow.objects.filter(follower=user_id).values_list("user"),
                        key=lambda x: LikePost.objects.filter(createdBy=x).count())
-            message = "El usuario " + user.username + " es el usuario al que sigues con mas likes en post," \
+            message = user.username + " es el usuario que más me gusta tiene en sus publicaciones, de los que sigues" \
 
         elif probability < 5/9:
             follows = Follow.objects.filter(follower=user_id).count()
             if follows < 10:
-                message = "Veo que sigues a poca gente, puedes seguir a mas gente para ver mas contenido"
+                message = "Sigues a pocos usuarios, puedes seguir a más para ver más contenido"
             else:
-                message = "Veo que sigues a mucha gente interesante, " \
+                message = "Sigues a muchos usuarios interesantes, " \
                           "pero podrían interesarte otros usuarios de la vista de explora"
 
         elif probability < 6/9:
             num_post = Post.objects.filter(
                 createdBy__in=Follow.objects.filter(follower=user_id).values_list("user")).count()
             if num_post < 10:
-                message = "Veo que tus seguidos no son muy activos, puedes seguir a mas gente " \
+                message = "Los usuarios que sigues no son muy activos, puedes seguir a mas usuarios " \
                           "para ver mas contenido usando la vista de explora"
             else:
-                message = "Tus seguidores son muy activos teniendo entre todos " + str(
-                    num_post) + " posts, ¿A que es increíble?"
+                message = "Tus seguidores son muy activos, suman " + str(
+                    num_post) + " posts entre todos, por lo que tienes mucho contenido que ver"
         elif probability < 7/9:
-            message = "Sabias que puedes dar like a los post de otros usuarios cliqueando en el botón" \
-                      " del corazon al lado de cada post"
+            message = "Puedes dar like a las publicaciones de otros usuarios haciendo clic en el botón" \
+                      " del corazón al lado de cada post"
         elif probability < 8/9:
-            message = "Sabias que puedes escribir comentarios en los post de otros usuarios escribiendo" \
-                      " en el cuadrado de texto de cada post"
+            message = "Puedes escribir comentarios en las publicaciones de otros usuarios"
         else:
             post = min(Post.objects.filter(createdBy=user_id).order_by('-creationDate')[:30],
                        key=lambda x: LikePost.objects.filter(post=x).count())
@@ -131,28 +138,36 @@ class FeedAssistantAPI(APIView):
 class ExploreAssistantAPI(APIView):
     def get(self, request):
         probability = random.random()
-        if probability < 0.5:
-            message = "En esta pagina puedes explorar post,usuarios y metas relacionadas contigo"
-        else:
-            message = "Si no encuentras lo que buscas puedes clicar en el botón de buscar y " \
+        if probability < 0.25:
+            message = "En esta pagina puedes explorar publicaciones, usuarios y metas relacionadas contigo"
+        elif probability < 0.5:
+            message = "Si no encuentras lo que buscas puedes hacer clic en el botón de buscar y " \
                       "hacer una búsqueda personalizada"
+        elif probability < 0.75:
+            message = "Puedes ver los objetivos o usuarios en detalle si haces clic sobre ellos"
+        else:
+            message = "Puedes cambiar entre las distintas pestañas para navegar entre los distintos tipos de contenido"
+
         return Response({"message": message})
 
 
 class NotificationsAssistantAPI(APIView):
-    def get(self, request, user_id):
+    def get(self, request):
+        user = User.objects.filter(user_id=request.user.id).first()
+        user_id = user.id
         probability = random.random()
         if probability < 0.5:
-            unchecked_notifications = Notification.objects.filter(checked=False, user=user_id).count()
+            unchecked_notifications = Notification.objects.filter(
+                checked=False, user=user_id).count()
             if unchecked_notifications > 10:
                 message = "Quedan notificaciones sin leer en la siguiente pagina, ¡No te olvides de revisarlas!"
             elif unchecked_notifications > 0:
-                message = "Veo que tienes " + str(
+                message = "Tienes " + str(
                     unchecked_notifications) + " notificaciones sin revisar"
             else:
-                message = "Uy, parece que no tienes notificaciones pendientes de revisar"
+                message = "¡Estás al día!, no tienes notificaciones pendientes de revisar"
         else:
-            message = "Aquí podrás revisar en detalle la actividad de la aplicación y la fecha en la que ocurrió"
+            message = "Aquí podrás revisar en detalle tu actividad"
         return Response({"message": message})
 
 
@@ -163,37 +178,42 @@ class UserInfoAssistantAPI(APIView):
         if user_id == request.query_params.get("userId"):
             if probability < 0.5:
                 if user and user.media:
-                    message = "Veo que tienes una foto de perfil, ¿Porque no la actualizas?"
+                    message = "¡Ya tienes una foto de perfil!, si quieres puedes actualizarla o eliminarla"
                 else:
-                    message = "Veo que no tienes una foto de perfil, ¿Porque no subes una?"
+                    message = "No tienes una foto de perfil, ¿Por qué no subes una?"
             else:
                 followers = Follow.objects.filter(user=user_id).count()
                 if followers > 20:
-                    message = "Veo que te siguen " + str(followers) + " personas, estas hecho un influencer"
+                    message = "Te siguen " + \
+                        str(followers) + " personas, estas hecho un influencer"
                 else:
-                    message = "Veo que te siguen " + str(
-                        followers) + " personas, ¿Porque no subimos más publicaciones o goals y aumentamos ese numero?"
+                    message = "Te siguen " + str(
+                        followers) + " personas, puedes seguir a usuarios o generar actividad en alguna meta y aumentamos ese numero."
         else:
-            other_user = User.objects.filter(id=request.query_params.get("userId")).first()
+            other_user = User.objects.filter(
+                id=request.query_params.get("userId")).first()
             if probability < 0.5:
-                follows = Follow.objects.filter(user=user_id, follower=request.query_params.get("userId")).first()
-                follower = Follow.objects.filter(user=request.query_params.get("userId"), follower=user_id).first()
+                follows = Follow.objects.filter(
+                    user=user_id, follower=request.query_params.get("userId")).first()
+                follower = Follow.objects.filter(
+                    user=request.query_params.get("userId"), follower=user_id).first()
                 if follows and follower:
                     message = "Os seguís mutuamente tu y " + other_user.username
                 elif follows:
-                    message = "Este" + other_user.username + "te sigue, ¿Porque no le sigues tu a el?"
+                    message = "Este" + other_user.username + \
+                        "te sigue, ¿Por qué no le sigues tu a el?"
                 elif follower:
                     message = "Sigues a " + other_user.username + ", pero el a ti no te sigue"
                 else:
-                    message = "No os seguís mutuamente, ¿porque no le empiezas a seguir?"
+                    message = "Aún no os conoceis, ¿Por qué no le empiezas a seguir?"
             else:
                 goals_in_common = Participate.objects.filter(createdBy=user_id, goal__in=Goal.objects.filter(
                     createdBy=request.query_params.get("userId")).values_list("id")).count()
                 if goals_in_common > 0:
-                    message = "Veo que tienes " + str(
-                        goals_in_common) + " goals en común con " + user.username + ", os podríais llevar muy bien"
+                    message = "Tienes " + str(
+                        goals_in_common) + " metas en común con " + user.username + ", os podríais llevar muy bien"
                 else:
-                    message = "Veo que no tienes goals en común con " + other_user.username
+                    message = "No tienes metas en común con " + other_user.username
         return Response({"message": message})
 
 
@@ -204,14 +224,15 @@ class UserTrackingsAssistantAPI(APIView):
         if probability < 0.5:
             tracking_num = Tracking.objects.filter(createdBy=user_id).count()
             if tracking_num == 0:
-                message = "Veo que no tienes ningún progreso registrado," \
-                          " ¿Porque no empiezas a registrar en alguna meta?"
+                message = "No tienes ningún progreso registrado," \
+                          " ¿Por qué no empiezas a registrar en alguna meta?"
             elif tracking_num < 10:
-                message = "Veo que tienes pocos progresos registrados, ¿Porque no registramos más?"
+                message = "Tienes pocos progresos registrados, puedes añadir progreso en cualquiera de tus metas"
             else:
-                message = "Veo que tienes muchos progresos registrados, ¡Felicidades sigue asi!"
+                message = "Tienes muchos progresos registrados, ¡Felicidades sigue así!"
         else:
-            trackings = Tracking.objects.filter(createdBy=user_id).order_by('-creationDate')[:30]
+            trackings = Tracking.objects.filter(
+                createdBy=user_id).order_by('-creationDate')[:30]
             if trackings:
                 goal_types = {}
                 for tracking in trackings:
@@ -222,7 +243,7 @@ class UserTrackingsAssistantAPI(APIView):
                 max_type = max(goal_types, key=goal_types.get)
                 message = "La mayor cantidad de progresos registrados últimamente son en metas de tipo " + max_type
             else:
-                message = "Veo que no tienes progresos registrados, ¿Porque no empiezas a registrar en alguna meta?"
+                message = "No tienes progresos registrados, ¿Por qué no empiezas a registrar en alguna meta?"
         return Response({"message": message})
 
 
@@ -232,14 +253,16 @@ class UserFeedAssistantAPI(APIView):
         if probability < 0.5:
             post_num = Post.objects.filter(createdBy=user_id).count()
             if post_num == 0:
-                message = "Veo que no tienes ninguna publicación, ¿Porque no publicas alguna?"
+                message = "No tienes ninguna publicación, pudes crear una nueva pulsando en 'NUEVO'"
             elif post_num < 10:
-                message = "Veo que tienes pocas publicaciones, ¿Porque no publicas más?"
+                message = "Tienes pocas publicaciones, puedes crear una nueva haciendo clic en 'NUEVO'"
             else:
-                message = "Veo que tienes muchas publicaciones, ¡Felicidades sigue asi!"
+                message = "Tienes muchas publicaciones, ¡Felicidades sigue asi!"
         else:
-            num_post_goal = Post.objects.filter(createdBy=user_id, goal__ne=None).count()
-            num_post = Post.objects.filter(createdBy=user_id, goal=None).count()
+            num_post_goal = Post.objects.filter(
+                createdBy=user_id, goal__ne=None).count()
+            num_post = Post.objects.filter(
+                createdBy=user_id, goal=None).count()
             if num_post_goal > num_post:
                 message = "La mayoría de tus publicaciones están asociadas a metas, " \
                           "también puedes publicar sin asociar a una meta"
@@ -255,32 +278,36 @@ class UserRelatedAssistantAPI(APIView):
         following = Follow.objects.filter(follower=user_id).values_list("user")
         followers = Follow.objects.filter(user=user_id).values_list("follower")
         if following.count() == 0 and followers.count() == 0:
-            message = "Veo que no sigues a mucha gente, ¿Porque no sigues a mas gente usando la vista de explora?"
+            message = "Aún no sigues a nigún usuario, ¿Por qué no buscas algunos usando la vista de explora?"
             return Response({"message": message})
         if probability < 0.25:
             if followers.count() > 30:
-                message = "Veo que tienes muchos seguidos, ¡Felicidades sigue asi!"
+                message = "Tienes muchos seguidores, ¡Felicidades sigue asi!"
             else:
-                message = "Veo que no sigues a mucha gente, ¿Porque no sigues a mas gente usando la vista de explora?"
+                message = "No te siguen muchos usuarios, puedes buscar algunos usando la vista de explora y comenzar a seguirlos"
         elif probability < 0.5:
             mutual = following & followers
             if mutual.count() > 0:
-                message = "Veo que tu y " + mutual.order_by('?').first().username + " os seguís mutuamente"
+                message = "Tú y " + \
+                    mutual.order_by('?').first().username + \
+                    " os seguís mutuamente"
             else:
-                message = "Veo que no tienes ninguna persona que os sigáis mutuamente, " \
-                          "¿Porque no buscas a alguien que te siga?"
+                message = "Parece que aún no tienes seguidores mutuos, puedes seguir a tus seguidores o interactuar con tus seguidos y conoceros mejor"
         elif probability < 0.75:
-            not_following = random.choice(list(set(following).difference(set(followers))))
+            not_following = random.choice(
+                list(set(following).difference(set(followers))))
             if not_following:
-                message = "Veo que no te sigue " + not_following.username + ", aunque tu le sigues "
+                message = not_following.username + "no te sigue, aunque tú le sigues "
             else:
-                message = "Todos los usuarios que sigues te siguen, ¡Guau!"
+                message = "Te siguen todos los usuarios a los que sigues, ¡Guau!"
         else:
-            not_followers = random.choice(list(set(followers).difference(set(following))))
+            not_followers = random.choice(
+                list(set(followers).difference(set(following))))
             if not_followers:
-                message = "Veo que no sigues a " + not_followers.username + ", ¿Porque no le sigues?"
+                message = "No sigues a " + \
+                    not_followers.username + ", quizá pueda interesarte su contenido"
             else:
-                message = "Todos los usuarios que te siguen los sigues tu, ¡Guau!"
+                message = "Sigues a todos los usuarios que te siguen, ¡Guau!"
         return Response({"message": message})
 
 
@@ -295,36 +322,42 @@ class UserStatsAssistantAPI(APIView):
                                 "mensual": stats.monthlyObjectivesCompleted, "anual": stats.yearlyObjectivesCompleted,
                                 "total": stats.totalObjectivesCompleted}
             if sum(total_objectives.values()) == 0:
-                message = "Veo que no has completado ninguna objetivo todavía, " \
-                          "¿Porque no empezamos a registrar en alguna meta?"
+                message = "No has completado ningun objetivo todavía, " \
+                          "¿Por qué no empezamos a registrar en alguna meta?"
             else:
                 sorted(total_objectives, key=total_objectives.get, reverse=True)
-                message = "Veo que has completado muchos objetivos de tipo " + list(total_objectives.keys())[
+                message = "Has completado muchos objetivos de tipo " + list(total_objectives.keys())[
                     0] + "tal vez te gustaría probar con otra frecuencia"
 
         elif probability < 0.5:
             if stats_serializer.get("numPosts") == 0:
-                message = "Veo que no has publicado ninguna publicación todavía, ¿Porque no publicas alguna?"
+                message = "Aún no has realizado ninguna publicación, puedes hacerlo pulsando en 'NUEVO'"
             else:
-                ranking = list(Follow.objects.filter(follower=user_id).values_list("user")) + [user]
-                sorted(ranking, key=lambda x: Post.objects().filter(createdBy=x).count(), reverse=True)
+                ranking = list(Follow.objects.filter(
+                    follower=user_id).values_list("user")) + [user]
+                sorted(ranking, key=lambda x: Post.objects().filter(
+                    createdBy=x).count(), reverse=True)
                 message = "Eres el " + str(
                     ranking.index(user) + 1) + "º usuario que publica más entre tus seguidos"
         elif probability < 0.75:
             if stats_serializer.get("numTrackings") == 0:
-                message = "Veo que no has registrado ningún progreso todavía, ¿Porque no registras en alguna meta?"
+                message = "Aún no has registrado ningún progreso, ¡empecemos con alguna de tus metas!"
             else:
-                ranking = list(Follow.objects.filter(follower=user_id).values_list("user")) + [user]
-                sorted(ranking, key=lambda x: Tracking.objects().filter(createdBy=x).count(), reverse=True)
+                ranking = list(Follow.objects.filter(
+                    follower=user_id).values_list("user")) + [user]
+                sorted(ranking, key=lambda x: Tracking.objects().filter(
+                    createdBy=x).count(), reverse=True)
                 message = "Eres el " + str(
                     ranking.index(user) + 1) + "º usuario que registra más progresos entre tus seguidos"
         else:
             if stats_serializer.get("numLikes") == 0:
-                message = "Veo que no te han dado like a ninguna publicación todavía, " \
-                          "ya verás como pronto recibirás más likes"
+                message = "Tu publicación aún no le ha gustadoa nadie, " \
+                          "no te preocupes, sigue generando actividad y contenido para llegar a más usuarios"
             else:
-                ranking = list(Follow.objects.filter(follower=user_id).values_list("user")) + [user]
-                sorted(ranking, key=lambda x: LikePost.objects().filter(createdBy=x).count(), reverse=True)
+                ranking = list(Follow.objects.filter(
+                    follower=user_id).values_list("user")) + [user]
+                sorted(ranking, key=lambda x: LikePost.objects().filter(
+                    createdBy=x).count(), reverse=True)
                 message = "Eres el " + str(
                     ranking.index(user) + 1) + "º usuario que recibe más likes en publicaciones entre tus seguidos"
         return Response({"message": message})
@@ -337,37 +370,35 @@ class LeaderboardAssistantAPI(APIView):
         start_week = today - timedelta(days=today.weekday())
         end_week = start_week + timedelta(days=6)
         frequency = request.query_params.get('frequency')
-        query, amount = get_leader_board(goal_id, today, start_week, end_week, frequency)
+        query, amount = get_leader_board(
+            goal_id, today, start_week, end_week, frequency)
         res = [set_amount(user, amount[user.username]) for user in query]
-        user = User.objects.filter(id=request.query_params.get("userId")).first()
+        user = User.objects.filter(
+            id=request.query_params.get("userId")).first()
         probability = random.random()
 
         if probability < 0.25:
             if user.username != res[0].get("username"):
-                message = "Veo que el líder de la meta es " + res[0][
-                    'username'] + " que ha registrado " + str(get_trackings([frequency], goal_id, res[0].get("id"),
-                                                                            today, start_week, end_week).count()) +\
-                          " progresos"
+                message = "El líder de la meta es " + res[0][
+                    'username'] + ", pero aún puedes superarlo, ¡comienza a generar progreso ahora!"
             else:
-                message = "Veo que eres el líder de la meta, ¡Felicidades!"
+                message = "Eres el líder de la meta, ¡Felicidades!"
         elif probability < 0.5:
             if user.username != res[1].get("username"):
-                message = "Veo que el segundo en la meta es " + res[1][
+                message = "El segundo en la meta es " + res[1][
                     'username'] + " que ha registrado " + str(get_trackings([frequency], goal_id, res[1].get("id"), today,
                                                                             start_week, end_week).count()) +\
-                          " progresos"
+                    " progresos"
             else:
-                message = "Veo que eres el segundo de la meta, ¡Felicidades!"
+                message = "Eres el segundo en la tabla de líderes, ¡Felicidades, a por el primer puesto!"
         elif probability < 0.75:
             if user.username != res[2].get("username"):
-                message = "Veo que el tercero de la meta es " + res[2][
-                    'username'] + " que ha registrado " + str(get_trackings([frequency], goal_id, res[2].get("id"),
-                                                                            today, start_week, end_week).count()) + \
-                          " progresos"
+                message = "El tercero de la meta es " + res[2][
+                    'username']
             else:
-                message = "Veo que eres el tercero de la meta, ¡Felicidades!"
+                message = "Eres el tercero, ¡Felicidades, sigue así!"
         else:
-            message = "Te encuentras en el " + \
+            message = "Eres el " + \
                       str([list_user.get("username") for list_user in res].index(user.username) + 1) + \
-                      "º lugar de la meta"
+                      "º en la tabla de líderes, sigue generando progreso para llegar al podio"
         return Response({"message": message})
