@@ -9,9 +9,7 @@ const handledErrors: { [n: number]: string } = {
 };
 
 const ParsedError = (error: AxiosError) => {
-  const isHtmlData =
-    typeof error.response?.data === "string" &&
-    error.response?.data.includes("<!DOCTYPE html>");
+  const isStringError = typeof error.response?.data === "string";
 
   return (
     <Alert severity="error">
@@ -22,7 +20,7 @@ const ParsedError = (error: AxiosError) => {
           : error.message || "Algo salió mal"}
       </p>
 
-      {!isHtmlData ? (
+      {!isStringError ? (
         Object.entries(error?.response?.data as any)?.map(([key, value]) => (
           <p key={key}>
             <>

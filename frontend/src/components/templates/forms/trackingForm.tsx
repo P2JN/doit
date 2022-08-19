@@ -45,11 +45,7 @@ const TrackingForm = () => {
         },
         {
           onSuccess: () => {
-            navigate(
-              location.pathname.split("/").slice(0, -1).join("/") +
-                "?refresh=" +
-                goalId
-            );
+            navigate(location.pathname.split("/").slice(0, -1).join("/"));
           },
         }
       );

@@ -4,9 +4,9 @@ import {
   Navigate,
   Route,
   Routes,
+  useLocation,
   useMatch,
   useNavigate,
-  useSearchParams,
 } from "react-router-dom";
 import { Alert, Button, Divider, Tab, Tabs, Typography } from "@mui/material";
 
@@ -15,7 +15,6 @@ import { goalService, socialService } from "services";
 import { GoalTypes } from "types";
 import { dateUtils, paginationUtils, texts } from "utils";
 
-import { ParsedError } from "components/atoms";
 import { DataLoader, ProgressBar } from "components/molecules";
 import {
   LeaderboardTable,
@@ -47,12 +46,6 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
     goalService.useParticipation(activeUser?.id, goal.id);
   const isParticipating = useMemo(() => !!participation, [participation]);
 
-  const {
-    mutate: deleteGoal,
-    isError: isDeleteError,
-    error: deleteError,
-  } = goalService.useDeleteGoal();
-
   const { mutate: participate } = goalService.useCreateParticipation();
   const { mutate: stopParticipating } = goalService.useStopParticipating();
 
@@ -61,21 +54,14 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
     activeUser?.id
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === goal.id) {
-      refetch();
-      refetchParticipation();
-      setSearchParams("");
-    }
-  }, [goal.id, params, refetch, setSearchParams, refetchParticipation]);
+    refetch();
+    refetchParticipation();
+  }, [goal.id, refetch, location, refetchParticipation]);
 
   const onDelete = () => {
-    if (goal?.id) {
-      deleteGoal(goal.id, {
-        onSuccess: () => navigate("/home?refresh=goals"),
-      });
-    }
+    navigate(`/goals/${goal.id}/info/delete`);
   };
 
   const onParticipate = () => {
@@ -87,7 +73,8 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
         },
         {
           onSuccess: () => {
-            setSearchParams("?refresh=" + goal.id);
+            refetch();
+            refetchParticipation();
           },
         }
       );
@@ -104,7 +91,8 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
             type: "transient",
             variant: "success",
           });
-          setSearchParams("?refresh=" + goal.id);
+          refetch();
+          refetchParticipation();
         },
       });
     }
@@ -217,7 +205,6 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
               Eliminar
             </Button>
           </div>
-          {isDeleteError && <ParsedError {...deleteError} />}
         </>
       )}
     </section>
@@ -238,13 +225,10 @@ const GoalFeedTab = (goal: GoalTypes.Goal) => {
     [goalPages]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "goal-posts") {
-      refetch();
-      setSearchParams("");
-    }
-  }, [params, refetch, setSearchParams]);
+    refetch();
+  }, [refetch, location]);
 
   return (
     <section className="animate-fade-in">
@@ -292,13 +276,10 @@ const GoalTrackingsTab = (goal: GoalTypes.Goal) => {
     [trackingPages]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === goal.id) {
-      refetch();
-      setSearchParams("");
-    }
-  }, [goal.id, params, refetch, setSearchParams]);
+    refetch();
+  }, [goal.id, refetch, location]);
 
   return (
     <section className="animate-fade-in">
@@ -351,13 +332,10 @@ const GoalLeaderboardTab = (goal: GoalTypes.Goal) => {
     [leaderboardPages]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "goal-leaderboard") {
-      refetch();
-      setSearchParams("");
-    }
-  }, [params, refetch, setSearchParams]);
+    refetch();
+  }, [refetch, location]);
 
   return (
     <section className="animate-fade-in">
