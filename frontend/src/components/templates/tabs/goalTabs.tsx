@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { useEffect, useMemo, useState } from "react";
 import {
   Link,
@@ -88,15 +87,6 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
         },
         {
           onSuccess: () => {
-            setSearchParams("?refresh=" + goal.id);
-          },
-          onError: (error: AxiosError) => {
-            addNotification({
-              title: "Error, no puedes participar",
-              content: error.message,
-              type: "transient",
-              variant: "error",
-            });
             setSearchParams("?refresh=" + goal.id);
           },
         }

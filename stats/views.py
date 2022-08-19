@@ -11,8 +11,9 @@ from social.models import User
 from stats.models import Stats
 from stats.serializers import StatsSerializer
 
-
 # Custom endpoint
+from utils.utils import yearly_gte_date, yearly_lte_date, monthly_gte_date, monthly_lte_date, weekly_gte_date, \
+    weekly_lte_date
 
 
 class UserStatsApi(APIView):
@@ -28,6 +29,11 @@ class GoalStatsApi(APIView):
         user_id = request.query_params.get("userId")
         user = User.objects.filter(id=user_id).first()
         goal = Goal.objects.filter(id=goal_id).first()
+        time_zone = request.query_params.get("timeZone")
+        if time_zone:
+            time_zone = int(time_zone)
+        else:
+            time_zone = -2
         try:
             ref_day = parser.parse(request.query_params.get('refDay'))
         except (OverflowError, ParserError):
@@ -40,49 +46,29 @@ class GoalStatsApi(APIView):
         for days in [start_week + timedelta(days=i) for i in range((end_week - start_week).days + 1)]:
             if goal.type == 'cooperative':
                 res[days.strftime('%Y-%m-%d')] = Tracking.objects.filter(goal=goal,
-                                                                         date__gte=days.replace(hour=0, minute=0,
-                                                                                                second=0),
-                                                                         date__lte=days.replace(hour=23, minute=59,
-                                                                                                second=59)).sum(
-                    "amount")
-                res["totalMonth"] = Tracking.objects.filter(goal=goal,
-                                                            date__gte=ref_day.replace(day=1, hour=0, minute=0,
-                                                                                      second=0),
-                                                            date__lte=ref_day.replace(
-                                                                day=calendar.monthrange(ref_day.year, ref_day.month)[
-                                                                    1],
-                                                                hour=23, minute=59, second=59)).sum(
-                    "amount")
-                res["totalYear"] = Tracking.objects.filter(goal=goal,
-                                                           date__gte=ref_day.replace(month=1, day=1, hour=0, minute=0,
-                                                                                     second=0),
-                                                           date__lte=ref_day.replace(month=12, day=
-                                                           calendar.monthrange(ref_day.year, 12)[1],
-                                                                                     hour=23, minute=59,
-                                                                                     second=59)).sum(
-                    "amount")
+                                                                         date__gte=weekly_gte_date(days, time_zone),
+                                                                         date__lte=weekly_lte_date(days, time_zone)).sum("amount")
             else:
                 res[days.strftime('%Y-%m-%d')] = Tracking.objects.filter(createdBy=user, goal=goal,
-                                                                         date__gte=days.replace(hour=0, minute=0,
-                                                                                                second=0),
-                                                                         date__lte=days.replace(hour=23, minute=59,
-                                                                                                second=59)).sum(
-                    "amount")
-                res["totalMonth"] = Tracking.objects.filter(createdBy=user, goal=goal,
-                                                            date__gte=ref_day.replace(day=1, hour=0, minute=0,
-                                                                                      second=0),
-                                                            date__lte=ref_day.replace(
-                                                                day=calendar.monthrange(ref_day.year, ref_day.month)[
-                                                                    1],
-                                                                hour=23, minute=59, second=59)).sum(
-                    "amount")
-                res["totalYear"] = Tracking.objects.filter(createdBy=user, goal=goal,
-                                                           date__gte=ref_day.replace(month=1, day=1, hour=0, minute=0,
-                                                                                     second=0),
-                                                           date__lte=ref_day.replace(month=12, day=
-                                                           calendar.monthrange(ref_day.year, 12)[1],
-                                                                                     hour=23, minute=59,
-                                                                                     second=59)).sum(
-                    "amount")
+                                                                         date__gte=weekly_gte_date(days, time_zone),
+                                                                         date__lte=weekly_lte_date(days, time_zone)).sum("amount")
 
+        if goal.type == 'cooperative':
+            res["totalMonth"] = Tracking.objects.filter(goal=goal,
+                                                        date__gte=monthly_gte_date(ref_day, time_zone),
+                                                        date__lte=monthly_lte_date(ref_day, time_zone)).sum(
+                "amount")
+            res["totalYear"] = Tracking.objects.filter(goal=goal,
+                                                       date__gte=yearly_gte_date(ref_day, time_zone),
+                                                       date__lte=yearly_lte_date(ref_day, time_zone)).sum(
+                "amount")
+        else:
+            res["totalMonth"] = Tracking.objects.filter(createdBy=user, goal=goal,
+                                                        date__gte=monthly_gte_date(ref_day, time_zone),
+                                                        date__lte=monthly_lte_date(ref_day, time_zone)).sum(
+                "amount")
+            res["totalYear"] = Tracking.objects.filter(createdBy=user, goal=goal,
+                                                       date__gte=yearly_gte_date(ref_day, time_zone),
+                                                       date__lte=yearly_lte_date(ref_day, time_zone)).sum(
+                "amount")
         return Response(res)

@@ -136,6 +136,14 @@ const UserAvatar = (user: SocialTypes.User) => {
 const UserSearchResult = (user: SocialTypes.User) => {
   const navigate = useNavigate();
   const onOpenUser = () => navigate("/users/" + user.id + "/info");
+
+  const { activeUser } = useActiveUser();
+
+  const isMyProfile = useMemo(
+    () => activeUser?.id === user.id,
+    [activeUser?.id, user.id]
+  );
+
   return (
     <article>
       <section onClick={onOpenUser} className="cursor-pointer">
@@ -146,7 +154,7 @@ const UserSearchResult = (user: SocialTypes.User) => {
       <section className="flex cursor-pointer items-center gap-4 py-1">
         {user && <UserAvatar {...user} />}
         <div className="!mr-auto">{user && <UserUsername {...user} />}</div>
-        <FollowButton {...user} />
+        {!isMyProfile && <FollowButton {...user} />}
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </section>
     </article>

@@ -26,14 +26,23 @@ export const axiosInstance = Axios.create({
   },
 });
 
-// Error handling interceptor
-axiosInstance.interceptors.request.use(
-  (config) => config,
-  (error) => {
-    // Do something with request error
-    return Promise.reject(error);
+// Timezone interceptor, passes the timezone hours diff
+axiosInstance.interceptors.request.use((config) => {
+  const timezone = new Date().getTimezoneOffset() / 60;
+  if (config.headers) {
+    config.headers.timezone = timezone;
   }
-);
+  return config;
+});
+
+// Local language interceptor
+axiosInstance.interceptors.request.use((config) => {
+  const language = "es-es";
+  if (config.headers) {
+    config.headers["Accept-Language"] = language;
+  }
+  return config;
+});
 
 // React Query
 

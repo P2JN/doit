@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useNotificationStore } from "store";
 import { goalService } from "services";
 import { GoalTypes } from "types";
 import { formParsers, texts } from "utils";
@@ -24,7 +23,6 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
   const isUpdate = !!props.initial;
 
   const navigate = useNavigate();
-  const { addNotification } = useNotificationStore();
 
   const {
     mutate: createObjective,
@@ -57,49 +55,25 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
 
   const onCreate = (frequency: string, quantity: number) => {
     if (goalId && quantity && quantity > 0) {
-      createObjective(
-        {
-          goal: goalId,
-          quantity,
-          frequency: formParsers.fromFrequencyToEnumValue(
-            frequency as GoalTypes.Frequency
-          ),
-        },
-        {
-          onError: (error) => {
-            addNotification({
-              title: "Error al crear objetivo",
-              content: error.message,
-              type: "transient",
-              variant: "error",
-            });
-          },
-        }
-      );
+      createObjective({
+        goal: goalId,
+        quantity,
+        frequency: formParsers.fromFrequencyToEnumValue(
+          frequency as GoalTypes.Frequency
+        ),
+      });
     }
   };
 
   const onUpdate = (objective: GoalTypes.Objective, quantity: number) => {
     if (goalId && quantity && quantity > 0) {
-      updateObjective(
-        {
-          ...objective,
-          quantity,
-          frequency: formParsers.fromFrequencyToEnumValue(
-            objective.frequency as GoalTypes.Frequency
-          ),
-        },
-        {
-          onError: (error) => {
-            addNotification({
-              title: "Error al actualizar objetivo",
-              content: error.message,
-              type: "transient",
-              variant: "error",
-            });
-          },
-        }
-      );
+      updateObjective({
+        ...objective,
+        quantity,
+        frequency: formParsers.fromFrequencyToEnumValue(
+          objective.frequency as GoalTypes.Frequency
+        ),
+      });
     }
   };
 

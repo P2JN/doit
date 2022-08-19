@@ -188,7 +188,8 @@ class UserInfoAssistantAPI(APIView):
                         str(followers) + " personas, estas hecho un influencer"
                 else:
                     message = "Te siguen " + str(
-                        followers) + " personas, puedes seguir a usuarios o generar actividad en alguna meta y aumentamos ese numero."
+                        followers) + " personas, puedes seguir a usuarios o generar actividad en alguna meta y " \
+                                     "aumentamos ese numero."
         else:
             other_user = User.objects.filter(
                 id=request.query_params.get("userId")).first()
@@ -284,7 +285,8 @@ class UserRelatedAssistantAPI(APIView):
             if followers.count() > 30:
                 message = "Tienes muchos seguidores, ¡Felicidades sigue asi!"
             else:
-                message = "No te siguen muchos usuarios, puedes buscar algunos usando la vista de explora y comenzar a seguirlos"
+                message = "No te siguen muchos usuarios, " \
+                          "puedes buscar algunos usando la vista de explora y comenzar a seguirlos"
         elif probability < 0.5:
             mutual = following & followers
             if mutual.count() > 0:
@@ -292,7 +294,8 @@ class UserRelatedAssistantAPI(APIView):
                     mutual.order_by('?').first().username + \
                     " os seguís mutuamente"
             else:
-                message = "Parece que aún no tienes seguidores mutuos, puedes seguir a tus seguidores o interactuar con tus seguidos y conoceros mejor"
+                message = "Parece que aún no tienes seguidores mutuos, " \
+                          "puedes seguir a tus seguidores o interactuar con tus seguidos y conoceros mejor"
         elif probability < 0.75:
             not_following = random.choice(
                 list(set(following).difference(set(followers))))
@@ -370,8 +373,13 @@ class LeaderboardAssistantAPI(APIView):
         start_week = today - timedelta(days=today.weekday())
         end_week = start_week + timedelta(days=6)
         frequency = request.query_params.get('frequency')
+        time_zone = request.headers.get('timezone')
+        if time_zone:
+            time_zone = int(time_zone)
+        else:
+            time_zone = -2
         query, amount = get_leader_board(
-            goal_id, today, start_week, end_week, frequency)
+            goal_id, today, start_week, end_week, frequency, time_zone)
         res = [set_amount(user, amount[user.username]) for user in query]
         user = User.objects.filter(
             id=request.query_params.get("userId")).first()

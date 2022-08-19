@@ -1,7 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
-  Alert,
   Button,
   CircularProgress,
   FormHelperText,
@@ -10,6 +9,8 @@ import {
 
 import { useActiveUser } from "store";
 import { goalService } from "services";
+
+import { ParsedError } from "components/atoms";
 
 const TrackingForm = () => {
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ const TrackingForm = () => {
           {isLoading ? <CircularProgress size={16} /> : "Registrar"}
         </Button>
       </div>
-      {isError && <Alert severity="error">{error.message}</Alert>}
+      {isError && <ParsedError {...error} />}
     </form>
   );
 };
