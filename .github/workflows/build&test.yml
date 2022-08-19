@@ -24,7 +24,6 @@ jobs:
           POSTGRES_USER: doit
           POSTGRES_PASSWORD: doit
           POSTGRES_DB: doit
-          POSTGRES_HOST: postgres
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -48,7 +47,7 @@ jobs:
           POSTGRES_USER: doit
           POSTGRES_PASSWORD: doit
           POSTGRES_DB: doit
-          POSTGRES_HOST: postgres
+          POSTGRES_HOST: 127.0.0.1
         run: |
           coverage run ./manage.py test 
           coverage xml
