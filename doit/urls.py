@@ -21,7 +21,7 @@ from rest_framework_mongoengine import routers
 
 from assistant.views import HomeAssistantAPI, FeedAssistantAPI, ExploreAssistantAPI, NotificationsAssistantAPI, \
     UserInfoAssistantAPI, UserTrackingsAssistantAPI, UserFeedAssistantAPI, UserRelatedAssistantAPI, \
-    UserStatsAssistantAPI, LeaderboardAssistantAPI
+    UserStatsAssistantAPI, LeaderboardAssistantAPI, GoalsStatsAssistantAPI
 from auth.googleOAuth2Adapter import GoogleLogin
 from doit.settings import MEDIA_ROOT, MEDIA_URL
 from doit.views import PopulateDB
@@ -71,7 +71,7 @@ urlpatterns = [
     # Assistant API
     path('api/assistant/home', HomeAssistantAPI.as_view()),
     path('api/assistant/feed', FeedAssistantAPI.as_view()),
-    path('api/assistant/explore', ExploreAssistantAPI.as_view()),
+    path('api/assistant/explore/<str:ignore>', ExploreAssistantAPI.as_view()),
 
     path('api/assistant/notifications', NotificationsAssistantAPI.as_view()),
     path('api/assistant/users/<str:user_id>/info',
@@ -87,6 +87,8 @@ urlpatterns = [
 
     path('api/assistant/goals/<str:goal_id>/leaderboard',
          LeaderboardAssistantAPI.as_view()),
+
+    path('api/assistant/goals/<str:goal_id>/stats/<str:refDate>', GoalsStatsAssistantAPI.as_view()),
 
     # ViewSet endpoints
     path('api/', include(router.urls)),

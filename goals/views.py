@@ -14,7 +14,7 @@ from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
 from utils.recomendations import get_tracking_score_by_goal, get_goals_affinity
-from utils.utils import get_trackings, set_amount, get_progress, get_leader_board
+from utils.utils import get_trackings, set_amount, get_progress, get_leader_board, get_of_set
 
 
 # ViewSet views
@@ -124,11 +124,7 @@ class GoalProgress(viewsets.GenericAPIView):
         user = User.objects.get(id=request.query_params.get('user_id'))
         goal = Goal.objects.get(id=goal_id)
         objectives = Objective.objects.filter(goal=goal_id)
-        time_zone = request.headers.get('timezone')
-        if time_zone:
-            time_zone = int(time_zone)
-        else:
-            time_zone = -2
+        time_zone = get_of_set(request.headers.get("timezone"))
         progress = get_progress(goal, objectives, user, time_zone)
         return Response(progress, status=200)
 
@@ -138,11 +134,7 @@ class LeaderBoard(viewsets.GenericAPIView):
         today = datetime.datetime.utcnow()
         start_week = today - datetime.timedelta(days=today.weekday())
         end_week = start_week + datetime.timedelta(days=6)
-        time_zone = request.headers.get('timezone')
-        if time_zone:
-            time_zone = int(time_zone)
-        else:
-            time_zone = -2
+        time_zone = get_of_set(request.headers.get('timezone'))
         query, amount = get_leader_board(goal_id, today, start_week, end_week,
                                          request.query_params.get('frequency'), time_zone)
         query = self.paginate_queryset(query)

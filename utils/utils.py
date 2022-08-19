@@ -171,3 +171,10 @@ def get_leader_board(goal_id, today, start_week, end_week, frequency, time_zone)
               participants}
     query = sorted(participants, key=lambda x: amount[x.username], reverse=True)
     return [query, amount]
+
+
+def get_of_set(time_zone):
+    if time_zone:
+        return int(time_zone)
+    else:
+        return -2

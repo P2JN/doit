@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from goals.models import Frequency, Goal, Objective
 from social.models import Participate, Notification, User, NotificationIconType
 from social.serializers import NotificationSerializer
-from utils.utils import get_progress, update_stats
+from utils.utils import get_progress, update_stats, get_of_set
 
 
 def create_user_notification(user, title, content, icon_type):
@@ -41,11 +41,7 @@ def create_notification_tracking(self, serializer, request, *args, **kwargs):
     goal = Goal.objects.get(id=goal_id)
     objectives = Objective.objects.filter(goal=goal_id)
     user = User.objects.get(id=serializer.data.get("createdBy"))
-    time_zone = request.headers.get("timezone")
-    if time_zone:
-        time_zone = int(time_zone)
-    else:
-        time_zone = -2
+    time_zone = get_of_set(request.headers.get("timezone"))
     progress = get_progress(goal, objectives, user, time_zone)
     notifications = notify_completed_objectives(
         progress, objectives, goal, user, serializer)
