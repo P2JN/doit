@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useNotificationStore } from "store";
 import { goalService } from "services";
 import { GoalTypes } from "types";
 import { formParsers, texts } from "utils";
@@ -24,7 +23,6 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
   const isUpdate = !!props.initial;
 
   const navigate = useNavigate();
-  const { addNotification } = useNotificationStore();
 
   const {
     mutate: createObjective,
