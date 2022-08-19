@@ -1,10 +1,14 @@
 import datetime
 
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
 from django.http import Http404
 import calendar
 from goals.models import Tracking, Frequency
 from social.serializers import UserSerializer
 from stats.models import Stats
+from social.models import User as MongoUser
 
 
 def get_obj_or_404(klass, *args, **kwargs):
@@ -136,3 +140,24 @@ def daily_gte_date(date, time_zone=2):
         return date.replace(day=date.day - 1, hour=23, minute=59, second=59) + datetime.timedelta(hours=time_zone)
     else:
         return date.replace(hour=0, minute=0, second=0) + datetime.timedelta(hours=time_zone)
+
+
+def set_up_test(self):
+    self.user = User.objects.create(username='test', email='test@gmail.com',
+                                    first_name='test',
+                                    last_name='test')
+    self.token = Token.objects.create(user=self.user)
+    self.password = 'test'
+    self.user.set_password(self.password)
+
+    self.mongo_user = MongoUser(username='test', email='test@gmail.com',
+                                firstName='test',
+                                lastName='test', user_id=self.user.id)
+    self.mongo_user.save()
+
+    self.mongo_user_2 = MongoUser(username='test2', email='test2@gmail.com',
+                                  firstName='test2', lastName='test2', user_id=self.user.id)
+    self.mongo_user_2.save()
+
+    stats = Stats(createdBy=self.mongo_user)
+    stats.save()
