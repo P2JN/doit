@@ -35,14 +35,14 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Error handling interceptor
-axiosInstance.interceptors.request.use(
-  (config) => config,
-  (error) => {
-    // Do something with request error
-    return Promise.reject(error);
+// Local language interceptor
+axiosInstance.interceptors.request.use((config) => {
+  const language = "es-es";
+  if (config.headers) {
+    config.headers["Accept-Language"] = language;
   }
-);
+  return config;
+});
 
 // React Query
 

@@ -40,6 +40,7 @@ const UserForm = (props: {
     control,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<SocialTypes.User>({
     defaultValues: {
       ...props.initial,
@@ -158,7 +159,13 @@ const UserForm = (props: {
         {!isUpdate && (
           <Controller
             name="password1"
-            rules={{ required: "Obligatorio", minLength: 8 }}
+            rules={{
+              required: "Obligatorio",
+              minLength: {
+                value: 8,
+                message: "La contraseña es demasiado corta",
+              },
+            }}
             control={control}
             render={({ field }) => (
               <div className="flex w-full flex-col">
@@ -176,7 +183,19 @@ const UserForm = (props: {
         {!isUpdate && (
           <Controller
             name="password2"
-            rules={{ required: "Obligatorio", minLength: 8 }}
+            rules={{
+              required: "Obligatorio",
+              minLength: {
+                value: 8,
+                message: "La contraseña es demasiado corta",
+              },
+              validate: (value) => {
+                if (value === getValues().password1) {
+                  return true;
+                }
+                return "Las contraseñas no coinciden";
+              },
+            }}
             control={control}
             render={({ field }) => (
               <div className="flex w-full flex-col">

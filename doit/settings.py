@@ -32,6 +32,9 @@ SECRET_KEY = 'django-insecure-3scat@+fq!!i8f9jj*0#uo2@r^y*jhcz)tk6iw@6vquy^(9r(&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Language code spanish
+LANGUAGE_CODE = 'es-es'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -62,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware'
 ]
 
 AUTHENTICATION_BACKENDS = [

@@ -2,28 +2,37 @@ import { AxiosError } from "axios";
 import { Alert } from "@mui/material";
 
 const handledErrors: { [n: number]: string } = {
-  401: "No tienes permisos para realizar esta acción",
+  401: "No estas autenticado",
+  403: "No tienes permisos para realizar esta acción",
   404: "No hemos encontrado lo que buscabas",
-  500: "Ha ocurrido un error en el servidor",
+  500: "Algo salió mal en el servidor",
 };
 
 const ParsedError = (error: AxiosError) => {
+  const isHtmlData =
+    typeof error.response?.data === "string" &&
+    error.response?.data.includes("<!DOCTYPE html>");
+
   return (
     <Alert severity="error">
       <p>
         <strong>Error,</strong>{" "}
         {error.response?.status
-          ? handledErrors[error.response.status]
-          : error.message}
+          ? handledErrors[error.response.status] || "Algo salió mal"
+          : error.message || "Algo salió mal"}
       </p>
 
-      {Object.entries(error?.response?.data as any)?.map(([key, value]) => (
-        <p key={key}>
-          <>
-            {key}: {value}
-          </>
-        </p>
-      ))}
+      {!isHtmlData ? (
+        Object.entries(error?.response?.data as any)?.map(([key, value]) => (
+          <p key={key}>
+            <>
+              {key}: {value}
+            </>
+          </p>
+        ))
+      ) : (
+        <p>Algo salió mal en el servidor</p>
+      )}
     </Alert>
   );
 };
