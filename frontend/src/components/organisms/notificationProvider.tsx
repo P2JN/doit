@@ -34,8 +34,8 @@ const NotificationProvider = (props: { children: ReactNode }) => {
   const { setAlertCount } = useAlertCount();
 
   useEffect(() => {
-    refetch();
-  }, [refetch, location]);
+    activeUser?.id && refetch();
+  }, [refetch, location, activeUser?.id]);
 
   useEffect(() => {
     setAlertCount(alertCount || 0);
@@ -47,7 +47,7 @@ const NotificationProvider = (props: { children: ReactNode }) => {
       axiosInstance.interceptors.response.use(
         (response) => {
           if (response.data.notification) {
-            refetch();
+            activeUser?.id && refetch();
             const { notification, ...rest } = response.data;
             addNotification(notification);
             const values = Object.values(rest)[0] as any;
