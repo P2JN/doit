@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.conf.urls.static import static
+from pwa.views import service_worker, offline, manifest
 
 from rest_framework_mongoengine import routers
 
@@ -107,6 +108,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
     path('accounts/', include('allauth.urls')),
+    re_path(r'^serviceworker\.js$', service_worker, name='serviceworker'),
+    re_path(r'^manifest\.json$', manifest, name='manifest'),
+    re_path('^offline/$', offline, name='offline')
 ]
 
 # Serve media files
