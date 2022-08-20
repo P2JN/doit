@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useMatch, useNavigate } from "react-router-dom";
-import { Button, Tab, Tabs, Typography } from "@mui/material";
+import { Button, Divider, Tab, Tabs, Typography } from "@mui/material";
 import {
   CheckCircle,
   Comment,
@@ -144,6 +144,14 @@ const UserStatsTab = (user: SocialTypes.User) => {
 
   const { data: achievements } = statsService.useAchievements(user?.id);
 
+  const completed = useMemo(() => {
+    return achievements?.filter((a) => a.completed).length;
+  }, [achievements]);
+
+  const total = useMemo(() => {
+    return achievements?.length;
+  }, [achievements]);
+
   return (
     <section className="flex flex-col gap-5">
       <section className="flex flex-col gap-3">
@@ -244,9 +252,14 @@ const UserStatsTab = (user: SocialTypes.User) => {
           />
         </section>
       </section>
+      <Divider />
       <section className="flex flex-col gap-3">
-        <Typography variant="h5">Logros</Typography>
-
+        <div className="flex justify-between">
+          <Typography variant="h5">Logros</Typography>
+          <Typography variant="h5">
+            {completed} / {total}
+          </Typography>
+        </div>
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {achievements?.map((achievement) => (
             <Achievement {...achievement} />
