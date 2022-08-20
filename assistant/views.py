@@ -593,9 +593,9 @@ class GoalsFeedAssistantAPI(APIView):
         messages = ["Estos son los posts que están relacionados a la meta",
                     "Puedes indicar que los posts te gustan haciendo clic en el "
                     "botón del corazón",
-                    "Puedes acceder al perfil del autor de un post haciendo clic en el "
+                    "Puedes acceder al perfil del autor de una publicación haciendo clic en el "
                     "nombre de usuario del autor",
-                    "Puedes crear nuevas publicaciones relacionados a la meta, pulsando en el botón 'NUEVO'",
+                    "Puedes crear nuevas publicaciones relacionadas a la meta, pulsa en el botón 'NUEVO'",
                     "Hay un total de " +
                     str(Post.objects.filter(goal=goal_id).count()) +
                     " publicaciones relacionadas con esta "
