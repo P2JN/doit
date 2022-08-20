@@ -1,13 +1,17 @@
 from mongoengine import NotUniqueError
 
 from goals.models import Tracking
-from social.models import Post, LikePost, Participate
-from stats.models import Stats, AchievementUser
+from social.models import Post, LikePost, Participate, NotificationIconType
+from stats.models import Stats, AchievementUser, Achievement
 
 
 def save_achievement(user, achievement):
     try:
         AchievementUser(createdBy=user, achievement=achievement).save()
+        from utils.notifications import create_user_notification
+        create_user_notification(user, "Nuevo logro conseguido", "Has desbloqueado el logro " +
+                                 Achievement.objects.filter(id=achievement).first().title,
+                                 NotificationIconType.ACHIEVEMENT)
     except NotUniqueError:
         pass
 

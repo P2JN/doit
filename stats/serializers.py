@@ -41,11 +41,12 @@ class AchievementSerializer(serializers.DocumentSerializer):
 
     class Meta:
         model = Achievement
-        fields = ['id', 'title', 'description', 'url']
+        fields = ['title', 'description', 'url']
 
     def get_url(self, obj):
-        media = Media.objects.filter(id=obj.media).first()
-        if media:
-            return media.url
-        else:
-            return None
+        res = None
+        if obj.media:
+            media = Media.objects.filter(id=obj.media).first()
+            if media:
+                res = media.url
+        return res

@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 
 from goals.models import Goal, Tracking
 from social.models import User
-from stats.models import Stats
-from stats.serializers import StatsSerializer
+from stats.models import Stats, AchievementUser
+from stats.serializers import StatsSerializer, AchievementSerializer
 
 # Custom endpoint
 from utils.utils import yearly_gte_date, yearly_lte_date, monthly_gte_date, monthly_lte_date, weekly_gte_date, \
@@ -47,11 +47,15 @@ class GoalStatsApi(APIView):
             if goal.type == 'cooperative':
                 res[days.strftime('%Y-%m-%d')] = Tracking.objects.filter(goal=goal,
                                                                          date__gte=weekly_gte_date(days, time_zone),
-                                                                         date__lte=weekly_lte_date(days, time_zone)).sum("amount")
+                                                                         date__lte=weekly_lte_date(days,
+                                                                                                   time_zone)).sum(
+                    "amount")
             else:
                 res[days.strftime('%Y-%m-%d')] = Tracking.objects.filter(createdBy=user, goal=goal,
                                                                          date__gte=weekly_gte_date(days, time_zone),
-                                                                         date__lte=weekly_lte_date(days, time_zone)).sum("amount")
+                                                                         date__lte=weekly_lte_date(days,
+                                                                                                   time_zone)).sum(
+                    "amount")
 
         if goal.type == 'cooperative':
             res["totalMonth"] = Tracking.objects.filter(goal=goal,
@@ -72,3 +76,10 @@ class GoalStatsApi(APIView):
                                                        date__lte=yearly_lte_date(ref_day, time_zone)).sum(
                 "amount")
         return Response(res)
+
+
+class AchievementApi(APIView):
+    def get(self, request, user_id, *args, **kwargs):
+        achievements = AchievementSerializer(AchievementUser.objects.filter(createdBy=user_id).values_list('achievement'),
+                                             many=True).data
+        return Response(achievements, status=200)
