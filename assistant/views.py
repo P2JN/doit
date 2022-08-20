@@ -313,41 +313,74 @@ class UserFeedAssistantAPI(APIView):
 class UserRelatedAssistantAPI(APIView):
     def get(self, request, user_id):
         probability = random.random()
-        following = Follow.objects.filter(follower=user_id).values_list("user")
-        followers = Follow.objects.filter(user=user_id).values_list("follower")
-        if following.count() == 0 and followers.count() == 0:
-            message = "Aún no sigues a nigún usuario, ¿Por qué no buscas algunos usando la vista de explora?"
-            return Response({"message": message})
-        if probability < 0.25:
-            if followers.count() > 30:
-                message = "Tienes muchos seguidores, ¡Felicidades sigue asi!"
+        user = User.objects.filter(user_id=request.user.id).first()
+        following = Follow.objects.filter(follower=user_id, user__ne=user).values_list("user")
+        followers = Follow.objects.filter(user=user_id, follower__ne=user).values_list("follower")
+        if str(user.id) == user_id:
+            if following.count() == 0 and followers.count() == 0:
+                message = "Aún no sigues a nigún usuario, ¿Por qué no buscas algunos usando la vista de explora?"
+                return Response({"message": message})
+            if probability < 0.25:
+                if followers.count() > 30:
+                    message = "Tienes muchos seguidores, ¡Felicidades sigue asi!"
+                else:
+                    message = "No te siguen muchos usuarios, " \
+                              "puedes buscar algunos usando la vista de explora y comenzar a seguirlos"
+            elif probability < 0.5:
+                mutual = set(following).intersection(followers)
+                if len(mutual) > 0:
+                    message = "Tú y " + \
+                              random.choice(list(mutual)).username + \
+                              " os seguís mutuamente"
+                else:
+                    message = "Parece que aún no tienes seguidores mutuos, " \
+                              "puedes seguir a tus seguidores o interactuar con tus seguidos y conoceros mejor"
+            elif probability < 0.75:
+                not_following = set(following).difference(set(followers))
+                if len(not_following) > 0:
+                    message = random.choice(
+                        list(not_following)).username + " no te sigue, aunque tú le sigues "
+                else:
+                    message = "Te siguen todos los usuarios a los que sigues, ¡Guau!"
             else:
-                message = "No te siguen muchos usuarios, " \
-                          "puedes buscar algunos usando la vista de explora y comenzar a seguirlos"
-        elif probability < 0.5:
-            mutual = following & followers
-            if mutual.count() > 0:
-                message = "Tú y " + \
-                          mutual.order_by('?').first().username + \
-                          " os seguís mutuamente"
-            else:
-                message = "Parece que aún no tienes seguidores mutuos, " \
-                          "puedes seguir a tus seguidores o interactuar con tus seguidos y conoceros mejor"
-        elif probability < 0.75:
-            not_following = random.choice(
-                list(set(following).difference(set(followers))))
-            if not_following:
-                message = not_following.username + "no te sigue, aunque tú le sigues "
-            else:
-                message = "Te siguen todos los usuarios a los que sigues, ¡Guau!"
+                not_followers = set(followers).difference(set(following))
+                if len(not_followers) > 0:
+                    message = "No sigues a " + \
+                              random.choice(
+                                  list(not_followers)).username + ", quizá pueda interesarte su contenido"
+                else:
+                    message = "Sigues a todos los usuarios que te siguen, ¡Guau!"
         else:
-            not_followers = random.choice(
-                list(set(followers).difference(set(following))))
-            if not_followers:
-                message = "No sigues a " + \
-                          not_followers.username + ", quizá pueda interesarte su contenido"
+            following_logged_user = Follow.objects.filter(follower=user, user__ne=user_id).values_list("user")
+            followers_logged_user = Follow.objects.filter(user=user, follower__ne=user_id).values_list("follower")
+            other_user = User.objects.filter(id=user_id).first()
+            if probability < 0.25:
+                following_in_common = set(following_logged_user).intersection(set(following))
+                if len(following_in_common) > 0:
+                    message = "Tú y " + other_user.username + " teneis " + str(len(following_in_common)) + \
+                              " seguidos en común"
+                else:
+                    message = "Tú y " + other_user.username + " no teneis seguidos en común"
+            elif probability < 0.5:
+                followers_in_common = set(followers_logged_user).intersection(set(followers))
+                if len(followers_in_common) > 0:
+                    message = "Tú y " + other_user.username + " teneis " + str(len(followers_in_common)) + \
+                              " seguidores en común"
+                else:
+                    message = "Tú y " + other_user.username + "no teneis seguidores en común"
+            elif probability < 0.75:
+                following_mutual = Follow.objects.filter(follower=user, user=user_id).first()
+                follower_mutual = Follow.objects.filter(follower=user_id, user=user).first()
+                if following_mutual is not None and follower_mutual is not None:
+                    message = "Tú y " + other_user.username + "os seguís mutuamente"
+                else:
+                    message = "Tú y " + other_user.username + "no os seguís mutuamente"
             else:
-                message = "Sigues a todos los usuarios que te siguen, ¡Guau!"
+                following = Follow.objects.filter(follower=user_id, user=user).first()
+                if following:
+                    message = "Puedes dejar de seguir a " + other_user.username + " pulsando en 'No seguir'"
+                else:
+                    message = "Puedes seguir a " + other_user.username + " pulsando en 'Seguir'"
         return Response({"message": message})
 
 
@@ -409,7 +442,10 @@ class LeaderboardAssistantAPI(APIView):
         today = datetime.utcnow()
         start_week = today - timedelta(days=today.weekday())
         end_week = start_week + timedelta(days=6)
-        frequency = request.query_params.get('frequency')
+        objectives = list(Objective.objects.filter(goal=goal_id))
+        if len(objectives) <= 0:
+            return Response({"message": "No hay objetivos para esta meta"})
+        frequency = random.choice(objectives).frequency
         time_zone = get_of_set(request.headers.get('timezone'))
         user = User.objects.filter(user_id=request.user.id).first()
         query, amount = get_leader_board(
@@ -419,29 +455,64 @@ class LeaderboardAssistantAPI(APIView):
 
         if probability < 0.25:
             if user.username != res[0].get("username"):
-                message = "El líder de la meta es " + res[0][
-                    'username'] + ", pero aún puedes superarlo, ¡comienza a generar progreso ahora!"
+                message = "El líder de la meta para el objetivo " + translate_objective_frequency(frequency) + " es " \
+                          + res[0]['username'] + ", pero aún puedes superarlo, ¡comienza a generar progreso ahora!"
             else:
-                message = "Eres el líder de la meta, ¡Felicidades!"
+                message = "Eres el líder de la meta para para el objetivo " + translate_objective_frequency(frequency) \
+                          + " ¡Felicidades!"
         elif probability < 0.5:
-            if user.username != res[1].get("username"):
-                message = "El segundo en la meta es " + res[1][
-                    'username'] + " que ha registrado " + str(
-                    get_trackings([frequency], goal_id, res[1].get("id"), today,
-                                  start_week, end_week, time_zone).count()) + \
-                          " progresos"
+            if len(res) > 1:
+                if user.username != res[1].get("username"):
+                    message = "El segundo en la meta para el objetivo " + translate_objective_frequency(
+                        frequency) + " es " + \
+                              res[1]['username'] + " que ha registrado " + str(
+                        get_trackings([frequency], goal_id, res[1].get("id"), today,
+                                      start_week, end_week, time_zone).count()) + \
+                              " progresos."
+                else:
+                    message = "Eres el segundo en la tabla de líderes para el objetivo " + \
+                              translate_objective_frequency(frequency) + ", ¡Felicidades, a por el primer puesto!"
             else:
-                message = "Eres el segundo en la tabla de líderes, ¡Felicidades, a por el primer puesto!"
+                if user.username != res[0].get("username"):
+                    message = "El líder de la meta para el objetivo " + translate_objective_frequency(
+                        frequency) + " es " \
+                              + res[0]['username'] + ", pero aún puedes superarlo, ¡comienza a generar progreso ahora!"
+                else:
+                    message = "Eres el líder de la meta para para el objetivo " + translate_objective_frequency(
+                        frequency) \
+                              + " ¡Felicidades!"
         elif probability < 0.75:
-            if user.username != res[2].get("username"):
-                message = "El tercero de la meta es " + res[2][
-                    'username']
+            if len(res) > 2:
+                if user.username != res[2].get("username"):
+                    message = "El tercero de la meta es para el objetivo " + translate_objective_frequency(frequency) + \
+                              " es " + res[2]['username']
+                else:
+                    message = "Eres el tercero para el objetivo " \
+                              + translate_objective_frequency(frequency) + ", ¡Felicidades, sigue así!"
             else:
-                message = "Eres el tercero, ¡Felicidades, sigue así!"
+                pos = random.choice(res)
+                if user.username != pos.get("username"):
+                    message = "El usuario" + pos.get(
+                        "username") + " en esta meta para el objetivo " + translate_objective_frequency(
+                        frequency) + " es el " + \
+                              str(res.index(
+                                  pos) + 1) + "º, pero aún puedes superarlo, ¡comienza a generar progreso ahora!"
+                else:
+                    message = "Eres el " + \
+                              str(res.index(pos) + 1) + \
+                              "º en la tabla de líderes para el objetivo " + translate_objective_frequency(frequency) + \
+                              ", sigue generando progreso para llegar al podio"
         else:
-            message = "Eres el " + \
-                      str([list_user.get("username") for list_user in res].index(user.username) + 1) + \
-                      "º en la tabla de líderes, sigue generando progreso para llegar al podio"
+            username_list = [list_user.get("username") for list_user in res]
+            if user.username in username_list:
+                message = "Eres el " + \
+                          str(username_list.index(user.username) + 1) + \
+                          "º en la tabla de líderes para el objetivo " + translate_objective_frequency(frequency) + \
+                          ", sigue generando progreso para llegar al podio"
+            else:
+                pos = random.choice(username_list)
+                message = "El usuario " + pos.get("username") + " es el " + str(res.index(pos) + 1) + \
+                          "º, en la tabla de líderes para el objetivo" + translate_objective_frequency(frequency)
         return Response({"message": message})
 
 
@@ -456,7 +527,8 @@ class GoalsStatsAssistantAPI(APIView):
         probability = random.random()
 
         if probability < 0.25:
-            message = "Estas son tus estadísticas de progreso en la meta durante una semana, puedes navegar a semanas anteiores si lo deseas"
+            message = "Estas son tus estadísticas de progreso en la meta durante una semana," \
+                      " puedes navegar a semanas anteiores si lo deseas"
         elif probability < 0.5:
             trackings_semanales = Tracking.objects.filter(createdBy=user, goal=goal_id,
                                                           date__gte=weekly_gte_date(
@@ -464,9 +536,8 @@ class GoalsStatsAssistantAPI(APIView):
                                                           date__lte=weekly_lte_date(end_week, time_zone)) \
                 .count()
             if trackings_semanales > 0:
-                message = "¡Wow!, has registrado esta semana un total de " + str(
-                    trackings_semanales) + " progresos en la meta," \
-                                           " ¡sigue así!"
+                message = "Has registrado esta semana un total de " + str(
+                    trackings_semanales) + " progresos en la meta"
             else:
                 message = "Aún no has registrado progresos en la meta esta semana, " \
                           "¡Date prisa e intenta ser el primero en la tabla de lideres"
@@ -476,8 +547,8 @@ class GoalsStatsAssistantAPI(APIView):
                                                             today, time_zone),
                                                         date__lte=yearly_lte_date(today, time_zone)).count()
             if trackings_anuales > 0:
-                message = "¡Wow!, has registrado este año un total de " + str(trackings_anuales) + \
-                          " progresos en la meta, ¡sigue así!"
+                message = "Has registrado este año un total de " + str(trackings_anuales) + \
+                          " progresos en la meta"
             else:
                 message = "Aún no has registrado progresos en la meta este año, " \
                           "¡Date prisa e intenta ser el primero en la tabla de lideres"
@@ -570,8 +641,8 @@ class GoalsTrackingAssistantAPI(APIView):
                 tracking = Tracking.objects.filter(createdBy=User.objects.filter(user_id=request.user.id).first(),
                                                    goal=goal_id).order_by('-date').first()
                 if tracking:
-                    message = "Tu último progreso registrado fue el " + str(tracking.date) + " con un valor de " + str(
-                        tracking.amount)
+                    message = "Tu último progreso registrado fue el " + tracking.date.strftime("%d/%m/%Y a las %H:%M") \
+                              + " con un valor de " + str(tracking.amount)
                 else:
                     message = "Aún no has registrado progresos en esta meta, ¿por qué no registras algún progreso?"
             else:
