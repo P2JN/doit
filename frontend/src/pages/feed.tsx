@@ -9,7 +9,7 @@ import { SocialTypes } from "types";
 import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
-import { ModalDrawer, PostTeaser } from "components/organisms";
+import { ModalDrawer, PostTeaser, PostComments } from "components/organisms";
 import { PostForm } from "components/templates";
 
 const FeedPage = () => {
@@ -74,6 +74,14 @@ const FeedModals = () => {
         element={
           <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
             <PostForm />
+          </ModalDrawer>
+        }
+      />
+      <Route
+        path="/:postId/comments"
+        element={
+          <ModalDrawer title="Comentarios" onClose={() => navigate(-1)}>
+            <PostComments />
           </ModalDrawer>
         }
       />

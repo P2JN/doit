@@ -17,7 +17,11 @@ import { paginationUtils } from "utils";
 
 import { Card, HorizontalStatCounters, StatCounter } from "components/atoms";
 import { DataLoader } from "components/molecules";
-import { FollowTable, PostTeaser, TrackingTeaser } from "components/organisms";
+import {
+  FollowTable,
+  PostTeaserWithoutComments,
+  TrackingTeaser,
+} from "components/organisms";
 import { UserForm } from "components/templates";
 
 const UserInfoTab = (user: SocialTypes.User) => {
@@ -90,7 +94,7 @@ const UserFeedTab = (user: SocialTypes.User) => {
       )}
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {posts?.map((post) => (
-          <PostTeaser withoutComments key={post.id} {...post} />
+          <PostTeaserWithoutComments key={post.id} {...post} />
         ))}
       </div>
       <DataLoader

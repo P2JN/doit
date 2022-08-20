@@ -21,6 +21,7 @@ import { Card } from "components/atoms";
 
 const LeaderboardTable = (props: {
   users: (SocialTypes.User & { amount: number })[];
+  goalUnit: string;
   objective?: number;
 }) => {
   const { activeUser } = useActiveUser();
@@ -74,6 +75,7 @@ const LeaderboardTable = (props: {
                   <ProgressBar
                     objective={props.objective || 0}
                     completed={user.amount}
+                    unit={props.goalUnit}
                   />
                 </TableCell>
                 <TableCell align="center">
