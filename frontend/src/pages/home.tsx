@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Button, Skeleton, Typography } from "@mui/material";
 
 import { Page } from "layout";
@@ -27,13 +27,10 @@ const HomePage = () => {
 
   const navigate = useNavigate();
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "goals") {
-      refetch();
-      setSearchParams("");
-    }
-  }, [params, refetch, setSearchParams]);
+    refetch();
+  }, [location, refetch]);
 
   return (
     <Page title="Inicio">
@@ -70,7 +67,7 @@ const HomeModals = () => {
         element={
           <ModalDrawer
             title="Crear nuevo objetivo"
-            onClose={() => navigate("/home?refresh=goals")}
+            onClose={() => navigate(-1)}
           >
             <GoalForm />
           </ModalDrawer>
@@ -79,10 +76,7 @@ const HomeModals = () => {
       <Route
         path="/:goalId/track"
         element={
-          <ModalDrawer
-            title="Registrar progreso"
-            onClose={() => navigate("/home?refresh=goals")}
-          >
+          <ModalDrawer title="Registrar progreso" onClose={() => navigate(-1)}>
             <TrackingForm />
           </ModalDrawer>
         }
@@ -92,7 +86,7 @@ const HomeModals = () => {
         element={
           <ModalDrawer
             title="Objetivos temporales"
-            onClose={() => navigate("/home?refresh=goals")}
+            onClose={() => navigate("/home")}
           >
             <ObjectivesForm />
           </ModalDrawer>
@@ -110,11 +104,10 @@ const GoalTeaserProvider = (goal: GoalTypes.Goal) => {
     refetch,
   } = goalService.useMyGoalProgress(goal.id, activeUser?.id);
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === goal?.id) refetch();
-    setSearchParams("");
-  }, [goal?.id, params, refetch, setSearchParams]);
+    refetch();
+  }, [goal?.id, refetch, location]);
 
   return loadingProgress ? (
     <Skeleton />

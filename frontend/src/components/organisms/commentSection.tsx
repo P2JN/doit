@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
 
 import { SocialTypes } from "types";
@@ -27,13 +27,10 @@ const CommentSection = (post: SocialTypes.Post) => {
     [commentPages]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === post.id) {
-      refetch();
-      setSearchParams("");
-    }
-  }, [post.id, params, refetch, setSearchParams]);
+    refetch();
+  }, [location, refetch]);
 
   const commentListRef = useRef<HTMLSelectElement>(null);
   useEffect(() => {

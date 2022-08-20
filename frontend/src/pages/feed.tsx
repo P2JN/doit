@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 
 import { Page } from "layout";
@@ -30,10 +30,10 @@ const FeedPage = () => {
 
   const navigate = useNavigate();
 
-  const [params] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "feed") refetch();
-  }, [params, refetch]);
+    refetch();
+  }, [location, refetch]);
 
   return (
     <Page title="Contenido">

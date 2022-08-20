@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import {
   Route,
   Routes,
+  useLocation,
   useNavigate,
   useParams,
-  useSearchParams,
 } from "react-router-dom";
 import { Avatar, Divider, Tab, Tabs, Typography } from "@mui/material";
 import {
@@ -32,6 +32,7 @@ import {
   UserFollowersTab,
   PostForm,
   MediaForm,
+  DeleteTrackingConfirmation,
 } from "components/templates";
 
 type UserTabsType = "info" | "feed" | "trackings" | "stats" | "related";
@@ -48,13 +49,10 @@ const UserDetailPage = () => {
 
   const navigate = useNavigate();
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "user") {
-      refetch();
-      setSearchParams("");
-    }
-  }, [userId, params, refetch, setSearchParams]);
+    refetch();
+  }, [userId, refetch, location]);
 
   const handleChange = (_: any, tab: string) => {
     navigate(`/users/${userId}/${tab}`);
@@ -139,7 +137,7 @@ const UserModals = (user: SocialTypes.User) => {
       { userId: user.id, mediaId },
       {
         onSuccess: () => {
-          navigate(`/users/${user.id}/info?refresh=user`);
+          navigate(`/users/${user.id}/info`);
         },
       }
     );
@@ -170,6 +168,14 @@ const UserModals = (user: SocialTypes.User) => {
             <MediaForm initial={user.media} onUploadFinished={onUpdatePhoto} />
             {loadingPhoto && <Loader />}
             {errorPhoto && <div>Error</div>}
+          </ModalDrawer>
+        }
+      />
+      <Route
+        path="/delete-tracking/:trackingId"
+        element={
+          <ModalDrawer title="Eliminar progreso" onClose={() => navigate(-1)}>
+            <DeleteTrackingConfirmation />
           </ModalDrawer>
         }
       />
