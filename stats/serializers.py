@@ -41,7 +41,7 @@ class AchievementSerializer(serializers.DocumentSerializer):
 
     class Meta:
         model = Achievement
-        fields = ['id', 'title', 'description', 'urlMedia']
+        fields = ['id', 'title', 'description', 'urlMedia', 'type']
 
     def get_urlMedia(self, obj):
         res = None

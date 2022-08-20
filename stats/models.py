@@ -7,7 +7,7 @@ from mongoengine import Document, fields, CASCADE
 class AchievementType(str, Enum):
     GOLD = 'gold'
     SILVER = 'silver'
-    BRONZE = 'BRONZE'
+    BRONZE = 'bronze'
     SPECIAL = 'special'
 
 
