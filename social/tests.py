@@ -116,14 +116,14 @@ class UserViewTest(TestCase):
         self.assertEqual(response.data.get("id"), str(self.mongo_user.id))
 
     def test_user_view_set_post(self):
-        request = APIRequestFactory().post("", {'username': 'test', 'email': 'test@gmail.com', 'firstName': 'test',
+        request = APIRequestFactory().post("", {'username': 'testUser', 'email': 'test@gmail.com', 'firstName': 'test',
                                                 'lastName': 'test'})
         force_authenticate(request, user=self.user, token=self.token)
         user_detail = UserViewSet.as_view({'post': 'create'})
         response = user_detail(request)
         self.assertEqual(response.status_code, 201)
         self.assertIsNotNone(MongoUser.objects.filter(id=response.data.get("id")).first())
-        self.assertEqual(response.data.get("username"), "test")
+        self.assertEqual(response.data.get("username"), "testUser")
         self.assertEqual(response.data.get("email"), "test@gmail.com")
 
     def test_user_view_set_put(self):

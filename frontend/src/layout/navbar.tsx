@@ -48,7 +48,7 @@ const AppNavbar = () => {
         (!activeUser ? "hidden" : "")
       }
     >
-      <aside className="flex items-center justify-between gap-5 px-4 py-3 md:h-full md:flex-col md:items-start md:py-6 md:px-8">
+      <aside className="flex items-center justify-between gap-4 px-4 py-3 md:h-full md:flex-col md:items-start md:py-6 md:px-8">
         <Link to="/landing" className="flex items-center justify-start gap-5">
           <Icon>
             <img src={Logo} alt="React Logo" />
@@ -61,11 +61,7 @@ const AppNavbar = () => {
         <section className="flex gap-5 sm:gap-8 md:block">
           <NavLink to="/home" icon={<HomeOutlined />} title="Inicio" />
           <NavLink to="/feed" icon={<ImageOutlined />} title="Contenido" />
-          <NavLink
-            to="/explore/goals"
-            icon={<ExploreOutlined />}
-            title="Explora"
-          />
+          <NavLink to="/explore" icon={<ExploreOutlined />} title="Explora" />
           <NavLink
             to="/notifications"
             icon={

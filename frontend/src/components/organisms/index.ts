@@ -1,6 +1,8 @@
 import NotificationProvider from "./notificationProvider";
 import ErrorHandler from "./errorHandler";
 
+import AppAssistant from "./assistant";
+
 import ModalDrawer from "./modalDrawer";
 import CommentSection from "./commentSection";
 
@@ -53,6 +55,7 @@ export {
   TrackingTeaser,
   NotificationProvider,
   ErrorHandler,
+  AppAssistant,
   ModalDrawer,
   CommentSection,
   FollowTable,
