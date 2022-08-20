@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 
 import { socialService } from "services";
 import { SocialTypes } from "types";
@@ -11,9 +11,12 @@ const Comment = (comment: SocialTypes.Comment) => {
   return (
     <Card>
       <div className="flex gap-3">
-        <div className="-ml-2">{user && <UserAvatar {...user} />}</div>
+        <div className="-ml-2">
+          {user ? <UserAvatar {...user} /> : <Skeleton variant="circular" />}
+        </div>
         <Typography variant="body1">
-          {user && <UserUsername {...user} />} : {comment.content}
+          {user ? <UserUsername {...user} /> : <Skeleton variant="text" />} :{" "}
+          {comment.content || <Skeleton variant="text" />}
         </Typography>
       </div>
     </Card>

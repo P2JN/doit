@@ -24,8 +24,15 @@ import {
   UserTrackingsTab,
   UserFollowersTab,
 } from "./tabs/userTabs";
+import {
+  UsersExploreTab,
+  GoalsExploreTab,
+  PostsExploreTab,
+} from "./tabs/exploreTabs";
 
-// TEASERS
+// confirmation
+import DeleteTrackingConfirmation from "./confirmation/deleteTracking";
+import DeleteGoalConfirmation from "./confirmation/deleteGoal";
 
 export {
   GoalForm,
@@ -46,4 +53,9 @@ export {
   UserStatsTab,
   UserTrackingsTab,
   UserFollowersTab,
+  UsersExploreTab,
+  GoalsExploreTab,
+  PostsExploreTab,
+  DeleteTrackingConfirmation,
+  DeleteGoalConfirmation,
 };

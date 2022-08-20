@@ -1,4 +1,5 @@
 import NotificationProvider from "./notificationProvider";
+import ErrorHandler from "./errorHandler";
 
 import ModalDrawer from "./modalDrawer";
 import CommentSection from "./commentSection";
@@ -27,6 +28,8 @@ import {
 } from "./userTeaser";
 import { TrackingTeaser } from "./trackingTeaser";
 
+import WeekChart from "./weekChart";
+
 export {
   UserTeaser,
   UserTeaserInfo,
@@ -42,9 +45,11 @@ export {
   PostSearchResult,
   TrackingTeaser,
   NotificationProvider,
+  ErrorHandler,
   ModalDrawer,
   CommentSection,
   FollowTable,
   LeaderboardTable,
   SearchBar,
+  WeekChart,
 };

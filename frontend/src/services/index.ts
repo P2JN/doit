@@ -3,6 +3,7 @@ import socialService from "./socialService";
 import mediaService from "./mediaService";
 import recommendationService from "./recommendationService";
 import searchService from "./searchService";
+import statsService from "./statsService";
 
 export {
   goalService,
@@ -10,4 +11,5 @@ export {
   mediaService,
   recommendationService,
   searchService,
+  statsService,
 };

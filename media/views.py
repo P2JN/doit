@@ -20,7 +20,7 @@ class MediaUploadApi(APIView):
         file = request.data['file']
         extension = file.name.split('.')[-1]
         file.name = str(ObjectId.from_datetime(
-            datetime.now())) + '.' + extension
+            datetime.utcnow())) + '.' + extension
         url = handle_uploaded_file(file)
         media = Media(url=url).save()
         return Response(str(media.id))

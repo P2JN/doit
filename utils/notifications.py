@@ -10,7 +10,7 @@ from utils.utils import get_progress, update_stats
 
 def create_user_notification(user, title, content, icon_type):
     notification = Notification(
-        user=user, title=title, content=content, iconType=icon_type)
+        user=user, title=title[:50], content=content[:1250], iconType=icon_type)
     notification.save()
     return NotificationSerializer(notification)
 
@@ -42,7 +42,12 @@ def create_notification_tracking(self, serializer, request, *args, **kwargs):
     goal = Goal.objects.get(id=goal_id)
     objectives = Objective.objects.filter(goal=goal_id)
     user = User.objects.get(id=serializer.data.get("createdBy"))
-    progress = get_progress(goal, objectives, user)
+    time_zone = request.headers.get("timezone")
+    if time_zone:
+        time_zone = int(time_zone)
+    else:
+        time_zone = -2
+    progress = get_progress(goal, objectives, user, time_zone)
     notifications = notify_completed_objectives(
         progress, objectives, goal, user, serializer)
     notifications.append(notification)
@@ -86,3 +91,9 @@ def translate_objective_frequency(frequency):
         return "anual"
     elif frequency == Frequency.TOTAL:
         return "total"
+
+
+def limit_text(text, limit, length):
+    if text and length+len(text) > limit:
+        text = text[:limit-length - 3] + "..."
+    return text
