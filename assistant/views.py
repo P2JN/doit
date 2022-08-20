@@ -222,7 +222,7 @@ class UserInfoAssistantAPI(APIView):
                 if followers > 20:
                     message = "Te siguen " + \
                               str(followers) + \
-                        " personas, estas hecho un influencer"
+                              " personas, estas hecho un influencer"
                 else:
                     message = "Te siguen " + str(
                         followers) + " personas, puedes seguir a usuarios o generar actividad en alguna meta y " \
@@ -249,7 +249,7 @@ class UserInfoAssistantAPI(APIView):
                 if goals_in_common > 0:
                     message = "Tienes " + str(
                         goals_in_common) + " metas en común con " + logged_user.username + \
-                        ", os podríais llevar muy bien"
+                              ", os podríais llevar muy bien"
                 else:
                     message = "No tienes metas en común con " + other_user.username
         return Response({"message": message})
@@ -429,7 +429,7 @@ class LeaderboardAssistantAPI(APIView):
                     'username'] + " que ha registrado " + str(
                     get_trackings([frequency], goal_id, res[1].get("id"), today,
                                   start_week, end_week, time_zone).count()) + \
-                    " progresos"
+                          " progresos"
             else:
                 message = "Eres el segundo en la tabla de líderes, ¡Felicidades, a por el primer puesto!"
         elif probability < 0.75:
@@ -486,7 +486,7 @@ class GoalsStatsAssistantAPI(APIView):
                 createdBy=user, goal=goal_id).count()
             if total_trackings > 0:
                 message = "¿Sabias que has registrado un total de " + \
-                    str(total_trackings) + " progresos en esta meta?"
+                          str(total_trackings) + " progresos en esta meta?"
             else:
                 message = "Aún no has registrado progresos en esta meta, " \
                           "¡Date prisa e intenta ser el primero en la tabla de lideres"
@@ -536,7 +536,7 @@ class GoalsInfoAssistantAPI(APIView):
             participates = Participate.objects.filter(goal=goal_id).count()
             if participates > 1:
                 message = "Actualmente participan " + \
-                    str(participates) + " usuarios en esta meta"
+                          str(participates) + " usuarios en esta meta"
             else:
                 message = "Aún no hay muchos participantes en esta meta"
         return Response({"message": message})
@@ -560,7 +560,7 @@ class GoalsTrackingAssistantAPI(APIView):
                 goal=goal_id).order_by('-date').first()
             if tracking:
                 message = tracking.createdBy.username + \
-                    " ha sido el último que ha registrado progresos en esta meta"
+                          " ha sido el último que ha registrado progresos en esta meta"
             else:
                 message = "Aún no hay progresos registrados en esta meta"
         elif probability < 0.75:
@@ -583,7 +583,7 @@ class GoalsTrackingAssistantAPI(APIView):
                           + str(trackings) + " progresos"
             else:
                 message = "Los participantes de esta meta han registrado un total de " + \
-                    str(trackings) + " progresos"
+                          str(trackings) + " progresos"
 
         return Response({"message": message})
 
@@ -600,4 +600,17 @@ class GoalsFeedAssistantAPI(APIView):
                     str(Post.objects.filter(goal=goal_id).count()) +
                     " publicaciones relacionadas con esta "
                     "meta"]
+        return Response({"message": random.choice(messages)})
+
+
+class PostDetailsAssistantAPI(APIView):
+    def get(self, request, post_id, *args, **kwargs):
+        messages = ["Esta es la vista en detalle de una publicación",
+                    "Puedes indicar te gusta haciendo clic en el "
+                    "botón del corazón",
+                    "Puedes acceder al perfil del autor de una publicación haciendo clic en el "
+                    "nombre de usuario del autor",
+                    "Puedes escribir un comentario haciendo clic en el icono de comentario o "
+                    "desde el recuadro de texto",
+                    "Puedes acceder a los detalles de la meta haciendo clic en el titulo"]
         return Response({"message": random.choice(messages)})
