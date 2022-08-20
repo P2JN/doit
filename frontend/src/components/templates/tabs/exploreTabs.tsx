@@ -7,7 +7,11 @@ import { recommendationService } from "services";
 import { arrayUtils, texts } from "utils";
 
 import { DataLoader } from "components/molecules";
-import { GoalTeaserInfo, PostTeaser, UserTeaser } from "components/organisms";
+import {
+  GoalTeaserInfo,
+  PostTeaserWithoutComments,
+  UserTeaser,
+} from "components/organisms";
 
 const ExploreSection = (props: {
   title: string;
@@ -64,8 +68,8 @@ const ExploreSkeleton = () => {
     <>
       {Array.from({ length: 3 }, () => (
         <div className="mb-3">
-          <Skeleton variant="text" width={430} />
-          <div className="flex gap-3">
+          <Skeleton variant="text" width="45%" />
+          <div className="flex flex-col items-center gap-3 md:flex-row">
             {Array.from({ length: 3 }, () => (
               <Skeleton variant="rectangular" width={300} height={300} />
             ))}
@@ -131,7 +135,7 @@ const PostsExploreTab = () => {
           error={isPostError ? postError : undefined}
           slides={
             posts?.map((post) => (
-              <PostTeaser withoutComments key={post.id} {...post} />
+              <PostTeaserWithoutComments key={post.id} {...post} />
             )) || []
           }
         />

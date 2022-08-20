@@ -15,6 +15,7 @@ const PostCounters = (props: {
   comments?: number;
   likes?: number;
   postId: Id;
+  onCommentsClick?: () => void;
 }) => {
   const [syncLike, setSyncLike] = useState(0);
   const { activeUser } = useActiveUser();
@@ -53,16 +54,23 @@ const PostCounters = (props: {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         {props.comments || 0}
-        <CommentOutlined />
+        <CommentOutlined
+          onClick={props?.onCommentsClick}
+          className={props.onCommentsClick ? "cursor-pointer" : ""}
+        />
       </span>
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         {(props.likes || 0) + syncLike}
         {!like?.id ? (
           <FavoriteBorder className="cursor-pointer" onClick={onLikeClick} />
         ) : (
-          <Favorite className="cursor-pointer" onClick={onLikeClick} />
+          <Favorite
+            color="primary"
+            className="cursor-pointer"
+            onClick={onLikeClick}
+          />
         )}
       </span>
     </div>
@@ -72,11 +80,11 @@ const PostCounters = (props: {
 const GoalCounters = (props: { participants?: number; posts?: number }) => {
   return (
     <div className="flex items-center gap-2">
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         {props.participants || 0}
         <Person />
       </span>
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         {props.posts || 0}
         <Image />
       </span>
@@ -87,11 +95,11 @@ const GoalCounters = (props: { participants?: number; posts?: number }) => {
 const UserCounters = (props: { followers?: number; posts?: number }) => {
   return (
     <div className="flex items-center gap-2">
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         {props.followers || 0}
         <Person />
       </span>
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         {props.posts || 0}
         <Image />
       </span>

@@ -11,6 +11,7 @@ import {
   NotificationsPage,
   LoadingPage,
   GoalDetailPage,
+  PostDetailPage,
 } from "pages";
 import UserDetailPage from "pages/userDetails";
 
@@ -39,6 +40,7 @@ const AppPages = () => {
             path="/users/:userId/:activeTab/*"
             element={<UserDetailPage />}
           />
+          <Route path="/posts/:postId/*" element={<PostDetailPage />} />
         </>
       ) : (
         <Route path="*" element={<Navigate to="/auth/login" />} />

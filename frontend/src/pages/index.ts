@@ -9,6 +9,8 @@ import ExplorePage from "./explore";
 import NotificationsPage from "./notifications";
 
 import GoalDetailPage from "./goalDetails";
+import PostDetailPage from "./postDetails";
+import UserDetailPage from "./userDetails";
 
 export {
   HomePage,
@@ -20,4 +22,6 @@ export {
   AuthPage,
   LoadingPage,
   GoalDetailPage,
+  PostDetailPage,
+  UserDetailPage,
 };
