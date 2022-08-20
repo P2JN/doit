@@ -7,7 +7,11 @@ import { recommendationService } from "services";
 import { arrayUtils, texts } from "utils";
 
 import { DataLoader } from "components/molecules";
-import { GoalTeaserInfo, PostTeaser, UserTeaser } from "components/organisms";
+import {
+  GoalTeaserInfo,
+  PostTeaserWithoutComments,
+  UserTeaser,
+} from "components/organisms";
 
 const ExploreSection = (props: {
   title: string;
@@ -131,7 +135,7 @@ const PostsExploreTab = () => {
           error={isPostError ? postError : undefined}
           slides={
             posts?.map((post) => (
-              <PostTeaser withoutComments key={post.id} {...post} />
+              <PostTeaserWithoutComments key={post.id} {...post} />
             )) || []
           }
         />

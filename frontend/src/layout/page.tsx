@@ -7,7 +7,7 @@ const Page = (props: {
   actions?: ReactNode;
 }) => {
   return (
-    <main className="h-[calc(100vh-65px)] w-full overflow-auto px-5 py-3 md:h-screen xl:mx-4">
+    <main className="h-[calc(100vh-65px)] w-full overflow-auto px-5 pb-10 pt-3 md:h-screen xl:mx-4">
       <section className="block animate-fade-in">
         <section className="mb-2 flex flex-col justify-between gap-y-2 md:mb-7 md:flex-row md:items-center">
           {props.title && (

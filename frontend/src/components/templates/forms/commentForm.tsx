@@ -10,7 +10,7 @@ import { socialService } from "services";
 import { Id } from "types/apiTypes";
 import { useActiveUser } from "store";
 
-const CommentForm = (props: { postId?: Id }) => {
+const CommentForm = (props: { postId?: Id; onComment: () => void }) => {
   const { activeUser } = useActiveUser();
 
   const {
@@ -33,6 +33,7 @@ const CommentForm = (props: { postId?: Id }) => {
         {
           onSuccess: () => {
             setValue("message", "");
+            props.onComment();
           },
         }
       );
