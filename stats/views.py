@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from goals.models import Goal, Tracking
 from social.models import User
-from stats.models import Stats, AchievementUser
+from stats.models import Stats, AchievementUser, Achievement
 from stats.serializers import StatsSerializer, AchievementSerializer
 
 # Custom endpoint
@@ -80,6 +80,12 @@ class GoalStatsApi(APIView):
 
 class AchievementApi(APIView):
     def get(self, request, user_id, *args, **kwargs):
-        achievements = AchievementSerializer(AchievementUser.objects.filter(createdBy=user_id).values_list('achievement'),
-                                             many=True).data
+        achievements = AchievementSerializer(Achievement.objects.all(), many=True).data
+        user_achievements = AchievementUser.objects.filter(createdBy=user_id).values_list('achievement')
+        user_achievements_ids = [achievement.id for achievement in user_achievements]
+        for achievement in achievements:
+            if achievement['id'] in user_achievements_ids:
+                achievement['completed'] = True
+            else:
+                achievement['completed'] = False
         return Response(achievements, status=200)

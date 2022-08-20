@@ -37,13 +37,13 @@ class StatsSerializer(serializers.DocumentSerializer):
 
 
 class AchievementSerializer(serializers.DocumentSerializer):
-    url = serializers.serializers.SerializerMethodField()
+    urlMedia = serializers.serializers.SerializerMethodField()
 
     class Meta:
         model = Achievement
-        fields = ['title', 'description', 'url']
+        fields = ['id', 'title', 'description', 'urlMedia']
 
-    def get_url(self, obj):
+    def get_urlMedia(self, obj):
         res = None
         if obj.media:
             media = Media.objects.filter(id=obj.media).first()
