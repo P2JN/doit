@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.conf.urls.static import static
+from pwa.views import service_worker, manifest, offline
 
 from rest_framework_mongoengine import routers
 
@@ -72,6 +73,9 @@ urlpatterns = [
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/signup/', include('dj_rest_auth.registration.urls')),
     path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
+    path('serviceworker.js', service_worker, name='serviceworker'),
+    path('manifest.json', manifest, name='manifest'),
+    path('offline/', offline, name='offline')
 ]
 
 # Serve media files
