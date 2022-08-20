@@ -61,11 +61,7 @@ const AppNavbar = () => {
         <section className="flex gap-5 sm:gap-8 md:block">
           <NavLink to="/home" icon={<HomeOutlined />} title="Inicio" />
           <NavLink to="/feed" icon={<ImageOutlined />} title="Contenido" />
-          <NavLink
-            to="/explore/goals"
-            icon={<ExploreOutlined />}
-            title="Explora"
-          />
+          <NavLink to="/explore" icon={<ExploreOutlined />} title="Explora" />
           <NavLink
             to="/notifications"
             icon={
