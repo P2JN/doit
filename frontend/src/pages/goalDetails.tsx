@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import {
   Route,
   Routes,
+  useLocation,
   useNavigate,
   useParams,
-  useSearchParams,
 } from "react-router-dom";
 import { Tab, Tabs, Typography } from "@mui/material";
 import {
@@ -29,6 +29,8 @@ import {
   GoalTrackingsTab,
   TrackingForm,
   PostForm,
+  DeleteGoalConfirmation,
+  DeleteTrackingConfirmation,
 } from "components/templates";
 
 type GoalTabsType = "info" | "feed" | "trackings" | "leaderboard" | "stats";
@@ -44,13 +46,10 @@ const GoalDetailPage = () => {
 
   const navigate = useNavigate();
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "goal") {
-      refetch();
-      setSearchParams("");
-    }
-  }, [goalId, params, refetch, setSearchParams]);
+    refetch();
+  }, [goalId, refetch, location]);
 
   const handleChange = (_: any, tab: string) => {
     navigate(`/goals/${goalId}/${tab}`);
@@ -116,6 +115,22 @@ const GoalModals = (goal: GoalTypes.Goal) => {
         element={
           <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
             <PostForm relatedGoal={goal} />
+          </ModalDrawer>
+        }
+      />
+      <Route
+        path="/delete"
+        element={
+          <ModalDrawer title="Eliminar objetivo" onClose={() => navigate(-1)}>
+            <DeleteGoalConfirmation {...goal} />
+          </ModalDrawer>
+        }
+      />
+      <Route
+        path="/delete-tracking/:trackingId"
+        element={
+          <ModalDrawer title="Eliminar progreso" onClose={() => navigate(-1)}>
+            <DeleteTrackingConfirmation />
           </ModalDrawer>
         }
       />

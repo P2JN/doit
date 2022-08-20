@@ -4,7 +4,7 @@ import { Delete } from "@mui/icons-material";
 
 import { GoalTypes } from "types";
 import { goalService, socialService } from "services";
-import { useActiveUser, useNotificationStore } from "store";
+import { useActiveUser } from "store";
 import { dateUtils } from "utils";
 
 import { Card } from "components/atoms";
@@ -13,7 +13,6 @@ import { GoalTeaserReduced, UserTeaserReduced } from "components/organisms";
 const TrackingTeaser = (tracking: GoalTypes.Tracking) => {
   const navigate = useNavigate();
   const { activeUser } = useActiveUser();
-  const { addNotification } = useNotificationStore();
 
   const { data: user } = socialService.useUser(tracking.createdBy);
   const isOwner = activeUser?.id === tracking.createdBy;
@@ -21,34 +20,18 @@ const TrackingTeaser = (tracking: GoalTypes.Tracking) => {
   const { data: goal } = goalService.useGoal(tracking.goal);
   const isInGoalPage = useMatch("/goals/:id/trackings/*");
 
-  const { mutate: removeTracking } = goalService.useRemoveTracking();
-
-  const onRemoveTracking = () => {
-    if (tracking.id)
-      removeTracking(tracking.id, {
-        onSuccess: () => {
-          addNotification({
-            title: "Se ha eliminado el registro",
-            content: "Dejará de contar el progreso en este objetivo.",
-            type: "transient",
-          });
-          navigate(
-            "/goals/" + tracking.goal + "/trackings?refresh=" + tracking.goal
-          );
-        },
-      });
-  };
-
   return (
     <div className="flex flex-col gap-2">
       {!isInGoalPage && goal && <GoalTeaserReduced {...goal} />}
       <Card className="cursor-pointer">
         <header className="flex cursor-pointer items-center justify-between">
-          <div className="flex items-end gap-3 text-primary">
+          <div className="flex items-end gap-2 text-primary">
             <Typography variant="h4" className="!font-bold">
               +{tracking.amount}
             </Typography>
-            <Typography variant="body1">{goal?.unit.slice(0, 3)}</Typography>
+            <Typography variant="body1" className="!font-bold">
+              {goal?.unit.slice(0, 3)}
+            </Typography>
           </div>
           {user && <UserTeaserReduced {...user} />}
         </header>
@@ -59,7 +42,7 @@ const TrackingTeaser = (tracking: GoalTypes.Tracking) => {
           </Typography>
           {isOwner && (
             <IconButton
-              onClick={onRemoveTracking}
+              onClick={() => navigate("delete-tracking/" + tracking.id)}
               className="!-mr-2 hover:text-red-600"
             >
               <Delete />

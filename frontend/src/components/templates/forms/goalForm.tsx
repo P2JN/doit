@@ -85,7 +85,7 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
           content: "Los datos de tu meta se han actualizado correctamente",
           type: "transient",
         });
-        navigate("/goals/" + goal.id + "/info?refresh=goal");
+        navigate("/goals/" + goal.id + "/info");
       },
     });
   };

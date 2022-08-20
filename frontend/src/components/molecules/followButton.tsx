@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
 import { Button, CircularProgress } from "@mui/material";
 
 import { socialService } from "services";
@@ -9,7 +8,6 @@ import { SocialTypes } from "types";
 const FollowButton = (user: SocialTypes.User) => {
   const { activeUser } = useActiveUser();
   const { addNotification } = useNotificationStore();
-  const [params, setSearchParams] = useSearchParams();
 
   const { data: followData, refetch: refetchFollowData } =
     socialService.useFollowData(user.id, activeUser?.id);
@@ -28,7 +26,6 @@ const FollowButton = (user: SocialTypes.User) => {
         unfollow(followData.id, {
           onSuccess: () => {
             refetchFollowData();
-            !params.get("q") && setSearchParams("?refresh=user");
             addNotification({
               title: "Has dejado de seguir a este usuario.",
               content: "Ya no verás sus posts en el feed.",
@@ -47,7 +44,6 @@ const FollowButton = (user: SocialTypes.User) => {
             {
               onSuccess: () => {
                 refetchFollowData();
-                !params.get("q") && setSearchParams("?refresh=user");
                 addNotification({
                   title: "Has comenzado a seguir a este usuario.",
                   content: "Verás sus posts en el feed.",

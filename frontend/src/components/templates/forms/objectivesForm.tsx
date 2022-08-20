@@ -100,8 +100,8 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
     });
 
     setTimeout(() => {
-      if (isUpdate) navigate("/goals/" + goalId + "/info?refresh=goal");
-      else navigate("/home?refresh=goals");
+      if (isUpdate) navigate("/goals/" + goalId + "/info");
+      else navigate("/home");
     }, 500);
   };
 
