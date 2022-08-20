@@ -18,7 +18,7 @@ import { dateUtils, paginationUtils, texts } from "utils";
 import { DataLoader, ProgressBar } from "components/molecules";
 import {
   LeaderboardTable,
-  PostTeaser,
+  PostTeaserWithoutComments,
   TrackingTeaser,
   WeekChart,
 } from "components/organisms";
@@ -153,6 +153,7 @@ const GoalInfoTab = (goal: GoalTypes.Goal) => {
                   }
                   expected={undefined}
                   objective={obj.quantity}
+                  unit={goal.unit}
                 />
               ))}
               {(isOwner || isParticipating) && (
@@ -246,7 +247,7 @@ const GoalFeedTab = (goal: GoalTypes.Goal) => {
       </div>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {goals?.map((post) => (
-          <PostTeaser withoutComments key={post.id} {...post} />
+          <PostTeaserWithoutComments key={post.id} {...post} />
         ))}
       </div>
       <DataLoader
@@ -364,6 +365,7 @@ const GoalLeaderboardTab = (goal: GoalTypes.Goal) => {
             <LeaderboardTable
               users={leaderboard}
               objective={objective?.quantity}
+              goalUnit={goal.unit}
             />
           )}
           <DataLoader

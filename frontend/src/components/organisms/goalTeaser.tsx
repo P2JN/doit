@@ -43,6 +43,7 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
             }
             expected={undefined}
             objective={obj.quantity}
+            unit={goal.unit}
           />
         ))}
       </section>
@@ -95,7 +96,10 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
       <header className="flex items-center justify-between gap-3">
         <section className="flex items-center gap-3">
           <CrisisAlert />
-          <Typography variant="h6" className="!font-bold leading-tight">
+          <Typography
+            variant="h6"
+            className="!font-bold leading-tight !line-clamp-1"
+          >
             {goal.title}
           </Typography>
         </section>

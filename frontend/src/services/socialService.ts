@@ -99,6 +99,11 @@ const requests = {
       )
       .then((response) => response.data),
 
+  getPost: (id?: Id) =>
+    axiosInstance
+      .get("/post/" + (id || "missing") + "/")
+      .then((response) => response.data),
+
   createPost: (post: SocialTypes.Post) =>
     axiosInstance.post("/post/", post).then((response) => response.data),
 
@@ -246,6 +251,12 @@ const socialService = {
     useQuery<SocialTypes.Follow, AxiosError>(
       `is-following-${userId}-${followerId}`,
       () => requests.getFollow(userId, followerId)
+    ),
+
+  // use post
+  usePost: (id?: Id) =>
+    useQuery<SocialTypes.Post, AxiosError>(`post-${id}`, () =>
+      requests.getPost(id)
     ),
 
   // Use feed posts

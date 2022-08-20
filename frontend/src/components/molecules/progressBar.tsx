@@ -1,3 +1,4 @@
+import { CheckCircleOutline } from "@mui/icons-material";
 import { LinearProgress } from "@mui/material";
 
 const ProgressBar = (props: {
@@ -5,12 +6,19 @@ const ProgressBar = (props: {
   completed: number;
   objective: number;
   expected?: number;
+  unit?: string;
 }) => {
+  const isCompleted = props.completed >= props.objective;
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-1 text-base text-gray-700">
-      {props.title && <span>{props.title}</span>}
+      {props.title && (
+        <span className="flex items-center gap-3">
+          {isCompleted && <CheckCircleOutline color="primary" />} {props.title}
+        </span>
+      )}
       <span>
-        {props.completed} / {props.objective}
+        {props.completed} / {props.objective} {props.unit?.slice(0, 3)}{" "}
       </span>
       <LinearProgress
         className="!h-2 w-full rounded-full"

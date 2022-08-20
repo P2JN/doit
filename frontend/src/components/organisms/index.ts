@@ -17,7 +17,12 @@ import {
   GoalTeaserReduced,
   GoalSearchResult,
 } from "./goalTeaser";
-import { PostTeaser, PostSearchResult } from "./postTeaser";
+import {
+  PostTeaser,
+  PostSearchResult,
+  PostComments,
+  PostTeaserWithoutComments,
+} from "./postTeaser";
 import {
   UserTeaser,
   UserTeaserReduced,
@@ -43,6 +48,8 @@ export {
   GoalSearchResult,
   PostTeaser,
   PostSearchResult,
+  PostComments,
+  PostTeaserWithoutComments,
   TrackingTeaser,
   NotificationProvider,
   ErrorHandler,
