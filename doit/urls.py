@@ -21,7 +21,8 @@ from rest_framework_mongoengine import routers
 
 from assistant.views import HomeAssistantAPI, FeedAssistantAPI, ExploreAssistantAPI, NotificationsAssistantAPI, \
     UserInfoAssistantAPI, UserTrackingsAssistantAPI, UserFeedAssistantAPI, UserRelatedAssistantAPI, \
-    UserStatsAssistantAPI, LeaderboardAssistantAPI, GoalsStatsAssistantAPI
+    UserStatsAssistantAPI, LeaderboardAssistantAPI, GoalsStatsAssistantAPI, GoalsInfoAssistantAPI, \
+    GoalsTrackingAssistantAPI, GoalsFeedAssistantAPI
 from auth.googleOAuth2Adapter import GoogleLogin
 from doit.settings import MEDIA_ROOT, MEDIA_URL
 from doit.views import PopulateDB
@@ -29,7 +30,7 @@ from frontend.views import app
 from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet, GoalProgress, LeaderBoard, GoalsRecommendations
 from media.views import MediaUploadApi, MediaApi
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
-    LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating, UserRecommendations, PostRecommendations,\
+    LikePostViewSet, LikeTrackingViewSet, CommentViewSet, UserIsParticipating, UserRecommendations, PostRecommendations, \
     UncheckedNotifications
 from stats.views import UserStatsApi, GoalStatsApi
 
@@ -89,6 +90,10 @@ urlpatterns = [
          LeaderboardAssistantAPI.as_view()),
 
     path('api/assistant/goals/<str:goal_id>/stats/<str:refDate>', GoalsStatsAssistantAPI.as_view()),
+
+    path('api/assistant/goals/<str:goal_id>/info', GoalsInfoAssistantAPI.as_view()),
+    path('api/assistant/goals/<str:goal_id>/trackings', GoalsTrackingAssistantAPI.as_view()),
+    path('api/assistant/goals/<str:goal_id>/feed', GoalsFeedAssistantAPI.as_view()),
 
     # ViewSet endpoints
     path('api/', include(router.urls)),

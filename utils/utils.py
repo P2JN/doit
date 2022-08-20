@@ -5,6 +5,8 @@ from rest_framework.authtoken.models import Token
 
 from django.http import Http404
 import calendar
+
+from doit import settings
 from goals.models import Tracking, Frequency
 from social.models import Participate
 from social.serializers import UserSerializer
@@ -144,6 +146,7 @@ def daily_gte_date(date, time_zone=2):
 
 
 def set_up_test(self):
+    settings.db.drop_database("TEST")
     self.user = User.objects.create(username='test', email='test@gmail.com',
                                     first_name='test',
                                     last_name='test')
