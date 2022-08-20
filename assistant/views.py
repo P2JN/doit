@@ -95,22 +95,26 @@ class FeedAssistantAPI(APIView):
                 createdBy__in=list(Follow.objects.filter(follower=user_id).values_list("user")) + [user_id]).order_by(
                 '-creationDate')[:30]
             if posts and len(posts) > 0:
-                post = max(posts, key=lambda x: LikePost.objects.filter(post=x).count())
+                post = max(
+                    posts, key=lambda x: LikePost.objects.filter(post=x).count())
                 message = "Esta última publicación " + post.title + \
                           " esta obteniendo bastantes likes, podría gustarte"
             else:
                 message = "Tus seguidos no han publicado nada, " \
                           "¿sabias que puedes buscar nuevas personas a las que seguir en la vista de explora?"
         elif probability < 2 / 9:
-            posts = Post.objects.filter(createdBy=user_id).order_by('-creationDate')[:30]
+            posts = Post.objects.filter(
+                createdBy=user_id).order_by('-creationDate')[:30]
             if posts and len(posts) > 0:
-                post = max(posts, key=lambda x: LikePost.objects.filter(post=x).count())
+                post = max(
+                    posts, key=lambda x: LikePost.objects.filter(post=x).count())
                 message = "Esta ultima publicación tuya " + post.title + \
                           " esta obteniendo bastantes likes,¡Felicidades!"
             else:
                 message = "Todavía No has publicado nada, ¿te gustaría publicar algo?"
         elif probability < 3 / 9:
-            follows = Follow.objects.filter(follower=user_id).values_list("user")
+            follows = Follow.objects.filter(
+                follower=user_id).values_list("user")
             if follows and len(follows) > 0:
                 user = max(follows,
                            key=lambda x: Post.objects.filter(createdBy=x).count())
@@ -120,7 +124,8 @@ class FeedAssistantAPI(APIView):
                 message = "No estas siguiendo a nadie, " \
                           "¿sabias que puedes buscar nuevas personas a las que seguir en la vista de explora?"
         elif probability < 4 / 9:
-            follows = Follow.objects.filter(follower=user_id).values_list("user")
+            follows = Follow.objects.filter(
+                follower=user_id).values_list("user")
             if follows and len(follows) > 0:
                 user = max(follows,
                            key=lambda x: LikePost.objects.filter(post__in=Post.objects.filter(createdBy=user)).count())
@@ -152,9 +157,11 @@ class FeedAssistantAPI(APIView):
         elif probability < 8 / 9:
             message = "Puedes escribir comentarios en las publicaciones de otros usuarios"
         else:
-            posts = Post.objects.filter(createdBy=user_id).order_by('-creationDate')[:30]
+            posts = Post.objects.filter(
+                createdBy=user_id).order_by('-creationDate')[:30]
             if posts and len(posts) > 0:
-                post = min(posts, key=lambda x: LikePost.objects.filter(post=x).count())
+                post = min(
+                    posts, key=lambda x: LikePost.objects.filter(post=x).count())
                 message = "Esta ultima publicación tuya " + post.title + \
                           " no tiene muchos likes, sigue esforzándote y conseguirás muchos más"
             else:
@@ -214,7 +221,8 @@ class UserInfoAssistantAPI(APIView):
                 followers = Follow.objects.filter(user=user_id).count()
                 if followers > 20:
                     message = "Te siguen " + \
-                              str(followers) + " personas, estas hecho un influencer"
+                              str(followers) + \
+                        " personas, estas hecho un influencer"
                 else:
                     message = "Te siguen " + str(
                         followers) + " personas, puedes seguir a usuarios o generar actividad en alguna meta y " \
@@ -241,7 +249,7 @@ class UserInfoAssistantAPI(APIView):
                 if goals_in_common > 0:
                     message = "Tienes " + str(
                         goals_in_common) + " metas en común con " + logged_user.username + \
-                              ", os podríais llevar muy bien"
+                        ", os podríais llevar muy bien"
                 else:
                     message = "No tienes metas en común con " + other_user.username
         return Response({"message": message})
@@ -421,7 +429,7 @@ class LeaderboardAssistantAPI(APIView):
                     'username'] + " que ha registrado " + str(
                     get_trackings([frequency], goal_id, res[1].get("id"), today,
                                   start_week, end_week, time_zone).count()) + \
-                          " progresos"
+                    " progresos"
             else:
                 message = "Eres el segundo en la tabla de líderes, ¡Felicidades, a por el primer puesto!"
         elif probability < 0.75:
@@ -448,10 +456,11 @@ class GoalsStatsAssistantAPI(APIView):
         probability = random.random()
 
         if probability < 0.25:
-            message = "Desde aquí podrás seguir tus estadísticas de la meta dia a dia"
+            message = "Estas son tus estadísticas de progreso en la meta durante una semana, puedes navegar a semanas anteiores si lo deseas"
         elif probability < 0.5:
             trackings_semanales = Tracking.objects.filter(createdBy=user, goal=goal_id,
-                                                          date__gte=weekly_gte_date(start_week, time_zone),
+                                                          date__gte=weekly_gte_date(
+                                                              start_week, time_zone),
                                                           date__lte=weekly_lte_date(end_week, time_zone)) \
                 .count()
             if trackings_semanales > 0:
@@ -463,7 +472,8 @@ class GoalsStatsAssistantAPI(APIView):
                           "¡Date prisa e intenta ser el primero en la tabla de lideres"
         elif probability < 0.75:
             trackings_anuales = Tracking.objects.filter(createdBy=user, goal=goal_id,
-                                                        date__gte=yearly_gte_date(today, time_zone),
+                                                        date__gte=yearly_gte_date(
+                                                            today, time_zone),
                                                         date__lte=yearly_lte_date(today, time_zone)).count()
             if trackings_anuales > 0:
                 message = "¡Wow!, has registrado este año un total de " + str(trackings_anuales) + \
@@ -472,9 +482,11 @@ class GoalsStatsAssistantAPI(APIView):
                 message = "Aún no has registrado progresos en la meta este año, " \
                           "¡Date prisa e intenta ser el primero en la tabla de lideres"
         else:
-            total_trackings = Tracking.objects.filter(createdBy=user, goal=goal_id).count()
+            total_trackings = Tracking.objects.filter(
+                createdBy=user, goal=goal_id).count()
             if total_trackings > 0:
-                message = "¿Sabias que has registrado un total de " + str(total_trackings) + " progresos en esta meta?"
+                message = "¿Sabias que has registrado un total de " + \
+                    str(total_trackings) + " progresos en esta meta?"
             else:
                 message = "Aún no has registrado progresos en esta meta, " \
                           "¡Date prisa e intenta ser el primero en la tabla de lideres"
@@ -490,42 +502,43 @@ class GoalsInfoAssistantAPI(APIView):
 
         if probability < 0.2:
             if goal.createdBy.username == request.user.username:
-                message = "Desde aquí podrás actualizar los datos de tu meta"
+                message = "Puedes actualizar los datos de la meta si lo necesitas, pulsa en 'EDITAR'"
             else:
-                message = "Desde aquí podrás ver los datos de la meta"
+                message = "Estos son los datos básicos de la meta"
         elif probability < 0.4:
             if goal.createdBy.username == request.user.username:
                 if goal.type != "cooperative":
-                    message = "Sabias que puedes hacer tu meta colaborativa asi podrás " \
-                              "completar la meta junto a otros usuarios"
+                    message = "Puedes hacer que tu meta sea cooperativa, así podrás " \
+                              "completar la meta con la colaboración de otros usuarios"
                 else:
-                    message = "Sabias que puedes hacer tu meta cooperativa un reto así otros usuarios podrán " \
-                              "unirse pero no compartiréis los resultados"
+                    message = "Puedes hacer que tu meta sea un reto, así otros usuarios podrán " \
+                              "participar y siempre podreis comparar vuestro progreso en la tabla de líderes"
             else:
                 if goal.type == "cooperative":
-                    message = "Sabias que en las metas colaborativas el progreso es compartido por " \
+                    message = "En las metas colaborativas el progreso es compartido por " \
                               "todos los usuarios que participan"
                 else:
-                    message = "Sabias que en las metas de tipo reto el progreso es individual pero otros usuarios " \
-                              "podrán unirse"
+                    message = "En las metas de tipo reto el progreso es individual pero otros usuarios " \
+                              "podrán participar y generar registros de progreso"
         elif probability < 0.6:
             if Participate.objects.filter(createdBy=User.objects.filter(user_id=request.user.id).first(),
                                           goal=goal_id).first():
-                message = "Puedes hacer click en nuevo progreso para añadir registros a la meta"
+                message = "Puedes hacer clic en nuevo progreso para añadir registros a la meta"
             else:
-                message = "Puedes hacer click en participar para unirte a la meta"
+                message = "Puedes hacer clic en participar para unirte a la meta"
         elif probability < 0.8:
             if goal.createdBy.username == request.user.username:
-                message = "Desde aquí podrás actualizar los datos de los objetivos de tu meta, " \
-                          "cliqueando en el botón editar a la derecha de objetivos"
+                message = "Puedes actualizar los datos de los objetivos de tu meta, " \
+                          "haz clic en el botón 'EDITAR' a la derecha de 'OBJETIVOS'"
             else:
-                message = "Desde aquí podrás ver los datos de los objetivos de la meta"
+                message = "Puedes ver que objetivos temporales tiene la meta"
         else:
             participates = Participate.objects.filter(goal=goal_id).count()
             if participates > 1:
-                message = "Actualmente participan " + str(participates) + " usuarios en esta meta"
+                message = "Actualmente participan " + \
+                    str(participates) + " usuarios en esta meta"
             else:
-                message = "Parece que aún no hay muchos participantes en esta meta"
+                message = "Aún no hay muchos participantes en esta meta"
         return Response({"message": message})
 
 
@@ -533,19 +546,21 @@ class GoalsTrackingAssistantAPI(APIView):
     def get(self, request, goal_id, *args, **kwargs):
         probability = random.random()
         not_participating = ["Debes participar para poder registrar progresos a la meta desde esta vista",
-                             "Desde esta vista podrás ver los progresos de la meta"]
+                             "Aquí podrás ver los progresos registrados en esta meta"]
         if probability < 0.25:
             participate = Participate.objects.filter(
                 createdBy=User.objects.filter(user_id=request.user.id).first()).first()
             if participate:
-                message = "Desde aquí podrás añadir nuevos progresos pulsando en nuevo y " \
-                          " también eliminarlos pulsando en el icono de la papelera del progreso que quieras eliminar"
+                message = "Puedes añadir nuevos progresos pulsando en 'NUEVO' y " \
+                          "también eliminarlos pulsando en la papelera"
             else:
                 message = random.choice(not_participating)
         elif probability < 0.5:
-            tracking = Tracking.objects.filter(goal=goal_id).order_by('-date').first()
+            tracking = Tracking.objects.filter(
+                goal=goal_id).order_by('-date').first()
             if tracking:
-                message = tracking.createdBy.username + " fue el ultimo en registro progresos en esta meta"
+                message = tracking.createdBy.username + \
+                    " ha sido el último que ha registrado progresos en esta meta"
             else:
                 message = "Aún no hay progresos registrados en esta meta"
         elif probability < 0.75:
@@ -558,28 +573,31 @@ class GoalsTrackingAssistantAPI(APIView):
                     message = "Tu último progreso registrado fue el " + str(tracking.date) + " con un valor de " + str(
                         tracking.amount)
                 else:
-                    message = "Aún no has registrado progresos en esta meta, ¿porque no registras algún progreso?"
+                    message = "Aún no has registrado progresos en esta meta, ¿por qué no registras algún progreso?"
             else:
                 message = random.choice(not_participating)
         else:
             trackings = Tracking.objects.filter(goal=goal_id).count()
             if trackings < 5:
-                message = "Los participantes de esta meta no parecen muy activos han registrado un total de " \
+                message = "Los participantes de esta meta no parecen muy activos, han registrado un total de " \
                           + str(trackings) + " progresos"
             else:
-                message = "Los participantes de esta meta han registrado un total de " + str(trackings) + " progresos"
+                message = "Los participantes de esta meta han registrado un total de " + \
+                    str(trackings) + " progresos"
 
         return Response({"message": message})
 
 
 class GoalsFeedAssistantAPI(APIView):
     def get(self, request, goal_id, *args, **kwargs):
-        messages = ["Desde aquí podrás ver los posts relacionados a la meta",
-                    "Sabias que desde esta vista puedes dar like a los posts relacionados a la meta cliqueando en el "
-                    "corazón",
-                    "Sabias que desde esta vista puedes acceder al perfil del autor de un post cliqueando en el "
-                    "nombre del autor",
-                    "Desde aquí podrás crear nuevos post relacionados a la meta, pulsando en el botón de nuevo",
-                    "Hay un total de " + str(Post.objects.filter(goal=goal_id).count()) + " posts relacionados a la "
-                                                                                          "meta"]
+        messages = ["Estos son los posts que están relacionados a la meta",
+                    "Puedes indicar que los posts te gustan haciendo clic en el "
+                    "botón del corazón",
+                    "Puedes acceder al perfil del autor de un post haciendo clic en el "
+                    "nombre de usuario del autor",
+                    "Puedes crear nuevas publicaciones relacionados a la meta, pulsando en el botón 'NUEVO'",
+                    "Hay un total de " +
+                    str(Post.objects.filter(goal=goal_id).count()) +
+                    " publicaciones relacionadas con esta "
+                    "meta"]
         return Response({"message": random.choice(messages)})
