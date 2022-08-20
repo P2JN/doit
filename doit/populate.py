@@ -379,7 +379,8 @@ def populate_participations(users, goals):
             if (user.id == goal.createdBy.id) or (random.random() < 0.15):
                 participation = Participate(createdBy=user, goal=goal)
                 participation.save()
-                Stats.objects.filter(createdBy=user).update_one(inc__participatedGoals=1)
+                Stats.objects.filter(createdBy=user).update_one(
+                    inc__participatedGoals=1)
 
 
 def populate_trackings(participations):
@@ -629,7 +630,7 @@ def populate_likes(users, trackings, posts):
 
 def populate_achievement():
     json = [{"title": 'Primer goal creado',
-             "description": '¡Has creado tu primer goal!', "url": ""},
+             "description": '¡Has creado tu primer goal!', "url": "media/uploaded/create-goal-1.svg"},
             {"title": 'Primer objetivo completado',
              "description": '¡Has completado tu primer objetivo!', "url": ""},
             {"title": 'Primero en el ranking',
@@ -660,7 +661,7 @@ def populate_achievement():
     i = 1
     for ach in json:
         media = Media(url=ach['url'])
-
+        media.save()
         achievement = Achievement(
             id=i,
             title=ach['title'],

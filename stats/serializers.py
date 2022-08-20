@@ -32,7 +32,7 @@ class StatsSerializer(serializers.DocumentSerializer):
     def get_numLikes(self, obj):
         return LikePost.objects(post__in=Post.objects.filter(createdBy=obj.createdBy)).count()
 
-    def get_num_comments(self, obj):
+    def get_numComments(self, obj):
         return Comment.objects().filter(createdBy=obj.createdBy).count()
 
 
@@ -46,7 +46,5 @@ class AchievementSerializer(serializers.DocumentSerializer):
     def get_urlMedia(self, obj):
         res = None
         if obj.media:
-            media = Media.objects.filter(id=obj.media).first()
-            if media:
-                res = media.url
+            res = obj.media.url
         return res

@@ -15,8 +15,8 @@ import { SocialTypes } from "types";
 import { useActiveUser } from "store";
 import { paginationUtils } from "utils";
 
-import { Card, HorizontalStatCounters, StatCounter } from "components/atoms";
-import { DataLoader } from "components/molecules";
+import { HorizontalStatCounters, StatCounter } from "components/atoms";
+import { Achievement, DataLoader } from "components/molecules";
 import { FollowTable, PostTeaser, TrackingTeaser } from "components/organisms";
 import { UserForm } from "components/templates";
 
@@ -142,14 +142,12 @@ const UserTrackingsTab = (user: SocialTypes.User) => {
 const UserStatsTab = (user: SocialTypes.User) => {
   const { data: stats } = statsService.useUserStats(user?.id);
 
+  const { data: achievements } = statsService.useAchievements(user?.id);
+
   return (
     <section className="flex flex-col gap-5">
       <section className="flex flex-col gap-3">
-        <Card>
-          <header>
-            <Typography variant="h5">Social</Typography>
-          </header>
-        </Card>
+        <Typography variant="h5">Social</Typography>
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <StatCounter
             value={stats?.numPosts}
@@ -169,11 +167,7 @@ const UserStatsTab = (user: SocialTypes.User) => {
         </section>
       </section>
       <section className="flex flex-col gap-3">
-        <Card>
-          <header>
-            <Typography variant="h5">Metas</Typography>
-          </header>
-        </Card>
+        <Typography variant="h5">Metas</Typography>
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <StatCounter
             value={stats?.createdGoals}
@@ -205,11 +199,8 @@ const UserStatsTab = (user: SocialTypes.User) => {
         </section>
       </section>
       <section className="flex flex-col gap-3">
-        <Card>
-          <header>
-            <Typography variant="h5">Progreso</Typography>
-          </header>
-        </Card>
+        <Typography variant="h5">Progreso</Typography>
+
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <StatCounter
             value={stats?.numTrackings}
@@ -251,6 +242,15 @@ const UserStatsTab = (user: SocialTypes.User) => {
               },
             ]}
           />
+        </section>
+      </section>
+      <section className="flex flex-col gap-3">
+        <Typography variant="h5">Logros</Typography>
+
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {achievements?.map((achievement) => (
+            <Achievement {...achievement} />
+          ))}
         </section>
       </section>
     </section>
