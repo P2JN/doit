@@ -24,8 +24,8 @@ function App() {
                   <div className="container mx-auto flex h-screen w-screen flex-col justify-center md:flex-row">
                     <AppNavbar />
                     <AppPages />
-                  <AppSidebar />
-                </div>
+                    <AppSidebar />
+                  </div>
                 </NotificationProvider>
               </ErrorHandler>
             </AuthProvider>
