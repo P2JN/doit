@@ -149,7 +149,7 @@ class LeaderBoard(viewsets.GenericAPIView):
         amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
                   participants}
         query = sorted(participants, key=lambda x: amount[x.username], reverse=True)
-        save_achievement(query[0], 3)
+        save_achievement(query[0], 19)
         query = self.paginate_queryset(query)
         res = [set_amount(user, amount[user.username]) for user in query]
         deadline = Goal.objects.filter(id=goal_id).only('deadline').first()

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from goals.models import Frequency, Goal, GoalType, Objective, Tracking
 from media.models import Media
 from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification, Comment
-from stats.models import Stats, Achievement
+from stats.models import Stats, Achievement, AchievementType
 
 
 def populate_users(n):
@@ -629,35 +629,78 @@ def populate_likes(users, trackings, posts):
 
 
 def populate_achievement():
-    json = [{"title": 'Primer goal creado',
-             "description": '¡Has creado tu primer goal!', "url": "media/uploaded/create-goal-1.svg"},
-            {"title": 'Primer objetivo completado',
-             "description": '¡Has completado tu primer objetivo!', "url": ""},
-            {"title": 'Primero en el ranking',
-             "description": '¡Has sido el primero en el ranking!', "url": ""},
-            {"title": 'Primera publicación',
-             "description": '¡Has comentado en una publicación por primera vez!', "url": ""},
-            {"title": 'Primer comentario',
-             "description": '¡Has creado tu primer comentario!', "url": ""},
-            {"title": 'Primer like',
-             "description": '¡Recibiste tu primer like!', "url": ""},
-            {"title": 'Crack de los progresos',
-             "description": 'Completaste un objetivo registrando un único progreso', "url": ""},
-            {"title": 'Rey de los progresos',
-             "description": 'Has registrado más de 500 trackings que barbaridad', "url": ""},
-            {"title": 'Rey de los objetivos',
-             "description": 'Has completado más de 100 objetivos', "url": ""},
-            {"title": 'Rey de las metas',
-             "description": 'Has completado más de 100 metas', "url": ""},
-            {"title": 'Lider de los goals cooperativos',
-             "description": 'A un goal cooperativo tuyo ya se han unido mas de 10 personas', "url": ""},
-            {"title": 'Rey de las publicaciones',
-             "description": 'Has creado más de 100 publicaciones', "url": ""},
-            {"title": 'Rey de los comentarios',
-             "description": 'Has creado más de 100 comentarios', "url": ""},
-            {"title": 'Primer progreso registrado',
-             "description": 'Has registrado tu primer progreso', "url": ""},
-            ]
+    json = [
+        # Principiante
+        {"title": 'Principiante de las metas',
+         "description": '¡Has creado tu primer meta!', "url": "media/uploaded/create-goal-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de los progreso registrado',
+         "description": 'Has registrado tu primer progreso', "url": "media/uploaded/create-tracking-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de los objetivos',
+         "description": '¡Has completado tu primer objetivo!', "url": "media/uploaded/completed-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de las publicaciones',
+         "description": '¡Has comentado en una publicación por primera vez!', "url": "media/uploaded/image-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de los comentarios',
+         "description": '¡Has recibido tu primer comentario!', "url": "media/uploaded/comment-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de los me gustas',
+         "description": '¡Has recibido tu primer me gusta en una publicación!', "url": "media/uploaded/like-1.svg",
+         "type": AchievementType.BRONZE},
+
+        # Aprendiz
+        {"title": 'Aprendiz de las metas',
+         "description": '¡Has creados más de 25 metas!', "url": "media/uploaded/create-goal-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de los progreso registrado',
+         "description": '¡Has registrado más de 200 progresos!', "url": "media/uploaded/create-tracking-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de los objetivos',
+         "description": '¡Has completado más de 200 objetivos!', "url": "media/uploaded/completed-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de las publicaciones',
+         "description": '¡Has creados más de 25 publicaciones!', "url": "media/uploaded/image-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de los comentarios',
+         "description": '¡Has recibido más de 500 comentarios!', "url": "media/uploaded/comment-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de los me gustas',
+         "description": '¡Has recibido más de 500 me gustas!', "url": "media/uploaded/like-2.svg",
+         "type": AchievementType.SILVER},
+
+        # Maestro
+        {"title": 'Maestro de las metass',
+         "description": '¡Has creados más de 50 metas!', "url": "media/uploaded/create-goal-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de los progresos',
+         "description": '¡Has registrado más de 500 progresos!', "url": "media/uploaded/create-tracking-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de los objetivos',
+         "description": '¡Has completado más de 500 objetivos!', "url": "media/uploaded/completed-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de las publicaciones',
+         "description": '¡Has creado más de 50 publicaciones!', "url": "media/uploaded/image-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de los comentarios',
+         "description": '¡Has creado más de 1000 comentarios!', "url": "media/uploaded/comment-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de los me gustas',
+         "description": '¡Has recibido más de 1000 me gustas!', "url": "media/uploaded/like-3.svg",
+         "type": AchievementType.GOLD},
+
+        # Especial
+        {"title": 'Primero en el ranking',
+         "description": '¡Has sido el primero en el ranking!', "url": "media/uploaded/winner.svg",
+         "type": AchievementType.SPECIAL},
+        {"title": 'Crack de los progresos',
+         "description": 'Completaste un objetivo registrando un único progreso', "url": "media/uploaded/one-to-one.svg",
+         "type": AchievementType.SPECIAL},
+        {"title": 'Lider de los goals cooperativos',
+         "description": 'A un goal cooperativo tuyo ya se han unido mas de 10 personas',
+         "url": "media/uploaded/coop.svg", "type": AchievementType.SPECIAL},
+    ]
     i = 1
     for ach in json:
         media = Media(url=ach['url'])
@@ -666,7 +709,8 @@ def populate_achievement():
             id=i,
             title=ach['title'],
             description=ach['description'],
-            media=media.id
+            media=media.id,
+            type=ach['type']
         )
         achievement.save()
         i += 1

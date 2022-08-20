@@ -1,6 +1,14 @@
 from datetime import datetime
+from enum import Enum
 
 from mongoengine import Document, fields, CASCADE
+
+
+class AchievementType(str, Enum):
+    GOLD = 'gold'
+    SILVER = 'silver'
+    BRONZE = 'BRONZE'
+    SPECIAL = 'special'
 
 
 # Models
@@ -20,6 +28,7 @@ class Achievement(Document):
     title = fields.StringField(max_length=120, required=True)
     description = fields.StringField(max_length=1250)
     media = fields.ReferenceField('Media', reverse_delete_rule=CASCADE)
+    type = fields.EnumField(AchievementType)
 
 
 class AchievementUser(Document):
