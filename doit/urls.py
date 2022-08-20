@@ -108,9 +108,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('populate/', PopulateDB.as_view()),
     path('accounts/', include('allauth.urls')),
-    re_path(r'^serviceworker\.js$', service_worker, name='serviceworker'),
-    re_path(r'^manifest\.json$', manifest, name='manifest'),
-    re_path('^offline/$', offline, name='offline')
+    path('serviceworker.js', service_worker, name='serviceworker'),
+    path('manifest.json', manifest, name='manifest'),
+    path('offline/', offline, name='offline')
 ]
 
 # Serve media files

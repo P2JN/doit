@@ -262,20 +262,20 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
-        'src': 'static/media/Logo.58218d2cab0730893cbc546528ac327f.svg',
-        'sizes': '160x160'
+        'src': 'static/media/Logo8.svg',
+        'sizes': '144x144'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': 'static/media/Logo.58218d2cab0730893cbc546528ac327f.svg',
-        'sizes': '160x160'
+        'src': 'static/media/Logo8.svg',
+        'sizes': '144x144'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': 'static/media/Logo.58218d2cab0730893cbc546528ac327f.svg',
-        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+        'src': 'static/media/Logo8.svg',
+        'sizes': '144x144'
     }
 ]
 PWA_APP_DIR = 'ltr'
