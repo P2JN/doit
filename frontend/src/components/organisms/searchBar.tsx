@@ -14,6 +14,7 @@ import {
   PostSearchResult,
   UserSearchResult,
 } from "components/organisms";
+import { Hint } from "components/atoms";
 
 const SearchBar = () => {
   const [params, setSearchParams] = useSearchParams();
@@ -92,8 +93,11 @@ const SearchBar = () => {
               placeholder="Encuentra metas, usuarios o posts"
               fullWidth
             />
+            <Hint id="search">
+              Puedes buscar usuarios, publicaciones o metas
+            </Hint>
             <div>
-              <Typography variant="h5">Goals</Typography>
+              <Typography variant="h5">Metas</Typography>
 
               <div>
                 <ul>
@@ -133,8 +137,7 @@ const SearchBar = () => {
               </div>
             </div>
             <div>
-              <Typography variant="h5">Posts</Typography>
-
+              <Typography variant="h5">Publicaciones</Typography>
               <div>
                 <ul>
                   {posts?.map((post) => (

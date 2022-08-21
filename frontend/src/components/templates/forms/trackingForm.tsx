@@ -10,7 +10,7 @@ import {
 import { useActiveUser } from "store";
 import { goalService } from "services";
 
-import { ParsedError } from "components/atoms";
+import { Hint, ParsedError } from "components/atoms";
 
 const TrackingForm = () => {
   const navigate = useNavigate();
@@ -73,6 +73,10 @@ const TrackingForm = () => {
             </div>
           )}
         />
+        <Hint id="cantidad">
+          La cantidad quedará registrada y pasará a formar parte de tu progreso
+          en esta meta
+        </Hint>
 
         <Button size="large" variant="outlined" type="submit">
           {isLoading ? <CircularProgress size={16} /> : "Registrar"}
