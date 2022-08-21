@@ -22,7 +22,8 @@ load_dotenv()  # take environment variables from .env.
 SITE_ID = 1
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/js', 'serviceworker.js')
+PWA_SERVICE_WORKER_PATH = os.path.join(
+    BASE_DIR, 'static/js', 'serviceworker.js')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -167,7 +168,8 @@ if os.environ.get('DOCKER'):
     )
 elif TEST:
     db = mongoengine.connect("TEST",
-                             username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
+                             username=os.environ.get(
+                                 "MONGO_INITDB_ROOT_USERNAME"),
                              password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"), )
     db.drop_database("TEST")
 else:
@@ -212,7 +214,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'frontend', 'build',),
     os.path.join(BASE_DIR, 'frontend', 'build', 'static'),
+    os.path.join(BASE_DIR, 'static', 'media'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -262,19 +266,19 @@ PWA_APP_START_URL = '/'
 PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_APP_ICONS = [
     {
-        'src': 'static/media/Logo8.svg',
+        'src': 'static/Logo.svg',
         'sizes': '144x144'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': 'static/media/Logo8.svg',
+        'src': 'static/Logo.svg',
         'sizes': '144x144'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': 'static/media/Logo8.svg',
+        'src': 'static/Logo.svg',
         'sizes': '144x144'
     }
 ]
