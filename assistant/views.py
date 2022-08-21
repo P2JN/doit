@@ -258,55 +258,143 @@ class UserInfoAssistantAPI(APIView):
 class UserTrackingsAssistantAPI(APIView):
     def get(self, request, user_id):
         probability = random.random()
-
-        if probability < 0.5:
-            tracking_num = Tracking.objects.filter(createdBy=user_id).count()
-            if tracking_num == 0:
-                message = "No tienes ningún progreso registrado," \
-                          " ¿Por qué no empiezas a registrar en alguna meta?"
-            elif tracking_num < 10:
-                message = "Tienes pocos progresos registrados, puedes añadir progreso en cualquiera de tus metas"
+        logged_user = User.objects.filter(user_id=request.user.id).first()
+        if logged_user and user_id == str(logged_user.id):
+            if probability < 0.25:
+                tracking_num = Tracking.objects.filter(createdBy=user_id).count()
+                if tracking_num == 0:
+                    message = "No tienes ningún progreso registrado," \
+                              " ¿Por qué no empiezas a registrar en alguna meta?"
+                elif tracking_num < 10:
+                    message = "Tienes pocos progresos registrados, puedes añadir progreso en cualquiera de tus metas"
+                else:
+                    message = "Tienes muchos progresos registrados, ¡Felicidades sigue así!"
+            elif probability < 0.5:
+                message = "Esta es la vista en detalle de tus progresos registrados"
+            elif probability < 0.75:
+                message = random.choice(["Puedes borrar los progresos registrados clicando en el botón de la papelera "
+                                         "si lo deseas",
+                                         "Puedes clicar en las metas asociadas a los progresos para verlas en detalle"])
             else:
-                message = "Tienes muchos progresos registrados, ¡Felicidades sigue así!"
+                trackings = Tracking.objects.filter(
+                    createdBy=user_id).order_by('-creationDate')[:30]
+                if trackings:
+                    goal_types = {}
+                    for tracking in trackings:
+                        if tracking.goal.type not in goal_types:
+                            goal_types[tracking.goal.type] = 1
+                        else:
+                            goal_types[tracking.goal.type] += 1
+                    max_type = max(goal_types, key=goal_types.get)
+                    message = "La mayor cantidad de progresos registrados últimamente son en metas de tipo " + max_type
+                else:
+                    message = "No tienes progresos registrados, ¿Por qué no empiezas a registrar en alguna meta?"
         else:
-            trackings = Tracking.objects.filter(
-                createdBy=user_id).order_by('-creationDate')[:30]
-            if trackings:
-                goal_types = {}
-                for tracking in trackings:
-                    if tracking.goal.type not in goal_types:
-                        goal_types[tracking.goal.type] = 1
-                    else:
-                        goal_types[tracking.goal.type] += 1
-                max_type = max(goal_types, key=goal_types.get)
-                message = "La mayor cantidad de progresos registrados últimamente son en metas de tipo " + max_type
+            other_user = User.objects.filter(id=user_id).first()
+            if probability < 0.25:
+                tracking_num_user = Tracking.objects.filter(createdBy=user_id).count()
+                tracking_num_logged = Tracking.objects.filter(createdBy=logged_user).count()
+                if tracking_num_user == 0:
+                    message = "Ups, parece que " + other_user.username + " no tiene progresos registrados"
+                elif tracking_num_user > tracking_num_logged:
+                    message = other_user.username + " tiene " + str(tracking_num_user - tracking_num_logged) + \
+                              " progresos registrados más que tú,¡aun puedes superarlo!"
+                elif tracking_num_user < tracking_num_logged:
+                    message = "Tienes " + str(
+                        tracking_num_logged - tracking_num_user) + " progresos registrados más que " + other_user.username
+                else:
+                    message = "Tienes los mismos progresos registrados que " + other_user.username
+            elif probability < 0.5:
+                message = "Esta es la vista en detalle de los progresos registrados por " + other_user.username
+            elif probability < 0.75:
+                message = "Puedes clicar en las metas asociadas a los progresos para verlas en detalle"
             else:
-                message = "No tienes progresos registrados, ¿Por qué no empiezas a registrar en alguna meta?"
+                trackings = Tracking.objects.filter(
+                    createdBy=user_id).order_by('-creationDate')[:30]
+                if trackings:
+                    goal_types = {}
+                    for tracking in trackings:
+                        if tracking.goal.type not in goal_types:
+                            goal_types[tracking.goal.type] = 1
+                        else:
+                            goal_types[tracking.goal.type] += 1
+                    max_type = max(goal_types, key=goal_types.get)
+                    message = "La mayor cantidad de progresos registrados por " + other_user.username + \
+                              " últimamente son en metas de tipo " + max_type
+                else:
+                    message = "Ups, parece que" + other_user.username + "no tiene progresos registrados"
+
         return Response({"message": message})
 
 
 class UserFeedAssistantAPI(APIView):
     def get(self, request, user_id):
         probability = random.random()
-        if probability < 0.5:
-            post_num = Post.objects.filter(createdBy=user_id).count()
-            if post_num == 0:
-                message = "No tienes ninguna publicación, pudes crear una nueva pulsando en 'NUEVO'"
-            elif post_num < 10:
-                message = "Tienes pocas publicaciones, puedes crear una nueva haciendo clic en 'NUEVO'"
+        logged_user = User.objects.filter(user_id=request.user.id).first()
+        if logged_user and user_id == str(logged_user.id):
+            if probability < 0.25:
+                post_num = Post.objects.filter(createdBy=user_id).count()
+                if post_num == 0:
+                    message = "No tienes ninguna publicación, pudes crear una nueva pulsando en 'NUEVO'"
+                elif post_num < 10:
+                    message = "Tienes pocas publicaciones, puedes crear una nueva haciendo clic en 'NUEVO'"
+                else:
+                    message = "Tienes muchas publicaciones, ¡Felicidades sigue asi!"
+            elif probability < 0.5:
+                message = "Esta es la vista en detalle de tus publicaciones"
+            elif probability < 0.75:
+                message = random.choice(["Puedes clicar en las publicaciones para verlas en detalle",
+                                         "Puedes dar me gusta a la publicación pulsando en el botón del corazon "
+                                         "al lado de cada publicación",
+                                         "Puedes escribir un comentario pulsando en el botón de comentario al lado "
+                                         "de cada publicación",
+                                         "Puedes ver el perfil del autor del post pulsando en el nombre del autor"])
+
             else:
-                message = "Tienes muchas publicaciones, ¡Felicidades sigue asi!"
+                num_post_goal = Post.objects.filter(
+                    createdBy=user_id, goal__ne=None).count()
+                num_post = Post.objects.filter(
+                    createdBy=user_id, goal=None).count()
+                if num_post_goal > num_post:
+                    message = "La mayoría de tus publicaciones están asociadas a metas, " \
+                              "también puedes publicar sin asociar a una meta"
+                else:
+                    message = "La mayoría de tus publicaciones no están asociadas a metas, " \
+                              "también puedes publicar asociándola a una meta"
         else:
-            num_post_goal = Post.objects.filter(
-                createdBy=user_id, goal__ne=None).count()
-            num_post = Post.objects.filter(
-                createdBy=user_id, goal=None).count()
-            if num_post_goal > num_post:
-                message = "La mayoría de tus publicaciones están asociadas a metas, " \
-                          "también puedes publicar sin asociar a una meta"
+            other_user = User.objects.filter(id=user_id).first()
+            if probability < 0.25:
+                post_num_user = Post.objects.filter(createdBy=user_id).count()
+                post_num_logged = Post.objects.filter(createdBy=logged_user).count()
+                if post_num_user == 0:
+                    message = "Ups, parece que " + other_user.username + " no tiene publicaciones"
+                elif post_num_user > post_num_logged:
+                    message = other_user.username + " tiene " + str(post_num_user - post_num_logged) + \
+                              " publicaciones más que tú,¡aun puedes superarlo!"
+                elif post_num_user < post_num_logged:
+                    message = "Tienes " + str(
+                        post_num_logged - post_num_user) + " publicaciones más que " + other_user.username
+                else:
+                    message = "Tienes la misma cantidad de publicaciones que " + other_user.username
+            elif probability < 0.5:
+                message = "Esta es la vista en detalle de las publicaciones de " + other_user.username
+            elif probability < 0.75:
+                message = random.choice(["Puedes clicar en las publicaciones para verlas en detalle",
+                                         "Puedes dar me gusta a la publicación pulsando en el botón del corazon "
+                                         "al lado de cada publicación",
+                                         "Puedes escribir un comentario pulsando en el botón de comentario al lado "
+                                         "de cada publicación",
+                                         "Puedes ver el perfil del autor del post pulsando en el nombre del autor"])
+
             else:
-                message = "La mayoría de tus publicaciones no están asociadas a metas, " \
-                          "también puedes publicar asociándola a una meta"
+                num_post_goal = Post.objects.filter(
+                    createdBy=user_id, goal__ne=None).count()
+                num_post = Post.objects.filter(
+                    createdBy=user_id, goal=None).count()
+                if num_post_goal > num_post:
+                    message = "La mayoría de las publicaciones de "+other_user.username+" están asociadas a metas"
+                else:
+                    message = "La mayoría de las publicaciones de "+other_user.username+" no están asociadas a metas"
         return Response({"message": message})
 
 
@@ -390,49 +478,92 @@ class UserStatsAssistantAPI(APIView):
         stats = Stats.objects.filter(createdBy=user_id).first()
         stats_serializer = StatsSerializer(stats).data
         probability = random.random()
-        if probability < 0.25:
-            total_objectives = {"diario": stats.dailyObjectivesCompleted, "semanal": stats.weeklyObjectivesCompleted,
-                                "mensual": stats.monthlyObjectivesCompleted, "anual": stats.yearlyObjectivesCompleted,
-                                "total": stats.totalObjectivesCompleted}
-            if sum(total_objectives.values()) == 0:
-                message = "No has completado ningun objetivo todavía, " \
-                          "¿Por qué no empezamos a registrar en alguna meta?"
-            else:
-                sorted(total_objectives, key=total_objectives.get, reverse=True)
-                message = "La mayoría de objetivos completados son de tipo " + list(total_objectives.keys())[
-                    0] + ", tal vez te gustaría probar con otra frecuencia"
+        logged_user = User.objects.filter(user_id=request.user.id).first()
+        if logged_user and user_id == str(logged_user.id):
+            if probability < 0.25:
+                total_objectives = {"diario": stats.dailyObjectivesCompleted, "semanal": stats.weeklyObjectivesCompleted,
+                                    "mensual": stats.monthlyObjectivesCompleted, "anual": stats.yearlyObjectivesCompleted,
+                                    "total": stats.totalObjectivesCompleted}
+                if sum(total_objectives.values()) == 0:
+                    message = "No has completado ningun objetivo todavía, " \
+                              "¿Por qué no empezamos a registrar en alguna meta?"
+                else:
+                    sorted(total_objectives, key=total_objectives.get, reverse=True)
+                    message = "La mayoría de objetivos completados son de tipo " + list(total_objectives.keys())[
+                        0] + ", tal vez te gustaría probar con otra frecuencia"
 
-        elif probability < 0.5:
-            if stats_serializer.get("numPosts") == 0:
-                message = "Aún no has realizado ninguna publicación, puedes hacerlo pulsando en 'NUEVO'"
+            elif probability < 0.5:
+                if stats_serializer.get("numPosts") == 0:
+                    message = "Aún no has realizado ninguna publicación, " \
+                              "puedes hacerlo pulsando en 'NUEVO' en la vista de publicaciones"
+                else:
+                    ranking = list(Follow.objects.filter(
+                        follower=user_id).values_list("user")) + [user]
+                    sorted(ranking, key=lambda x: Post.objects().filter(
+                        createdBy=x).count(), reverse=True)
+                    message = "Eres el " + str(
+                        ranking.index(user) + 1) + "º usuario que publica más entre tus seguidos"
+            elif probability < 0.75:
+                if stats_serializer.get("numTrackings") == 0:
+                    message = "Aún no has registrado ningún progreso, ¡empecemos con alguna de tus metas!"
+                else:
+                    ranking = list(Follow.objects.filter(
+                        follower=user_id).values_list("user")) + [user]
+                    sorted(ranking, key=lambda x: Tracking.objects().filter(
+                        createdBy=x).count(), reverse=True)
+                    message = "Eres el " + str(
+                        ranking.index(user) + 1) + "º usuario que registra más progresos entre tus seguidos"
             else:
-                ranking = list(Follow.objects.filter(
-                    follower=user_id).values_list("user")) + [user]
-                sorted(ranking, key=lambda x: Post.objects().filter(
-                    createdBy=x).count(), reverse=True)
-                message = "Eres el " + str(
-                    ranking.index(user) + 1) + "º usuario que publica más entre tus seguidos"
-        elif probability < 0.75:
-            if stats_serializer.get("numTrackings") == 0:
-                message = "Aún no has registrado ningún progreso, ¡empecemos con alguna de tus metas!"
-            else:
-                ranking = list(Follow.objects.filter(
-                    follower=user_id).values_list("user")) + [user]
-                sorted(ranking, key=lambda x: Tracking.objects().filter(
-                    createdBy=x).count(), reverse=True)
-                message = "Eres el " + str(
-                    ranking.index(user) + 1) + "º usuario que registra más progresos entre tus seguidos"
+                if stats_serializer.get("numLikes") == 0:
+                    message = "Tu publicación aún no le ha gustado a nadie, " \
+                              "no te preocupes, sigue generando actividad y contenido para llegar a más usuarios"
+                else:
+                    ranking = list(Follow.objects.filter(
+                        follower=user_id).values_list("user")) + [user]
+                    sorted(ranking, key=lambda x: LikePost.objects().filter(
+                        createdBy=x).count(), reverse=True)
+                    message = "Eres el " + str(
+                        ranking.index(user) + 1) + "º usuario que recibe más likes en publicaciones entre tus seguidos"
         else:
-            if stats_serializer.get("numLikes") == 0:
-                message = "Tu publicación aún no le ha gustado a nadie, " \
-                          "no te preocupes, sigue generando actividad y contenido para llegar a más usuarios"
+            other_user = User.objects.filter(id=user_id).first()
+            stats_logged = Stats.objects.filter(createdBy=logged_user).first()
+            stats_serializer_logged = StatsSerializer(stats).data
+            if probability < 0.25:
+                total_objectives_other = sum([stats.dailyObjectivesCompleted, stats.weeklyObjectivesCompleted,
+                                              stats.monthlyObjectivesCompleted, stats.yearlyObjectivesCompleted,
+                                              stats.totalObjectivesCompleted])
+                total_objectives_logged = sum(
+                    [stats_logged.dailyObjectivesCompleted, stats_logged.weeklyObjectivesCompleted,
+                     stats_logged.monthlyObjectivesCompleted, stats_logged.yearlyObjectivesCompleted,
+                     stats_logged.totalObjectivesCompleted])
+
+                if total_objectives_other == 0:
+                    message = other_user.username + " no ha completado ningún objetivo todavía, "
+                elif total_objectives_other > total_objectives_logged:
+                    message = other_user.username + " ha completado " \
+                              + str(total_objectives_other-total_objectives_logged) + "objetivos más que tú"
+                elif total_objectives_other < total_objectives_logged:
+                    message = other_user.username + " ha completado " \
+                              + str(total_objectives_logged - total_objectives_other) + " objetivos más que tú"
+                else:
+                    message = other_user.username + " ha completado los mismos objetivos que tú"
+            elif probability < 0.5:
+                numLikes_other = stats_serializer.get("numLikes")
+                numLikes_logged = stats_serializer_logged.get("numLikes")
+                if numLikes_other == 0:
+                    message = other_user.username + " no ha recibido ningún like todavía, "
+                elif numLikes_other > numLikes_logged:
+                    message = other_user.username + " ha recibido " \
+                              + str(numLikes_other-numLikes_logged) + " más likes que tú"
+                elif numLikes_other < numLikes_logged:
+                    message = "Has recibido " \
+                              + str(numLikes_logged - numLikes_other) + " likes mas que " + other_user.username
+                else:
+                    message = other_user.username + " ha recibido los mismos likes que tú"
+            elif probability < 0.75:
+                message = "Esta es la vista de estadisticas de " + other_user.username
             else:
-                ranking = list(Follow.objects.filter(
-                    follower=user_id).values_list("user")) + [user]
-                sorted(ranking, key=lambda x: LikePost.objects().filter(
-                    createdBy=x).count(), reverse=True)
-                message = "Eres el " + str(
-                    ranking.index(user) + 1) + "º usuario que recibe más likes en publicaciones entre tus seguidos"
+                message = "Puedes ver los logros de " + other_user.username + " mas abajo en esta vista"
         return Response({"message": message})
 
 
