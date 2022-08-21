@@ -230,19 +230,19 @@ class UserInfoAssistantAPI(APIView):
         else:
             other_user = user
             if probability < 0.5:
-                follows = Follow.objects.filter(
-                    user=user_id, follower=logged_user).first()
                 follower = Follow.objects.filter(
+                    user=user_id, follower=logged_user).first()
+                follows = Follow.objects.filter(
                     user=logged_user, follower=user_id).first()
                 if follows and follower:
                     message = "Os seguís mutuamente tu y " + other_user.username
                 elif follows:
-                    message = "Este" + other_user.username + \
-                              "te sigue, ¿Por qué no le sigues tu a el?"
+                    message = other_user.username + \
+                              " te sigue, ¿Por qué no le sigues tu a el?"
                 elif follower:
                     message = "Sigues a " + other_user.username + ", pero el a ti no te sigue"
                 else:
-                    message = "Aún no os conoceis, ¿Por qué no le empiezas a seguir?"
+                    message = "Aún no os conocéis, ¿Por qué no le empiezas a seguir?"
             else:
                 goals_in_common = Participate.objects.filter(createdBy=user_id, goal__in=Goal.objects.filter(
                     createdBy=logged_user).values_list("id")).count()
