@@ -20,3 +20,4 @@ django-cors-headers==3.13.0
 python-dotenv==0.20.0
 dj-rest-auth==2.2.4
 coverage==6.4.3
+django_pwa==1.0.10

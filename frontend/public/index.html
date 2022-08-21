@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/Logo.svg" />
+    <link rel="icon" href="./Logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Doit frontend development env"
+      content="Doit es una app para le gestión de objetivos, registro de progreso e interacción social."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/Logo.svg" />
+    <link rel="apple-touch-icon" href="./Logo.svg" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -27,6 +27,9 @@
     <title>Doit</title>
   </head>
   <body>
+    
+    {% load pwa %} {% progressive_web_app_meta %}
+
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root" class="h-full"></div>
     <!--
