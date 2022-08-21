@@ -3,7 +3,7 @@ import { QueryClientProvider } from "react-query";
 import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material";
 
 import { AppPages } from "routes";
-import { AppNavbar } from "layout";
+import { AppNavbar, AppSidebar } from "layout";
 import { StoreProvider } from "store";
 import { queryClient } from "services/config";
 import { AuthProvider } from "auth";
@@ -24,6 +24,7 @@ function App() {
                   <div className="container mx-auto flex h-screen w-screen flex-col justify-center md:flex-row">
                     <AppNavbar />
                     <AppPages />
+                    <AppSidebar />
                   </div>
                 </NotificationProvider>
               </ErrorHandler>

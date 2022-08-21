@@ -7,8 +7,8 @@ const Page = (props: {
   actions?: ReactNode;
 }) => {
   return (
-    <main className="h-[calc(100vh-65px)] w-full overflow-auto px-4 pt-3 pb-10 md:h-screen">
-      <section className="block animate-fade-in xl:w-3/4">
+    <main className="h-[calc(100vh-65px)] w-full overflow-auto px-5 pb-10 pt-3 md:h-screen xl:mx-4">
+      <section className="block animate-fade-in">
         <section className="mb-2 flex flex-col justify-between gap-y-2 md:mb-7 md:flex-row md:items-center">
           {props.title && (
             <Typography
@@ -21,13 +21,6 @@ const Page = (props: {
         </section>
         <section>{props.children}</section>
       </section>
-      <aside className="hidden w-1/4 xl:block">
-        {props.actions && (
-          <div className="flex items-center gap-2 md:justify-end">
-            {props.actions}
-          </div>
-        )}
-      </aside>
     </main>
   );
 };

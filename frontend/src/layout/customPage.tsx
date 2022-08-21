@@ -6,7 +6,7 @@ const CustomPage = (props: {
   actions?: ReactNode;
 }) => {
   return (
-    <main className="absolute inset-0 z-30 bg-white">{props.children}</main>
+    <main className="absolute inset-0 z-50 bg-white">{props.children}</main>
   );
 };
 

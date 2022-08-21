@@ -13,7 +13,7 @@ from stats.serializers import StatsSerializer
 
 # Custom endpoint
 from utils.utils import yearly_gte_date, yearly_lte_date, monthly_gte_date, monthly_lte_date, weekly_gte_date, \
-    weekly_lte_date
+    weekly_lte_date, get_of_set
 
 
 class UserStatsApi(APIView):
@@ -29,11 +29,7 @@ class GoalStatsApi(APIView):
         user_id = request.query_params.get("userId")
         user = User.objects.filter(id=user_id).first()
         goal = Goal.objects.filter(id=goal_id).first()
-        time_zone = request.query_params.get("timeZone")
-        if time_zone:
-            time_zone = int(time_zone)
-        else:
-            time_zone = -2
+        time_zone = get_of_set(request.headers.get("timezone"))
         try:
             ref_day = parser.parse(request.query_params.get('refDay'))
         except (OverflowError, ParserError):
