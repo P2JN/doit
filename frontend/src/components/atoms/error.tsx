@@ -10,6 +10,7 @@ const handledErrors: { [n: number]: string } = {
 
 const ParsedError = (error: AxiosError) => {
   const isStringError = typeof error.response?.data === "string";
+  const isUndefinedError = typeof error.response?.data === "undefined";
 
   return (
     <Alert severity="error">
@@ -20,7 +21,7 @@ const ParsedError = (error: AxiosError) => {
           : error.message || "Algo salió mal"}
       </p>
 
-      {!isStringError ? (
+      {!isStringError && !isUndefinedError ? (
         Object.entries(error?.response?.data as any)?.map(([key, value]) => (
           <p key={key}>
             <>
