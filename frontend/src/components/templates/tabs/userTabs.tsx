@@ -1,14 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMatch, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Tab, Tabs, Typography } from "@mui/material";
+import { useLocation, useMatch, useNavigate } from "react-router-dom";
+import { Button, Divider, Tab, Tabs, Typography } from "@mui/material";
+import {
+  CheckCircle,
+  Comment,
+  CrisisAlert,
+  Favorite,
+  Image,
+  TrackChangesOutlined,
+} from "@mui/icons-material";
 
-import { goalService, socialService } from "services";
+import { goalService, socialService, statsService } from "services";
 import { SocialTypes } from "types";
 import { useActiveUser } from "store";
 import { paginationUtils } from "utils";
 
-import { DataLoader } from "components/molecules";
-import { FollowTable, PostTeaser, TrackingTeaser } from "components/organisms";
+import { HorizontalStatCounters, StatCounter } from "components/atoms";
+import { Achievement, DataLoader } from "components/molecules";
+import {
+  FollowTable,
+  PostTeaserWithoutComments,
+  TrackingTeaser,
+} from "components/organisms";
 import { UserForm } from "components/templates";
 
 const UserInfoTab = (user: SocialTypes.User) => {
@@ -66,13 +79,10 @@ const UserFeedTab = (user: SocialTypes.User) => {
     [userPostList]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "user-posts") {
-      refetch();
-      setSearchParams("");
-    }
-  }, [params, refetch, setSearchParams]);
+    refetch();
+  }, [location, refetch]);
 
   return (
     <section className="animate-fade-in">
@@ -84,7 +94,7 @@ const UserFeedTab = (user: SocialTypes.User) => {
       )}
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {posts?.map((post) => (
-          <PostTeaser withoutComments key={post.id} {...post} />
+          <PostTeaserWithoutComments key={post.id} {...post} />
         ))}
       </div>
       <DataLoader
@@ -115,7 +125,7 @@ const UserTrackingsTab = (user: SocialTypes.User) => {
   return (
     <section className="animate-fade-in">
       <div className="mb-3 flex justify-between">
-        <Typography variant="h5">Últimos Progresos</Typography>
+        <Typography variant="h5">Últimos registros</Typography>
       </div>
       <div className="grid gap-x-5 gap-y-7 md:grid-cols-2 xl:grid-cols-3">
         {trackings?.map((tracking) => (
@@ -133,14 +143,136 @@ const UserTrackingsTab = (user: SocialTypes.User) => {
     </section>
   );
 };
-const UserStatsTab = () => {
+const UserStatsTab = (user: SocialTypes.User) => {
+  const { data: stats } = statsService.useUserStats(user?.id);
+
+  const { data: achievements } = statsService.useAchievements(user?.id);
+
+  const completed = useMemo(() => {
+    return achievements?.filter((a) => a.completed).length;
+  }, [achievements]);
+
+  const total = useMemo(() => {
+    return achievements?.length;
+  }, [achievements]);
+
   return (
-    <section>
-      <p>User Stats Content</p>
+    <section className="flex flex-col gap-5">
+      <section className="flex flex-col gap-3">
+        <Typography variant="h5">Social</Typography>
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <StatCounter
+            value={stats?.numPosts}
+            label="Publicaciones"
+            icon={<Image />}
+          />
+          <StatCounter
+            value={stats?.numComments}
+            label="Comentarios recibidos"
+            icon={<Comment />}
+          />
+          <StatCounter
+            value={stats?.numLikes}
+            label="Likes recibidos"
+            icon={<Favorite />}
+          />
+        </section>
+      </section>
+      <section className="flex flex-col gap-3">
+        <Typography variant="h5">Metas</Typography>
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <StatCounter
+            value={stats?.createdGoals}
+            label="Metas creadas"
+            icon={<CrisisAlert />}
+          />
+          <StatCounter
+            value={stats?.participatedGoals}
+            label="Participaciones"
+            icon={<CrisisAlert />}
+          />
+          <HorizontalStatCounters
+            items={[
+              {
+                label: "Actualmente",
+                value: stats?.actuallyParticipatedGoals,
+              },
+              {
+                label: "En metas propias",
+                value: stats?.createdGoals,
+              },
+              {
+                label: "En otras metas",
+                value:
+                  (stats?.participatedGoals || 0) - (stats?.createdGoals || 0),
+              },
+            ]}
+          />
+        </section>
+      </section>
+      <section className="flex flex-col gap-3">
+        <Typography variant="h5">Progreso</Typography>
+
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <StatCounter
+            value={stats?.numTrackings}
+            label="Registros"
+            icon={<TrackChangesOutlined />}
+          />
+          <StatCounter
+            value={
+              (stats?.dailyObjectivesCompleted || 0) +
+              (stats?.weeklyObjectivesCompleted || 0) +
+              (stats?.monthlyObjectivesCompleted || 0) +
+              (stats?.yearlyObjectivesCompleted || 0) +
+              (stats?.totalObjectivesCompleted || 0)
+            }
+            label="Objetivos completados"
+            icon={<CheckCircle />}
+          />
+          <HorizontalStatCounters
+            items={[
+              {
+                label: "diarios",
+                value: stats?.dailyObjectivesCompleted,
+              },
+              {
+                value: stats?.weeklyObjectivesCompleted,
+                label: "semanales",
+              },
+              {
+                value: stats?.monthlyObjectivesCompleted,
+                label: "mensuales",
+              },
+              {
+                value: stats?.yearlyObjectivesCompleted,
+                label: "anuales",
+              },
+              {
+                value: stats?.totalObjectivesCompleted,
+                label: "totales",
+              },
+            ]}
+          />
+        </section>
+      </section>
+      <Divider />
+      <section className="flex flex-col gap-3">
+        <div className="flex justify-between">
+          <Typography variant="h5">Logros</Typography>
+          <Typography variant="h5">
+            {completed} / {total}
+          </Typography>
+        </div>
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {achievements?.map((achievement) => (
+            <Achievement key={achievement.id} {...achievement} />
+          ))}
+        </section>
+      </section>
     </section>
   );
 };
-
 type FollowersTabType = "followers" | "following";
 const UserFollowersTab = (user: SocialTypes.User) => {
   const [subTab, setSubTab] = useState<FollowersTabType>("followers");
@@ -171,14 +303,11 @@ const UserFollowersTab = (user: SocialTypes.User) => {
     [followingPages]
   );
 
-  const [params, setSearchParams] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "user") {
-      refetch();
-      refetchFollowing();
-      setSearchParams("");
-    }
-  }, [params, refetch, refetchFollowing, setSearchParams]);
+    refetch();
+    refetchFollowing();
+  }, [location, refetch, refetchFollowing]);
 
   return (
     <section className="animate-fade-in">
@@ -187,8 +316,8 @@ const UserFollowersTab = (user: SocialTypes.User) => {
         onChange={(_: any, tab: string) => setSubTab(tab as FollowersTabType)}
         variant="scrollable"
       >
-        <Tab value={"followers"} label="Seguidores" />
-        <Tab value={"following"} label="Siguiendo" />
+        <Tab value={"followers"} label={`Seguidores  (${user.numFollowers})`} />
+        <Tab value={"following"} label={`Seguidos  (${user.numFollowing})`} />
       </Tabs>
       {subTab === "followers" && (
         <>

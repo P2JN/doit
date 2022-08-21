@@ -26,37 +26,21 @@ export const axiosInstance = Axios.create({
   },
 });
 
-// Error handling interceptor
-axiosInstance.interceptors.request.use(
-  (config) => config,
-  (error) => {
-    // Do something with request error
-    return Promise.reject(error);
+// Timezone interceptor, passes the timezone hours diff
+axiosInstance.interceptors.request.use((config) => {
+  const timezone = new Date().getTimezoneOffset() / 60;
+  if (config.headers) {
+    config.headers.timezone = timezone;
   }
-);
-
-// Session interceptors
-axiosInstance.interceptors.response.use((response) => {
-  if (response.data.key) {
-    localStorage.setItem("token", response.data.key);
-  }
-
-  return response;
+  return config;
 });
 
+// Local language interceptor
 axiosInstance.interceptors.request.use((config) => {
-  // if the request origin includes "logout" or "login" remove the token
-  if (config.url?.includes("logout") || config.url?.includes("login")) {
-    localStorage.removeItem("token");
+  const language = "es-es";
+  if (config.headers) {
+    config.headers["Accept-Language"] = language;
   }
-
-  const token = localStorage.getItem("token");
-  if (config.headers)
-    if (token) {
-      config.headers.Authorization = `Token ${token}`;
-    } else {
-      delete config.headers.Authorization;
-    }
   return config;
 });
 

@@ -14,25 +14,20 @@ const UserTeaser = (user: SocialTypes.User) => {
   const navigate = useNavigate();
   const onOpenUser = () => navigate("/users/" + user.id + "/info");
   return (
-    <Card className="cursor-pointer" onClick={onOpenUser}>
-      {user.urlMedia && (
-        <div className="-mx-7 -mt-5 flex items-center justify-between">
-          <img
-            src={user.urlMedia}
-            alt="userimg"
-            className="w-full text-center"
-          />
-        </div>
-      )}
+    <Card className="!h-full cursor-pointer" onClick={onOpenUser}>
       <header className="flex cursor-pointer flex-wrap-reverse items-center justify-between gap-3">
         <Typography variant="h5">
           <strong onClick={onOpenUser}>{user.firstName}</strong>
         </Typography>
-        <div className="ml-auto">
-          <UserTeaserReduced {...user} />
-        </div>
+        <UserAvatar {...user} />
       </header>
-      <footer className="flex justify-end" onClick={onOpenUser}>
+      <section className="flex flex-wrap-reverse gap-3">
+        <UserUsername {...user} />
+      </section>
+      <footer
+        className="mt-auto flex items-center justify-end"
+        onClick={onOpenUser}
+      >
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </footer>
     </Card>
@@ -69,7 +64,7 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
             <CameraAlt />
           </IconButton>
         )}
-        <Typography className="cursor-pointer hover:font-bold" variant="h5">
+        <Typography className="cursor-pointer hover:font-bold" variant="h6">
           @{user.username}
         </Typography>
       </div>
@@ -78,7 +73,7 @@ const UserTeaserInfo = (user: SocialTypes.User) => {
       </div>
 
       {!isMyProfile && (
-        <div className="md:order-auto order-first flex w-full justify-center md:w-auto">
+        <div className="order-first flex w-full justify-center md:order-last md:w-auto">
           <FollowButton {...user} />
         </div>
       )}
@@ -132,6 +127,14 @@ const UserAvatar = (user: SocialTypes.User) => {
 const UserSearchResult = (user: SocialTypes.User) => {
   const navigate = useNavigate();
   const onOpenUser = () => navigate("/users/" + user.id + "/info");
+
+  const { activeUser } = useActiveUser();
+
+  const isMyProfile = useMemo(
+    () => activeUser?.id === user.id,
+    [activeUser?.id, user.id]
+  );
+
   return (
     <article>
       <section onClick={onOpenUser} className="cursor-pointer">
@@ -142,7 +145,7 @@ const UserSearchResult = (user: SocialTypes.User) => {
       <section className="flex cursor-pointer items-center gap-4 py-1">
         {user && <UserAvatar {...user} />}
         <div className="!mr-auto">{user && <UserUsername {...user} />}</div>
-        <FollowButton {...user} />
+        {!isMyProfile && <FollowButton {...user} />}
         <UserCounters followers={user.numFollowers} posts={user.numPosts} />
       </section>
     </article>

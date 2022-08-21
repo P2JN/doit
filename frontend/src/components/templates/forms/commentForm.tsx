@@ -1,5 +1,4 @@
 import { Controller, useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
 import {
   Button,
   CircularProgress,
@@ -11,11 +10,8 @@ import { socialService } from "services";
 import { Id } from "types/apiTypes";
 import { useActiveUser } from "store";
 
-const CommentForm = (props: { postId?: Id }) => {
+const CommentForm = (props: { postId?: Id; onComment: () => void }) => {
   const { activeUser } = useActiveUser();
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setSearchParams] = useSearchParams();
 
   const {
     handleSubmit,
@@ -37,7 +33,7 @@ const CommentForm = (props: { postId?: Id }) => {
         {
           onSuccess: () => {
             setValue("message", "");
-            setSearchParams("?refresh=" + props.postId);
+            props.onComment();
           },
         }
       );

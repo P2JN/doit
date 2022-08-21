@@ -1,7 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
-  Alert,
   Button,
   CircularProgress,
   FormHelperText,
@@ -10,6 +9,8 @@ import {
 
 import { useActiveUser } from "store";
 import { goalService } from "services";
+
+import { Hint, ParsedError } from "components/atoms";
 
 const TrackingForm = () => {
   const navigate = useNavigate();
@@ -44,11 +45,7 @@ const TrackingForm = () => {
         },
         {
           onSuccess: () => {
-            navigate(
-              location.pathname.split("/").slice(0, -1).join("/") +
-                "?refresh=" +
-                goalId
-            );
+            navigate(location.pathname.split("/").slice(0, -1).join("/"));
           },
         }
       );
@@ -76,12 +73,16 @@ const TrackingForm = () => {
             </div>
           )}
         />
+        <Hint id="cantidad">
+          La cantidad quedará registrada y pasará a formar parte de tu progreso
+          en esta meta
+        </Hint>
 
         <Button size="large" variant="outlined" type="submit">
           {isLoading ? <CircularProgress size={16} /> : "Registrar"}
         </Button>
       </div>
-      {isError && <Alert severity="error">{error.message}</Alert>}
+      {isError && <ParsedError {...error} />}
     </form>
   );
 };

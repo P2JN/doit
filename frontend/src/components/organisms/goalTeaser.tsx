@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Add } from "@mui/icons-material";
+import { Add, CrisisAlert } from "@mui/icons-material";
 import { Chip, IconButton, Typography } from "@mui/material";
 
 import { GoalTypes } from "types";
@@ -43,6 +43,7 @@ const GoalTeaser = (goal: GoalTypes.Goal) => {
             }
             expected={undefined}
             objective={obj.quantity}
+            unit={goal.unit}
           />
         ))}
       </section>
@@ -55,22 +56,25 @@ const GoalTeaserInfo = (goal: GoalTypes.Goal) => {
   const onOpenGoal = () => navigate("/goals/" + goal.id + "/info");
 
   return (
-    <Card className="cursor-pointer" onClick={onOpenGoal}>
+    <Card className="!h-full cursor-pointer" onClick={onOpenGoal}>
       <header className="flex items-center justify-between">
         <Typography variant="h5" className="!font-bold">
+          <CrisisAlert className="mr-2 mb-1" />
           {goal.title}
         </Typography>
+      </header>
+      {goal.description && (
+        <Typography variant="body1" className="!mb-2 line-clamp-4">
+          {goal.description}
+        </Typography>
+      )}
+      <footer className="mt-auto flex justify-between">
         {goal.type && (
           <Chip
             label={texts.goalTypes[goal.type as GoalTypes.GoalType]}
             color="info"
           />
         )}
-      </header>
-      {goal.description && (
-        <Typography variant="body1">{goal.description}</Typography>
-      )}
-      <footer className="flex justify-end">
         <GoalCounters
           participants={goal.numParticipants}
           posts={goal.numPosts}
@@ -86,13 +90,19 @@ const GoalTeaserReduced = (goal: GoalTypes.Goal) => {
 
   return (
     <Card
-      className="min-h-[calc(32px+40px)] cursor-pointer"
+      className="min-h-[calc(32px+50px)] cursor-pointer"
       onClick={onOpenGoal}
     >
       <header className="flex items-center justify-between gap-3">
-        <Typography variant="h6" className="!font-bold leading-tight">
-          {goal.title}
-        </Typography>
+        <section className="flex items-center gap-3">
+          <CrisisAlert />
+          <Typography
+            variant="h6"
+            className="!font-bold leading-tight !line-clamp-1"
+          >
+            {goal.title}
+          </Typography>
+        </section>
         {goal.type && (
           <Chip
             className="ml-auto -mr-2"

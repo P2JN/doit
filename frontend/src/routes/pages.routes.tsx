@@ -11,6 +11,7 @@ import {
   NotificationsPage,
   LoadingPage,
   GoalDetailPage,
+  PostDetailPage,
 } from "pages";
 import UserDetailPage from "pages/userDetails";
 
@@ -28,8 +29,8 @@ const AppPages = () => {
         <>
           <Route path="/home/*" element={<HomePage />} />
           <Route path="/feed/*" element={<FeedPage />} />
+          <Route path="/explore/*" element={<ExplorePage />} />
           <Route path="/explore/:activeTab/*" element={<ExplorePage />} />
-          <Route path="/explore" element={<Navigate to="/explore/goals" />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route
             path="/goals/:goalId/:activeTab/*"
@@ -39,6 +40,7 @@ const AppPages = () => {
             path="/users/:userId/:activeTab/*"
             element={<UserDetailPage />}
           />
+          <Route path="/posts/:postId/*" element={<PostDetailPage />} />
         </>
       ) : (
         <Route path="*" element={<Navigate to="/auth/login" />} />

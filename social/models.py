@@ -17,11 +17,12 @@ class NotificationIconType(str, Enum):
     COMPLETED = 'completed'
     GOAL = 'goal'
     TRACKING = 'tracking'
+    ACHIEVEMENT = 'achievement'
 
 
 class User(Document):
     user_id = fields.IntField()
-    username = fields.StringField(max_length=30, required=True)
+    username = fields.StringField(max_length=30, required=True, unique=True)
     email = fields.EmailField(required=True)
     password = fields.StringField()
     birthDate = fields.DateTimeField()

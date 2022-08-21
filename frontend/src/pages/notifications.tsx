@@ -8,7 +8,8 @@ import { DataLoader, NotificationAlert } from "components/molecules";
 
 const NotificationsPage = () => {
   const { activeUser } = useActiveUser();
-  const { notifications, addNotification } = useNotificationStore();
+  const { notifications, addNotification, hideNotificationSnack } =
+    useNotificationStore();
 
   const {
     data: notificationPages,
@@ -24,18 +25,13 @@ const NotificationsPage = () => {
   useEffect(() => {
     notificationPages?.pages.forEach((page) => {
       page.results.forEach((notification) => {
-        console.log(notification);
         addNotification(notification);
-      });
-    });
-
-    return () => {
-      notifications.forEach((notification) => {
+        hideNotificationSnack(notification.id);
         notification.id &&
           !notification.checked &&
           checkNotification(notification.id);
       });
-    };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkNotification, notificationPages]);
 

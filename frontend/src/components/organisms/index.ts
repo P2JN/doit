@@ -1,4 +1,7 @@
 import NotificationProvider from "./notificationProvider";
+import ErrorHandler from "./errorHandler";
+
+import AppAssistant from "./assistant";
 
 import ModalDrawer from "./modalDrawer";
 import CommentSection from "./commentSection";
@@ -16,7 +19,12 @@ import {
   GoalTeaserReduced,
   GoalSearchResult,
 } from "./goalTeaser";
-import { PostTeaser, PostSearchResult } from "./postTeaser";
+import {
+  PostTeaser,
+  PostSearchResult,
+  PostComments,
+  PostTeaserWithoutComments,
+} from "./postTeaser";
 import {
   UserTeaser,
   UserTeaserReduced,
@@ -26,6 +34,8 @@ import {
   UserSearchResult,
 } from "./userTeaser";
 import { TrackingTeaser } from "./trackingTeaser";
+
+import WeekChart from "./weekChart";
 
 export {
   UserTeaser,
@@ -40,11 +50,16 @@ export {
   GoalSearchResult,
   PostTeaser,
   PostSearchResult,
+  PostComments,
+  PostTeaserWithoutComments,
   TrackingTeaser,
   NotificationProvider,
+  ErrorHandler,
+  AppAssistant,
   ModalDrawer,
   CommentSection,
   FollowTable,
   LeaderboardTable,
   SearchBar,
+  WeekChart,
 };

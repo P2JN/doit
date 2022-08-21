@@ -14,11 +14,16 @@ from pathlib import Path
 import mongoengine
 import os
 from dotenv import load_dotenv
+import sys
+
+TEST = 'test' in sys.argv
 
 load_dotenv()  # take environment variables from .env.
 SITE_ID = 1
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+PWA_SERVICE_WORKER_PATH = os.path.join(
+    BASE_DIR, 'static/js', 'serviceworker.js')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -28,6 +33,9 @@ SECRET_KEY = 'django-insecure-3scat@+fq!!i8f9jj*0#uo2@r^y*jhcz)tk6iw@6vquy^(9r(&
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# Language code spanish
+LANGUAGE_CODE = 'es-es'
 
 # Application definition
 
@@ -48,6 +56,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'dj_rest_auth',
+    'pwa'
 ]
 
 MIDDLEWARE = [
@@ -59,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware'
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -75,7 +85,6 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'auth.authSerializer.CustomUserDetailsSerializer',
 }
-
 
 ROOT_URLCONF = 'doit.urls'
 
@@ -109,7 +118,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-
 # AllAuth config
 SOCIALACCOUNT_ADAPTER = "auth.socialAccountAdapter.CustomSocialAccountAdapter"
 
@@ -142,7 +150,7 @@ WSGI_APPLICATION = 'doit.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("POSTGRES_NAME"),
+        'NAME': os.environ.get("POSTGRES_DB"),
         'USER': os.environ.get("POSTGRES_USER"),
         'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
         'HOST': os.environ.get("POSTGRES_HOST"),
@@ -158,6 +166,12 @@ if os.environ.get('DOCKER'):
         username=os.environ.get("MONGO_INITDB_ROOT_USERNAME"),
         password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"),
     )
+elif TEST:
+    db = mongoengine.connect("TEST",
+                             username=os.environ.get(
+                                 "MONGO_INITDB_ROOT_USERNAME"),
+                             password=os.environ.get("MONGO_INITDB_ROOT_PASSWORD"), )
+    db.drop_database("TEST")
 else:
     mongoengine.connect("DOIT")
 
@@ -200,12 +214,13 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'frontend', 'build',),
     os.path.join(BASE_DIR, 'frontend', 'build', 'static'),
+    os.path.join(BASE_DIR, 'static', 'media'),
 )
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -219,6 +234,18 @@ FE_BASEURL = 'http://localhost:3000'
 ALLOWED_HOSTS = ['*']
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    "timezone",
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with'
+]
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     BASEURL, FE_BASEURL
@@ -226,3 +253,34 @@ CORS_ORIGIN_WHITELIST = (
 CSRF_TRUSTED_ORIGINS = [
     BASEURL, FE_BASEURL
 ]
+
+# PWA
+PWA_APP_NAME = 'doit'
+PWA_APP_DESCRIPTION = "doit PWA"
+PWA_APP_THEME_COLOR = '#000000'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': 'static/Logo.svg',
+        'sizes': '144x144'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': 'static/Logo.svg',
+        'sizes': '144x144'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': 'static/Logo.svg',
+        'sizes': '144x144'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'es-ES'

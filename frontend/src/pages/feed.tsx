@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 
 import { Page } from "layout";
@@ -9,7 +9,7 @@ import { SocialTypes } from "types";
 import { paginationUtils } from "utils";
 
 import { DataLoader } from "components/molecules";
-import { ModalDrawer, PostTeaser } from "components/organisms";
+import { ModalDrawer, PostTeaser, PostComments } from "components/organisms";
 import { PostForm } from "components/templates";
 
 const FeedPage = () => {
@@ -30,10 +30,10 @@ const FeedPage = () => {
 
   const navigate = useNavigate();
 
-  const [params] = useSearchParams();
+  const location = useLocation();
   useEffect(() => {
-    if (params.get("refresh") === "feed") refetch();
-  }, [params, refetch]);
+    refetch();
+  }, [location, refetch]);
 
   return (
     <Page title="Contenido">
@@ -74,6 +74,14 @@ const FeedModals = () => {
         element={
           <ModalDrawer title="Nuevo post" onClose={() => navigate(-1)}>
             <PostForm />
+          </ModalDrawer>
+        }
+      />
+      <Route
+        path="/:postId/comments"
+        element={
+          <ModalDrawer title="Comentarios" onClose={() => navigate(-1)}>
+            <PostComments />
           </ModalDrawer>
         }
       />
