@@ -22,3 +22,14 @@ export type GoalStats = {
   totalMonth: number;
   totalYear: number;
 };
+
+export type Achievement = {
+  id: Id;
+  title: string;
+  description: string;
+  media: Id;
+  type: "BRONZE" | "SILVER" | "GOLD" | "SPECIAL";
+
+  urlMedia: string;
+  completed: boolean;
+};

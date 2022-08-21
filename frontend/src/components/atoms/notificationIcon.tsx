@@ -2,6 +2,7 @@ import {
   CheckCircle,
   Comment,
   CrisisAlert,
+  EmojiEvents,
   Favorite,
   Image,
   Info,
@@ -29,7 +30,8 @@ const NotificationIcon = (props: {
       return <PersonAdd />;
     case "tracking":
       return <TrackChanges />;
-
+    case "achievement":
+      return <EmojiEvents />;
     case "info":
     default:
       return <Info />;

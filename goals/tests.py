@@ -4,6 +4,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from goals.models import Goal, Objective, Frequency, Tracking
 from goals.views import GoalViewSet, ObjectiveViewSet, TrackingViewSet
 from social.models import Participate
+from stats.models import Achievement, AchievementType
 from utils.utils import set_up_test
 
 
@@ -37,6 +38,7 @@ class GoalsViewSetTest(TestCase):
                                                 'createdBy': str(self.mongo_user.id)})
         force_authenticate(request, user=self.user, token=self.token)
         goal_detail = GoalViewSet.as_view({'post': 'create'})
+        Achievement(id=1, title="test", description="test", type=AchievementType.BRONZE).save()
         response = goal_detail(request)
         self.assertEqual(response.status_code, 201)
         self.assertIsNotNone(response.data.get("notification"))

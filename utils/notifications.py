@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from goals.models import Frequency, Goal, Objective
 from social.models import Participate, Notification, User, NotificationIconType
 from social.serializers import NotificationSerializer
+from utils.achievement import update_objectives_achievement
 from utils.utils import get_progress, update_stats, get_of_set
 
 
@@ -54,7 +55,8 @@ def notify_completed_objectives(progress, objectives, goal, user, tracking):
     objectives_to_notify = [objective for objective in objectives if
                             progress[objective.frequency] >= objective.quantity >
                             progress[objective.frequency] - tracking.instance.amount]
-
+    if len(objectives_to_notify) > 0:
+        update_objectives_achievement(progress, tracking, objectives_to_notify, user)
     notifications = []
     for objective in objectives_to_notify:
         update_stats(user, objective.frequency)

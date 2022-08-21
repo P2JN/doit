@@ -2,7 +2,7 @@ from rest_framework_mongoengine import serializers
 
 from goals.models import Tracking
 from social.models import Participate, Post, LikePost, Comment
-from stats.models import Stats
+from stats.models import Stats, Achievement
 
 
 class StatsSerializer(serializers.DocumentSerializer):
@@ -33,3 +33,17 @@ class StatsSerializer(serializers.DocumentSerializer):
 
     def get_numComments(self, obj):
         return Comment.objects().filter(createdBy=obj.createdBy).count()
+
+
+class AchievementSerializer(serializers.DocumentSerializer):
+    urlMedia = serializers.serializers.SerializerMethodField()
+
+    class Meta:
+        model = Achievement
+        fields = ['id', 'title', 'description', 'urlMedia', 'type']
+
+    def get_urlMedia(self, obj):
+        res = None
+        if obj.media:
+            res = obj.media.url
+        return res

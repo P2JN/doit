@@ -10,7 +10,7 @@ const StatCounter = (props: {
 }) => {
   return (
     <Card className="!h-full">
-      <div className="my-auto flex h-full items-center gap-2 md:flex-col md:justify-center md:justify-between">
+      <div className="my-auto flex h-full items-center gap-2 md:flex-col md:justify-between">
         {props.icon}
         <Typography variant="h3" className="!mr-auto md:!mr-0">
           {props.value || 0}

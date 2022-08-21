@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useMatch, useNavigate } from "react-router-dom";
-import { Button, Tab, Tabs, Typography } from "@mui/material";
+import { Button, Divider, Tab, Tabs, Typography } from "@mui/material";
 import {
   CheckCircle,
   Comment,
@@ -15,8 +15,8 @@ import { SocialTypes } from "types";
 import { useActiveUser } from "store";
 import { paginationUtils } from "utils";
 
-import { Card, HorizontalStatCounters, StatCounter } from "components/atoms";
-import { DataLoader } from "components/molecules";
+import { HorizontalStatCounters, StatCounter } from "components/atoms";
+import { Achievement, DataLoader } from "components/molecules";
 import {
   FollowTable,
   PostTeaserWithoutComments,
@@ -146,14 +146,20 @@ const UserTrackingsTab = (user: SocialTypes.User) => {
 const UserStatsTab = (user: SocialTypes.User) => {
   const { data: stats } = statsService.useUserStats(user?.id);
 
+  const { data: achievements } = statsService.useAchievements(user?.id);
+
+  const completed = useMemo(() => {
+    return achievements?.filter((a) => a.completed).length;
+  }, [achievements]);
+
+  const total = useMemo(() => {
+    return achievements?.length;
+  }, [achievements]);
+
   return (
     <section className="flex flex-col gap-5">
       <section className="flex flex-col gap-3">
-        <Card>
-          <header>
-            <Typography variant="h5">Social</Typography>
-          </header>
-        </Card>
+        <Typography variant="h5">Social</Typography>
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <StatCounter
             value={stats?.numPosts}
@@ -173,11 +179,7 @@ const UserStatsTab = (user: SocialTypes.User) => {
         </section>
       </section>
       <section className="flex flex-col gap-3">
-        <Card>
-          <header>
-            <Typography variant="h5">Metas</Typography>
-          </header>
-        </Card>
+        <Typography variant="h5">Metas</Typography>
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <StatCounter
             value={stats?.createdGoals}
@@ -209,11 +211,8 @@ const UserStatsTab = (user: SocialTypes.User) => {
         </section>
       </section>
       <section className="flex flex-col gap-3">
-        <Card>
-          <header>
-            <Typography variant="h5">Progreso</Typography>
-          </header>
-        </Card>
+        <Typography variant="h5">Progreso</Typography>
+
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           <StatCounter
             value={stats?.numTrackings}
@@ -255,6 +254,20 @@ const UserStatsTab = (user: SocialTypes.User) => {
               },
             ]}
           />
+        </section>
+      </section>
+      <Divider />
+      <section className="flex flex-col gap-3">
+        <div className="flex justify-between">
+          <Typography variant="h5">Logros</Typography>
+          <Typography variant="h5">
+            {completed} / {total}
+          </Typography>
+        </div>
+        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {achievements?.map((achievement) => (
+            <Achievement key={achievement.id} {...achievement} />
+          ))}
         </section>
       </section>
     </section>

@@ -9,7 +9,7 @@ from goals.models import Goal, Objective, Tracking
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Follow
 from social.models import Participate, LikeTracking, User, NotificationIconType
-from stats.models import Stats
+from utils.achievement import update_goal_stats_achievement, save_achievement, update_trackings_achievement
 from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
@@ -42,7 +42,7 @@ class GoalViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        Stats.objects.filter(createdBy=serializer.instance.createdBy).update_one(inc__createdGoals=1)
+        update_goal_stats_achievement(serializer.instance)
         return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
                                    "La meta '" + serializer.data.get("title") + "' ha sido creada.",
                                    NotificationIconType.GOAL)
@@ -106,7 +106,7 @@ class TrackingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-
+        update_trackings_achievement(serializer.instance)
         return create_notification_tracking(self, serializer, request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
@@ -137,6 +137,7 @@ class LeaderBoard(viewsets.GenericAPIView):
         time_zone = get_of_set(request.headers.get('timezone'))
         query, amount = get_leader_board(goal_id, today, start_week, end_week,
                                          request.query_params.get('frequency'), time_zone)
+        save_achievement(query[0], 19)
         query = self.paginate_queryset(query)
         res = [set_amount(user, amount[user.username]) for user in query]
         return self.get_paginated_response(res)
