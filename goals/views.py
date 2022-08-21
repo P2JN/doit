@@ -9,7 +9,7 @@ from goals.models import Goal, Objective, Tracking
 from goals.serializers import GoalSerializer, ObjectiveSerializer, TrackingSerializer
 from social.models import Follow
 from social.models import Participate, LikeTracking, User, NotificationIconType
-from utils.achievement import update_goal_stats_achievement, save_achievement
+from utils.achievement import update_goal_stats_achievement, save_achievement, update_trackings_achievement
 from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
@@ -106,7 +106,7 @@ class TrackingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-
+        update_trackings_achievement(serializer.instance)
         return create_notification_tracking(self, serializer, request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
