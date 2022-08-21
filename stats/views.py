@@ -1,4 +1,3 @@
-import calendar
 from datetime import timedelta
 
 from dateutil import parser
@@ -10,7 +9,6 @@ from goals.models import Goal, Tracking
 from social.models import User
 from stats.models import Stats, AchievementUser, Achievement
 from stats.serializers import StatsSerializer, AchievementSerializer
-
 # Custom endpoint
 from utils.utils import yearly_gte_date, yearly_lte_date, monthly_gte_date, monthly_lte_date, weekly_gte_date, \
     weekly_lte_date, get_of_set

@@ -1,9 +1,9 @@
+import random
 from datetime import datetime, timedelta
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import random
 
 from goals.models import Tracking, Goal, Objective
 from social.models import User, Participate, Follow, Post, LikePost, Notification
@@ -11,7 +11,7 @@ from stats.models import Stats
 from stats.serializers import StatsSerializer
 from utils.notifications import translate_objective_frequency
 from utils.utils import get_progress, get_leader_board, set_amount, get_trackings, get_of_set, weekly_gte_date, \
-    weekly_lte_date, yearly_gte_date, yearly_lte_date, get_obj_or_404
+    weekly_lte_date, yearly_gte_date, yearly_lte_date
 
 
 # Custom endpoint
