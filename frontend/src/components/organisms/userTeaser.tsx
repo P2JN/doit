@@ -15,15 +15,6 @@ const UserTeaser = (user: SocialTypes.User) => {
   const onOpenUser = () => navigate("/users/" + user.id + "/info");
   return (
     <Card className="!h-full cursor-pointer" onClick={onOpenUser}>
-      {user.urlMedia && (
-        <div className="-mx-7 -mt-5 flex items-center justify-between">
-          <img
-            src={user.urlMedia}
-            alt="userimg"
-            className="w-full text-center"
-          />
-        </div>
-      )}
       <header className="flex cursor-pointer flex-wrap-reverse items-center justify-between gap-3">
         <Typography variant="h5">
           <strong onClick={onOpenUser}>{user.firstName}</strong>

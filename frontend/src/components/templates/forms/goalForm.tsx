@@ -16,7 +16,7 @@ import { goalService } from "services";
 import { GoalTypes } from "types";
 import { formParsers, texts } from "utils";
 
-import { ParsedError } from "components/atoms";
+import { Hint, ParsedError } from "components/atoms";
 
 const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
   const navigate = useNavigate();
@@ -144,12 +144,17 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
               <TextField disabled={props.disabled} label="Unidad" {...field} />
               {errors.unit && (
                 <FormHelperText error>
-                  {errors.unit.message || "Demasiado largo"}
+                  {errors.unit.message || "Demasiado larga"}
                 </FormHelperText>
               )}
             </div>
           )}
         />
+        <Hint id="unidad" {...{ hidden: isUpdate }}>
+          La <strong>unidad</strong> determina la medida de tus objetivos
+          temporales para esta meta, algunos ejemplos son: km, rep, min, horas,
+          ...
+        </Hint>
 
         <InputLabel htmlFor="type">Tipo</InputLabel>
         <Controller
@@ -181,6 +186,10 @@ const GoalForm = (props: { initial?: GoalTypes.Goal; disabled?: boolean }) => {
             </div>
           )}
         />
+        <Hint id="tipo-goal" {...{ hidden: isUpdate }}>
+          El <strong>tipo</strong> de meta determina quién podrá participar en
+          tu meta y como se gestionará el progreso
+        </Hint>
 
         {!props.disabled && (
           <Button size="large" variant="outlined" type="submit">

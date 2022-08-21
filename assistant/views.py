@@ -1,9 +1,9 @@
+import random
 from datetime import datetime, timedelta
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import random
 
 from goals.models import Tracking, Goal, Objective
 from social.models import User, Participate, Follow, Post, LikePost, Notification
@@ -11,7 +11,7 @@ from stats.models import Stats
 from stats.serializers import StatsSerializer
 from utils.notifications import translate_objective_frequency
 from utils.utils import get_progress, get_leader_board, set_amount, get_trackings, get_of_set, weekly_gte_date, \
-    weekly_lte_date, yearly_gte_date, yearly_lte_date, get_obj_or_404
+    weekly_lte_date, yearly_gte_date, yearly_lte_date
 
 
 # Custom endpoint
@@ -230,19 +230,19 @@ class UserInfoAssistantAPI(APIView):
         else:
             other_user = user
             if probability < 0.5:
-                follows = Follow.objects.filter(
-                    user=user_id, follower=logged_user).first()
                 follower = Follow.objects.filter(
+                    user=user_id, follower=logged_user).first()
+                follows = Follow.objects.filter(
                     user=logged_user, follower=user_id).first()
                 if follows and follower:
                     message = "Os seguís mutuamente tu y " + other_user.username
                 elif follows:
-                    message = "Este" + other_user.username + \
-                              "te sigue, ¿Por qué no le sigues tu a el?"
+                    message = other_user.username + \
+                              " te sigue, ¿Por qué no le sigues tu a el?"
                 elif follower:
                     message = "Sigues a " + other_user.username + ", pero el a ti no te sigue"
                 else:
-                    message = "Aún no os conoceis, ¿Por qué no le empiezas a seguir?"
+                    message = "Aún no os conocéis, ¿Por qué no le empiezas a seguir?"
             else:
                 goals_in_common = Participate.objects.filter(createdBy=user_id, goal__in=Goal.objects.filter(
                     createdBy=logged_user).values_list("id")).count()

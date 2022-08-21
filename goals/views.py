@@ -14,7 +14,7 @@ from utils.filters import FilterSet
 from utils.notifications import create_notification, translate_objective_frequency, \
     create_user_notification, delete_notification, create_notification_tracking
 from utils.recomendations import get_tracking_score_by_goal, get_goals_affinity
-from utils.utils import get_trackings, set_amount, get_progress, get_leader_board, get_of_set
+from utils.utils import set_amount, get_progress, get_leader_board, get_of_set
 
 
 # ViewSet views

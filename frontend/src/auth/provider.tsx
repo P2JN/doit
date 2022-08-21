@@ -38,7 +38,6 @@ const AuthProvider = (props: { children: ReactNode }) => {
 
       if (response.data.key) {
         setTokenUpdated(false);
-        console.log("loggedIn", response.data.key);
         localStorage.setItem("token", response.data.key);
         setTokenUpdated(true);
       }
@@ -46,7 +45,6 @@ const AuthProvider = (props: { children: ReactNode }) => {
       // handle expired token
       if (currentToken && response.status === 401) {
         setTokenUpdated(false);
-        console.log("token expired");
         localStorage.removeItem("token");
         navigate("/auth/login");
         setTokenUpdated(true);
