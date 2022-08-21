@@ -5,7 +5,10 @@ from rest_framework.authtoken.models import Token
 
 from django.http import Http404
 import calendar
+
+from doit import settings
 from goals.models import Tracking, Frequency
+from social.models import Participate
 from social.serializers import UserSerializer
 from stats.models import Stats
 from social.models import User as MongoUser
@@ -143,6 +146,7 @@ def daily_gte_date(date, time_zone=2):
 
 
 def set_up_test(self):
+    settings.db.drop_database("TEST")
     self.user = User.objects.create(username='test', email='test@gmail.com',
                                     first_name='test',
                                     last_name='test')
@@ -161,3 +165,19 @@ def set_up_test(self):
 
     stats = Stats(createdBy=self.mongo_user)
     stats.save()
+
+
+def get_leader_board(goal_id, today, start_week, end_week, frequency, time_zone):
+    trackings = get_trackings([frequency], goal_id, None, today, start_week, end_week, time_zone)
+    participants = Participate.objects.filter(goal=goal_id).values_list('createdBy')
+    amount = {participant.username: trackings.filter(createdBy=participant).sum('amount') for participant in
+              participants}
+    query = sorted(participants, key=lambda x: amount[x.username], reverse=True)
+    return [query, amount]
+
+
+def get_of_set(time_zone):
+    if time_zone:
+        return int(time_zone)
+    else:
+        return -2

@@ -1,6 +1,8 @@
 import random
 from datetime import datetime, timedelta
 
+from mongoengine import NotUniqueError
+
 from goals.models import Frequency, Goal, GoalType, Objective, Tracking
 from media.models import Media
 from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification, Comment
@@ -14,24 +16,27 @@ def populate_users(n):
                   "Williams", "Harris", "Davis", "Miller", "Wilson", "Moore", "Taylor"]
 
     for _ in range(n):
-        name = names[int(random.random() * len(names))]
-        last_name = last_names[int(random.random() * len(last_names))]
+        try:
+            name = names[int(random.random() * len(names))]
+            last_name = last_names[int(random.random() * len(last_names))]
 
-        initial = datetime(1975, 1, 1)
-        final = datetime(2017, 1, 1)
+            initial = datetime(1975, 1, 1)
+            final = datetime(2017, 1, 1)
 
-        user = User(
-            username=name.lower() + last_name.lower(),
-            email=name.lower() + last_name.lower() + '@mail.com',
-            password='123123123',
-            birthDate=initial + (final - initial) * random.random(),
-            firstName=name,
-            lastName=last_name,
-        )
+            user = User(
+                username=name.lower() + last_name.lower(),
+                email=name.lower() + last_name.lower() + '@mail.com',
+                password='123123123',
+                birthDate=initial + (final - initial) * random.random(),
+                firstName=name,
+                lastName=last_name,
+            )
 
-        user.save()
-        stats = Stats(createdBy=user)
-        stats.save()
+            user.save()
+            stats = Stats(createdBy=user)
+            stats.save()
+        except NotUniqueError:
+            pass
 
 
 def populate_followers(users):

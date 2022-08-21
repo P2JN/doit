@@ -4,6 +4,7 @@ import paginationUtils from "./paginationUtils";
 import mediaUtils from "./mediaUtils";
 import dateUtils from "./dateUtils";
 import texts from "./texts";
+import utilsHooks from "./hooks";
 
 export {
   formParsers,
@@ -12,4 +13,5 @@ export {
   paginationUtils,
   dateUtils,
   mediaUtils,
+  utilsHooks,
 };

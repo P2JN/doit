@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Tab, Tabs, Typography } from "@mui/material";
 import {
@@ -31,6 +32,10 @@ const ExplorePage = () => {
   const handleChange = (_: any, tab: string) => {
     navigate(`/explore/${tab}`);
   };
+
+  useEffect(() => {
+    !activeTab && navigate(`/explore/goals`);
+  }, [activeTab, navigate]);
 
   return (
     <Page title="Explora">
