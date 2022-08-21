@@ -28,7 +28,7 @@ export type Achievement = {
   title: string;
   description: string;
   media: Id;
-  type: "BRONZE" | "SILVER" | "GOLD" | "SPECIAL";
+  type: "bronze" | "silver" | "gold" | "special";
 
   urlMedia: string;
   completed: boolean;

@@ -10,13 +10,13 @@ import { Card } from "components/atoms";
 const Achievement = (achievement: StatsTypes.Achievement) => {
   const getColor = (type: string) => {
     switch (type) {
-      case "BRONZE":
+      case "bronze":
         return "!text-yellow-800 !fill-yellow-800";
-      case "SILVER":
+      case "silver":
         return "!text-gray-500 !fill-gray-500";
-      case "GOLD":
+      case "gold":
         return "!text-yellow-400 !fill-yellow-400";
-      case "SPECIAL":
+      case "special":
         return "!text-primary !fill-primary";
       default:
         return "!text-primary !fill-primary";

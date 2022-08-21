@@ -14,12 +14,24 @@ const ErrorHandler = (props: { children: ReactNode }) => {
   const [error, setError] = useState<any>(null);
   const [errorId, setErrorId] = useState<number>(0);
 
+  const isNotInternalAcceptedError = (error: AxiosError) => {
+    return (
+      typeof error.response?.data !== "string" ||
+      (!error.response.data.includes("missing") &&
+        !error.response.data.includes("TemplateDoesNotExist") &&
+        !error.response.data.includes("api/assistant"))
+    );
+  };
+
   useEffect(() => {
     axiosInstance.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
-        if (error.response) {
-          console.log(error);
+        if (
+          error.response &&
+          error.response.status !== 401 &&
+          isNotInternalAcceptedError(error)
+        ) {
           setError(error);
           setErrorId(errorId + 1);
         }
