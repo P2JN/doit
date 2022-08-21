@@ -6,6 +6,7 @@ from goals.models import Goal, Tracking
 from social.models import Post, User as MongoUser, Notification, Follow, Participate, LikeTracking, LikePost, Comment
 from social.views import PostViewSet, UserViewSet, NotificationViewSet, FollowViewSet, ParticipateViewSet, \
     LikeTrackingViewSet, LikePostViewSet, CommentViewSet
+from stats.models import Achievement, AchievementType
 from utils.utils import set_up_test
 
 
@@ -620,6 +621,7 @@ class CommentPostViewTest(TestCase):
                                                 'content': "testContent"})
         force_authenticate(request, user=self.user, token=self.token)
         comment_detail = CommentViewSet.as_view({'post': 'create'})
+        achievement = Achievement(id=5, title="test", description="test", type=AchievementType.BRONZE).save()
         response = comment_detail(request)
         self.assertEqual(response.status_code, 201)
         self.assertIsNotNone(Comment.objects.filter(id=response.data.get("id")).first())
