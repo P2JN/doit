@@ -38,7 +38,7 @@ class GoalsViewSetTest(TestCase):
                                                 'createdBy': str(self.mongo_user.id)})
         force_authenticate(request, user=self.user, token=self.token)
         goal_detail = GoalViewSet.as_view({'post': 'create'})
-        achievement = Achievement(id=1, title="test", description="test", type=AchievementType.BRONZE).save()
+        Achievement(id=1, title="test", description="test", type=AchievementType.BRONZE).save()
         response = goal_detail(request)
         self.assertEqual(response.status_code, 201)
         self.assertIsNotNone(response.data.get("notification"))

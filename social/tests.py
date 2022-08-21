@@ -621,7 +621,7 @@ class CommentPostViewTest(TestCase):
                                                 'content': "testContent"})
         force_authenticate(request, user=self.user, token=self.token)
         comment_detail = CommentViewSet.as_view({'post': 'create'})
-        achievement = Achievement(id=5, title="test", description="test", type=AchievementType.BRONZE).save()
+        Achievement(id=5, title="test", description="test", type=AchievementType.BRONZE).save()
         response = comment_detail(request)
         self.assertEqual(response.status_code, 201)
         self.assertIsNotNone(Comment.objects.filter(id=response.data.get("id")).first())

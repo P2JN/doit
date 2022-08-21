@@ -1,7 +1,6 @@
 from rest_framework_mongoengine import serializers
 
 from goals.models import Tracking
-from media.models import Media
 from social.models import Participate, Post, LikePost, Comment
 from stats.models import Stats, Achievement
 
