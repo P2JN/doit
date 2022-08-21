@@ -20,7 +20,7 @@ const AppAssistant = () => {
 
   const debouncedRefetch = utilsHooks.useDebouncedCallback(
     refetchMessage,
-    20000
+    30000
   );
 
   useEffect(() => {
