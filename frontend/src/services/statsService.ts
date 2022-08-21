@@ -23,12 +23,18 @@ const requests = {
           (refDay || "missing")
       )
       .then((response) => response.data),
+
+  getAchievements: (userId?: Id) =>
+    axiosInstance
+      .get("/user/" + (userId || "missing") + "/achievements")
+      .then((response) => response.data),
 };
 
-const recommendationService = {
+const statsService = {
   useUserStats: (userId?: Id) =>
-    useQuery<StatsTypes.UserStats, AxiosError>("getUserRecommendations", () =>
-      requests.getUserStats(userId)
+    useQuery<StatsTypes.UserStats, AxiosError>(
+      "getUserRecommendations-" + userId,
+      () => requests.getUserStats(userId)
     ),
 
   useWeekData: (goalId?: Id, userId?: Id, refDay?: string) =>
@@ -36,6 +42,12 @@ const recommendationService = {
       `get-${goalId}-stats-${refDay}`,
       () => requests.getGoalStats(goalId, userId, refDay)
     ),
+
+  useAchievements: (userId?: Id) =>
+    useQuery<StatsTypes.Achievement[], AxiosError>(
+      "getUserAchievements-" + userId,
+      () => requests.getAchievements(userId)
+    ),
 };
 
-export default recommendationService;
+export default statsService;

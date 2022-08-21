@@ -72,7 +72,9 @@ export type NotificationIconType =
   | "goal"
   | "info"
   | "completed"
-  | "tracking";
+  | "tracking"
+  | "achievement";
+
 export type Notification = {
   id?: Id;
   title?: string;

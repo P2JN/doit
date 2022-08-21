@@ -1,5 +1,6 @@
 import ProgressBar from "./progressBar";
 import Comment from "./comment";
+import Achievement from "./achievement";
 
 import { PostCounters, GoalCounters, UserCounters } from "./counters";
 
@@ -15,6 +16,7 @@ import DataLoader from "./dataLoader";
 export {
   ProgressBar,
   Comment,
+  Achievement,
   SwipeableDrawer,
   Modal,
   PostCounters,

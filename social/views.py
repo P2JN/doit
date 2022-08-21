@@ -12,6 +12,7 @@ from social.models import Post, User, Notification, Follow, Participate, LikeTra
 from social.serializers import PostSerializer, UserSerializer, NotificationSerializer, FollowSerializer, \
     ParticipateSerializer, LikeTrackingSerializer, LikePostSerializer, CommentSerializer
 from stats.models import Stats
+from utils.achievement import update_posts_achievement, update_comments_achievement, update_like_achievement
 from utils.filters import FilterSet
 from utils.recomendations import get_users_affinity, get_post_recomendations
 from utils.notifications import delete_notification, create_notification, create_user_notification, limit_text
@@ -38,6 +39,7 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        update_posts_achievement(serializer.instance.createdBy)
         content = "La publicación '" + \
                   serializer.data.get("title") + "' ha sido añadida."
         if serializer.instance.goal:
@@ -195,6 +197,7 @@ class LikePostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
+        update_like_achievement(instance.post.createdBy)
         create_user_notification(instance.post.createdBy,
                                  "A alguien le ha gustado tu publicación",
                                  "Al usuario " + instance.createdBy.username + " le ha gustado tu publicación '" + instance.post.title + "'.",
@@ -217,6 +220,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         instance = serializer.instance
+        update_comments_achievement(instance.post.createdBy)
         create_user_notification(instance.post.createdBy,
                                  "Alguien ha comentado en tu post.",
                                  "'"+instance.createdBy.username + "' ha comentado en tu post '" + instance.post.title +

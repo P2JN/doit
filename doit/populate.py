@@ -4,8 +4,9 @@ from datetime import datetime, timedelta
 from mongoengine import NotUniqueError
 
 from goals.models import Frequency, Goal, GoalType, Objective, Tracking
+from media.models import Media
 from social.models import Follow, LikePost, LikeTracking, Participate, Post, User, Notification, Comment
-from stats.models import Stats
+from stats.models import Stats, Achievement, AchievementType
 
 
 def populate_users(n):
@@ -36,6 +37,7 @@ def populate_users(n):
             stats.save()
         except NotUniqueError:
             pass
+
 
 def populate_followers(users):
     for user in users:
@@ -382,14 +384,16 @@ def populate_participations(users, goals):
             if (user.id == goal.createdBy.id) or (random.random() < 0.15):
                 participation = Participate(createdBy=user, goal=goal)
                 participation.save()
-                Stats.objects.filter(createdBy=user).update_one(inc__participatedGoals=1)
+                Stats.objects.filter(createdBy=user).update_one(
+                    inc__participatedGoals=1)
 
 
 def populate_trackings(participations):
     for participation in participations:
         for _ in range(random.randint(1, 4)):
             if random.random() >= 0.25:
-                tracking = Tracking(amount=random.randint(1, 10), goal=participation.goal, createdBy=participation.createdBy)
+                tracking = Tracking(amount=random.randint(1, 10), goal=participation.goal,
+                                    createdBy=participation.createdBy)
                 tracking.save()
 
 
@@ -616,6 +620,7 @@ def populate_posts_comments(users, goals):
     )
     comment.save()
 
+
 def populate_likes(users, trackings, posts):
     for user in users:
         for tracking in trackings:
@@ -626,6 +631,94 @@ def populate_likes(users, trackings, posts):
             if random.random() < 0.35:
                 like_post = LikePost(createdBy=user, post=post)
                 like_post.save()
+
+
+def populate_achievement():
+    json = [
+        # Principiante
+        {"title": 'Principiante de las metas',
+         "description": '¡Has creado tu primera meta!', "url": "media/uploaded/create-goal-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante del registro',
+         "description": 'Has registrado tu primer progreso', "url": "media/uploaded/create-tracking-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de los objetivos',
+         "description": '¡Has completado tu primer objetivo!', "url": "media/uploaded/completed-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de las publicaciones',
+         "description": '¡Has comentado en una publicación por primera vez!', "url": "media/uploaded/image-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de los comentarios',
+         "description": '¡Has recibido tu primer comentario!', "url": "media/uploaded/comment-1.svg",
+         "type": AchievementType.BRONZE},
+        {"title": 'Principiante de los me gusta',
+         "description": '¡Has recibido tu primer me gusta en una publicación!', "url": "media/uploaded/like-1.svg",
+         "type": AchievementType.BRONZE},
+
+        # Aprendiz
+        {"title": 'Aprendiz de las metas',
+         "description": '¡Has creados más de 25 metas!', "url": "media/uploaded/create-goal-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz del registro',
+         "description": '¡Has registrado más de 200 progresos!', "url": "media/uploaded/create-tracking-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de los objetivos',
+         "description": '¡Has completado más de 200 objetivos!', "url": "media/uploaded/completed-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de las publicaciones',
+         "description": '¡Has creado más de 25 publicaciones!', "url": "media/uploaded/image-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de los comentarios',
+         "description": '¡Has recibido más de 500 comentarios!', "url": "media/uploaded/comment-2.svg",
+         "type": AchievementType.SILVER},
+        {"title": 'Aprendiz de los me gustas',
+         "description": '¡Has recibido más de 500 me gustas!', "url": "media/uploaded/like-2.svg",
+         "type": AchievementType.SILVER},
+
+        # Maestro
+        {"title": 'Maestro de las metas',
+         "description": '¡Has creados más de 50 metas!', "url": "media/uploaded/create-goal-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro del registro',
+         "description": '¡Has registrado más de 500 progresos!', "url": "media/uploaded/create-tracking-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de los objetivos',
+         "description": '¡Has completado más de 500 objetivos!', "url": "media/uploaded/completed-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de las publicaciones',
+         "description": '¡Has creado más de 50 publicaciones!', "url": "media/uploaded/image-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de los comentarios',
+         "description": '¡Has creado más de 1000 comentarios!', "url": "media/uploaded/comment-3.svg",
+         "type": AchievementType.GOLD},
+        {"title": 'Maestro de los me gusta',
+         "description": '¡Has recibido más de 1000 me gustas!', "url": "media/uploaded/like-3.svg",
+         "type": AchievementType.GOLD},
+
+        # Especial
+        {"title": 'En primer lugar',
+         "description": '¡Has sido el primero en el ranking!', "url": "media/uploaded/winner.svg",
+         "type": AchievementType.SPECIAL},
+        {"title": '¡De una!',
+         "description": 'Completaste un objetivo registrando un único progreso', "url": "media/uploaded/one-to-one.svg",
+         "type": AchievementType.SPECIAL},
+        {"title": 'Lider cooperativo',
+         "description": 'A un goal cooperativo tuyo ya se han unido mas de 10 personas',
+         "url": "media/uploaded/coop.svg", "type": AchievementType.SPECIAL},
+    ]
+    i = 1
+    for ach in json:
+        media = Media(url=ach['url'])
+        media.save()
+        achievement = Achievement(
+            id=i,
+            title=ach['title'],
+            description=ach['description'],
+            media=media.id,
+            type=ach['type']
+        )
+        achievement.save()
+        i += 1
 
 
 def drop_all():
@@ -645,7 +738,7 @@ def drop_all():
     Goal.objects.all().delete()
 
     User.objects.filter(user_id=None).delete()
-
+    Achievement.objects.all().delete()
 
 
 def populate():
@@ -674,3 +767,4 @@ def populate():
     trackings = Tracking.objects.all()
 
     populate_likes(users, trackings, posts)
+    populate_achievement()
