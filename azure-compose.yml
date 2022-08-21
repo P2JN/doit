@@ -1,3 +1,5 @@
+version: "3"
+
 services:
   mongo:
     image: ghcr.io/p2jn/doit-mongo
@@ -20,7 +22,7 @@ services:
       - 5432:5432
 
   web:
-    image: ghcr.io/p2jn/doit-develop
+    image: ghcr.io/p2jn/doit-main
     command: ./startup.sh 80
     environment:
       - DOCKER=true
