@@ -266,7 +266,7 @@ const UserStatsTab = (user: SocialTypes.User) => {
         </div>
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {achievements?.map((achievement) => (
-            <Achievement {...achievement} />
+            <Achievement key={achievement.id} {...achievement} />
           ))}
         </section>
       </section>
