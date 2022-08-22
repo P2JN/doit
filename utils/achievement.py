@@ -42,7 +42,7 @@ def update_objectives_achievement(progress, tracking, objectives_to_notify, user
             if total_objectives > 500:
                 save_achievement(user, 15)
         for objectives in objectives_to_notify:
-            if progress[objectives.frequency] - tracking.instance.amount <= 0:
+            if progress[objectives.frequency] - tracking.instance.amount <= 0 and tracking.instance.createdBy == user:
                 save_achievement(user, 20)
                 break
     except NotUniqueError as e:
