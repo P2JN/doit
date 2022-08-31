@@ -56,7 +56,7 @@ const AppAssistant = () => {
             className="w-full"
           >
             <Typography variant="body1" className="animate-fade-in">
-              {assistantMessage?.message || "Estoy aquí para ayudarte"}
+              {assistantMessage?.message || "Estoy aquí para ayudarte."}
             </Typography>
           </Alert>
         ) : (

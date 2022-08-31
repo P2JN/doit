@@ -9,8 +9,9 @@ def save_achievement(user, achievement):
     try:
         AchievementUser(createdBy=user, achievement=achievement).save()
         from utils.notifications import create_user_notification
-        create_user_notification(user, "Nuevo logro conseguido", "Has desbloqueado el logro " +
-                                 Achievement.objects.filter(id=achievement).first().title,
+        create_user_notification(user, "Nuevo logro conseguido", "Has desbloqueado el logro '" +
+                                 Achievement.objects.filter(
+                                     id=achievement).first().title + "'",
                                  NotificationIconType.ACHIEVEMENT)
     except NotUniqueError:
         pass
@@ -25,7 +26,8 @@ def update_goal_stats_achievement(goal):
             save_achievement(goal.createdBy, 7)
         elif stats.createdGoals == 50:
             save_achievement(goal.createdBy, 13)
-    Stats.objects.filter(createdBy=goal.createdBy).update_one(inc__createdGoals=1)
+    Stats.objects.filter(createdBy=goal.createdBy).update_one(
+        inc__createdGoals=1)
 
 
 def update_objectives_achievement(progress, tracking, objectives_to_notify, user):
@@ -33,8 +35,8 @@ def update_objectives_achievement(progress, tracking, objectives_to_notify, user
     try:
         if stats:
             total_objectives = stats.dailyObjectivesCompleted + stats.weeklyObjectivesCompleted + \
-                               stats.monthlyObjectivesCompleted + stats.yearlyObjectivesCompleted + \
-                               stats.totalObjectivesCompleted + len(objectives_to_notify)
+                stats.monthlyObjectivesCompleted + stats.yearlyObjectivesCompleted + \
+                stats.totalObjectivesCompleted + len(objectives_to_notify)
             if total_objectives > 0:
                 save_achievement(user, 3)
             if total_objectives > 200:
@@ -70,7 +72,8 @@ def update_comments_achievement(user):
 
 
 def update_like_achievement(user):
-    user_likes = LikePost.objects.filter(post__in=Post.objects.filter(createdBy=user)).count()
+    user_likes = LikePost.objects.filter(
+        post__in=Post.objects.filter(createdBy=user)).count()
     if user_likes == 1:
         save_achievement(user, 6)
     elif user_likes == 500:
@@ -81,7 +84,8 @@ def update_like_achievement(user):
 
 def update_participants_achievement(participate):
     if participate.goal.type == 'cooperative':
-        participants = Participate.objects.filter(goal=participate.goal).count()
+        participants = Participate.objects.filter(
+            goal=participate.goal).count()
         if participants == 20:
             save_achievement(participate.goal.createdBy, 21)
 

@@ -42,6 +42,7 @@ const GoalDetailPage = () => {
     data: goal,
     isLoading: loadingGoal,
     refetch,
+    error,
   } = goalService.useGoal(goalId);
 
   const navigate = useNavigate();
@@ -64,30 +65,39 @@ const GoalDetailPage = () => {
   };
 
   return (
-    <Page title={goal?.title || "Objetivo sin título"}>
+    <Page
+      title={goal?.title || (loadingGoal ? "Buscando..." : "No encontrado")}
+    >
       <div className="flex flex-col gap-3">
-        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
-          <Typography
-            variant="h5"
-            className="order-2 !text-center md:-order-1 md:text-left"
-          >
-            {labels[activeTab as GoalTabsType]}
-          </Typography>
+        {goal && (
+          <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
+            <Typography
+              variant="h5"
+              className="order-2 !text-center md:-order-1 md:text-left"
+            >
+              {labels[activeTab as GoalTabsType]}
+            </Typography>
 
-          <Tabs
-            value={activeTab}
-            onChange={handleChange}
-            variant="scrollable"
-            allowScrollButtonsMobile
-          >
-            <Tab value={"info"} icon={<InfoOutlined />} />
-            <Tab value={"trackings"} icon={<TrackChangesOutlined />} />
-            <Tab value={"feed"} icon={<ImageOutlined />} />
-            <Tab value={"leaderboard"} icon={<LeaderboardOutlined />} />
-            <Tab value={"stats"} icon={<TimelineOutlined />} />
-          </Tabs>
-        </div>
-        <DataLoader isLoading={loadingGoal} hasData={!!goal} retry={refetch} />
+            <Tabs
+              value={activeTab}
+              onChange={handleChange}
+              variant="scrollable"
+              allowScrollButtonsMobile
+            >
+              <Tab value={"info"} icon={<InfoOutlined />} />
+              <Tab value={"trackings"} icon={<TrackChangesOutlined />} />
+              <Tab value={"feed"} icon={<ImageOutlined />} />
+              <Tab value={"leaderboard"} icon={<LeaderboardOutlined />} />
+              <Tab value={"stats"} icon={<TimelineOutlined />} />
+            </Tabs>
+          </div>
+        )}
+        <DataLoader
+          isLoading={loadingGoal}
+          hasData={!!goal}
+          retry={refetch}
+          error={error}
+        />
         {activeTab && goal && <GoalTabs activeTab={activeTab} goal={goal} />}
       </div>
       {goal && <GoalModals {...goal} />}

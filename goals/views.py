@@ -44,7 +44,9 @@ class GoalViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         update_goal_stats_achievement(serializer.instance)
         return create_notification(self, serializer, request, "Goal", "¡Nueva meta creada!",
-                                   "La meta '" + serializer.data.get("title") + "' ha sido creada.",
+                                   "La meta '" +
+                                   serializer.data.get(
+                                       "title") + "' ha sido creada.",
                                    NotificationIconType.GOAL)
 
     def destroy(self, request, *args, **kwargs):
@@ -82,7 +84,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         notification = create_user_notification(instance.goal.createdBy, "¡Objetivo eliminado!",
                                                 "Has borrado un objetivo " + translate_objective_frequency(
-                                                    instance.frequency) + " a la meta '" + instance.goal.title + "'.",
+                                                    instance.frequency) + " de la meta '" + instance.goal.title + "'.",
                                                 NotificationIconType.INFO)
         return Response({"notification": notification.data}, status=200)
 
@@ -112,8 +114,7 @@ class TrackingViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         return delete_notification(self, instance, request, "¡Progreso eliminado!",
-                                   "Has eliminado " + str(instance.amount).replace(".",
-                                                                                   ",") + " " + instance.goal.unit +
+                                   "Has eliminado " + str(instance.amount) + " " + instance.goal.unit +
                                    " a la meta '" + instance.goal.title + "'.", NotificationIconType.INFO)
 
 
@@ -152,15 +153,17 @@ class GoalsRecommendations(viewsets.GenericAPIView):
                  Goal.objects.filter(createdBy__ne=user_id, id__nin=user_goals_ids,
                                      creationDate__gte=datetime.datetime.utcnow() - datetime.timedelta(
                                          weeks=12))]
-        sorted_by_participants = sorted(goals, key=lambda x: x.get("numParticipants"), reverse=True)
-        max_participants = sorted_by_participants[0].get("numParticipants") if sorted_by_participants else 0
+        sorted_by_participants = sorted(
+            goals, key=lambda x: x.get("numParticipants"), reverse=True)
+        max_participants = sorted_by_participants[0].get(
+            "numParticipants") if sorted_by_participants else 0
         goals_by_followers = GoalSerializer(Participate.objects.filter(
-            createdBy__in=Follow.objects(follower=user_id).values_list('user')
-            , goal__nin=user_goals_ids, creationDate__gte=datetime.datetime.utcnow() - datetime.timedelta(
+            createdBy__in=Follow.objects(follower=user_id).values_list('user'), goal__nin=user_goals_ids, creationDate__gte=datetime.datetime.utcnow() - datetime.timedelta(
                 weeks=12)).order_by('?')[0:9].values_list('goal'), many=True).data
         goals_by_affinity = sorted(goals, key=lambda x: get_goals_affinity(user_goals, x, max_participants),
                                    reverse=True)
-        goals_by_tracking = sorted(goals, key=lambda x: get_tracking_score_by_goal(x), reverse=True)
+        goals_by_tracking = sorted(
+            goals, key=lambda x: get_tracking_score_by_goal(x), reverse=True)
         res = {
             "affinity": goals_by_affinity[0:9],
             "participants": sorted_by_participants[0:9],
