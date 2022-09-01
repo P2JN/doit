@@ -34,9 +34,8 @@ def create_notification_tracking(self, serializer, request, *args, **kwargs):
     headers = self.get_success_headers(serializer.data)
     notification = create_user_notification(serializer.data.get("createdBy"), "¡Nuevo progreso registrado!",
                                             "Has registrado '" + str(
-                                                serializer.instance.amount).replace(".",
-                                                                                    ",") + " " + serializer.instance.goal.unit +
-                                            "' a la meta '" + serializer.instance.goal.title + "'.",
+                                                serializer.instance.amount) + " " + serializer.instance.goal.unit +
+                                            "' en la meta '" + serializer.instance.goal.title + "'.",
                                             NotificationIconType.TRACKING).data
     goal_id = serializer.data.get("goal")
     goal = Goal.objects.get(id=goal_id)
@@ -55,24 +54,30 @@ def notify_completed_objectives(progress, objectives, goal, user, tracking):
     objectives_to_notify = [objective for objective in objectives if
                             progress[objective.frequency] >= objective.quantity >
                             progress[objective.frequency] - tracking.instance.amount]
+    participants = []
     if len(objectives_to_notify) > 0:
-        update_objectives_achievement(progress, tracking, objectives_to_notify, user)
-    notifications = []
-    for objective in objectives_to_notify:
-        update_stats(user, objective.frequency)
+        update_objectives_achievement(
+            progress, tracking, objectives_to_notify, user)
         if goal.type == 'cooperative':
             participants = list(Participate.objects.filter(
                 goal=goal, createdBy__ne=user))
             for participant in participants:
+                update_objectives_achievement(
+                    progress, tracking, objectives_to_notify, participant.createdBy)
+    notifications = []
+    for objective in objectives_to_notify:
+        update_stats(user, objective.frequency)
+        if goal.type == 'cooperative':
+            for participant in participants:
                 update_stats(participant.createdBy, objective.frequency)
                 create_user_notification(participant.createdBy, "Objetivo " + translate_objective_frequency(
                     objective.frequency) + " completado",
-                                         "Has completado el objetivo " + translate_objective_frequency(
-                                             objective.frequency) + " de la meta '" + goal.title + "'",
-                                         NotificationIconType.COMPLETED)
+                    "Has completado el objetivo " + translate_objective_frequency(
+                    objective.frequency) + " de la meta '" + goal.title + "'.",
+                    NotificationIconType.COMPLETED)
         notifications.append(create_user_notification(user, "Objetivo " + translate_objective_frequency(
             objective.frequency) + " completado", "Has completado el objetivo " + translate_objective_frequency(
-            objective.frequency) + " de la meta '" + goal.title + "'", NotificationIconType.COMPLETED).data)
+            objective.frequency) + " de la meta '" + goal.title + "'.", NotificationIconType.COMPLETED).data)
     return notifications
 
 
@@ -90,6 +95,6 @@ def translate_objective_frequency(frequency):
 
 
 def limit_text(text, limit, length):
-    if text and length+len(text) > limit:
-        text = text[:limit-length - 3] + "..."
+    if text and length + len(text) > limit:
+        text = text[:limit - length - 3] + "..."
     return text

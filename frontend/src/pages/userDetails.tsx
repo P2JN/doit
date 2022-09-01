@@ -67,7 +67,15 @@ const UserDetailPage = () => {
   };
 
   return (
-    <Page title={user ? user.firstName + " " + user.lastName : "404 No existe"}>
+    <Page
+      title={
+        user
+          ? user.firstName + " " + user.lastName
+          : loadingUser
+          ? "Buscando..."
+          : "No encontrado"
+      }
+    >
       <div className="mt-4 flex flex-col gap-3 md:mt-0">
         {user && (
           <>

@@ -28,7 +28,7 @@ const FollowButton = (user: SocialTypes.User) => {
             refetchFollowData();
             addNotification({
               title: "Has dejado de seguir a este usuario.",
-              content: "Ya no verás sus posts en el feed.",
+              content: "Ya no verás sus publicaciones en el feed.",
               type: "transient",
               variant: "success",
             });
@@ -46,7 +46,7 @@ const FollowButton = (user: SocialTypes.User) => {
                 refetchFollowData();
                 addNotification({
                   title: "Has comenzado a seguir a este usuario.",
-                  content: "Verás sus posts en el feed.",
+                  content: "Verás sus publicaciones en el feed.",
                   type: "transient",
                   variant: "success",
                 });

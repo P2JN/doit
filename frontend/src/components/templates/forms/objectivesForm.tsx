@@ -13,7 +13,7 @@ import { goalService } from "services";
 import { GoalTypes } from "types";
 import { formParsers, texts } from "utils";
 
-import { Loader, ParsedError } from "components/atoms";
+import { Hint, Loader, ParsedError } from "components/atoms";
 import { GoalTeaserInfo } from "components/organisms";
 
 const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
@@ -149,6 +149,11 @@ const ObjectivesForm = (props: { initial?: GoalTypes.Objective[] }) => {
             />
           )
         )}
+
+        <Hint id="temp-objectives" hidden={isUpdate}>
+          Los objetivos temporales representan la cantidad de {goal?.unit} que
+          quieres obtener en un determinado periodo de tiempo.
+        </Hint>
 
         <Button size="large" variant="outlined" type="submit">
           {isLoading ? (

@@ -65,10 +65,7 @@ const HomeModals = () => {
       <Route
         path="/new-goal"
         element={
-          <ModalDrawer
-            title="Crear nuevo objetivo"
-            onClose={() => navigate(-1)}
-          >
+          <ModalDrawer title="Crear nueva meta" onClose={() => navigate(-1)}>
             <GoalForm />
           </ModalDrawer>
         }
